@@ -1,0 +1,247 @@
+/* Panel flotante = vidrio (DESIGN.md, "Transparencia"). A la derecha: la izquierda es de la columna oscura. */
+.nav {
+  --tam-nodo: 36px;
+  position: fixed;
+  z-index: 10;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 20px 16px;
+  width: 216px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+.lista {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Línea vertical que une los nodos: va del centro del primero al centro del último. */
+.linea {
+  position: absolute;
+  left: calc(16px + var(--tam-nodo) / 2 - 1px);
+  top: calc(20px + var(--tam-nodo) / 2);
+  bottom: calc(20px + var(--tam-nodo) / 2);
+  width: 2px;
+  background: var(--border);
+}
+
+.relleno {
+  width: 100%;
+  height: calc(var(--progreso) * 100%);
+  background: var(--bg-dark);
+  transition: height 300ms ease;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nodo {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--tam-nodo);
+  height: var(--tam-nodo);
+  border-radius: 50%;
+  border: 1px solid transparent;
+  /* Cada etapa con su pastel; la actual en negro. */
+  background: var(--color-etapa, var(--bg-card));
+  color: var(--text);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-label);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 200ms ease, color 200ms ease;
+}
+
+.nodo[data-actual='true'] {
+  background: var(--bg-dark);
+  border-color: var(--bg-dark);
+  color: var(--text-on-dark);
+}
+
+.nodo[data-vacio='true'] {
+  background: var(--bg-soft);
+  border-color: var(--border);
+  cursor: default;
+}
+
+.etiqueta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.nombre {
+  font-size: var(--fs-label);
+  font-weight: 500;
+  flex: 1;
+}
+
+.contador {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-soft);
+}
+
+.proximamente {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.alternar {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  transition: transform 200ms ease;
+}
+
+.item[data-abierta='true'] .alternar {
+  transform: rotate(90deg);
+}
+
+/*
+ * Lista de pasos: se abre sobre el contenido, así que va en vidrio mate
+ * (más opaco y difuso) para que el texto de atrás no se confunda con el suyo.
+ */
+.pasos {
+  display: none;
+  position: absolute;
+  right: calc(100% + 28px);
+  top: 50%;
+  transform: translateY(-50%);
+  min-width: 260px;
+  margin: 0;
+  padding: 8px;
+  list-style: none;
+  background: var(--glass-mate-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--sombra-panel);
+  backdrop-filter: blur(var(--glass-mate-blur)) saturate(1.2);
+  -webkit-backdrop-filter: blur(var(--glass-mate-blur)) saturate(1.2);
+}
+
+.item[data-abierta='true'] .pasos {
+  display: block;
+}
+
+@media (hover: hover) {
+  .item:hover .pasos {
+    display: block;
+  }
+}
+
+.paso {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  text-align: left;
+  font-size: var(--fs-label);
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.paso:hover,
+.paso:focus-visible {
+  background: var(--bg-card);
+}
+
+.idPaso {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  min-width: 26px;
+}
+
+/* Celular: barra horizontal inferior. */
+@media (max-width: 767px) {
+  .nav {
+    left: 12px;
+    right: 12px;
+    top: auto;
+    bottom: 12px;
+    transform: none;
+    width: auto;
+    padding: 10px 16px;
+  }
+
+  .lista {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  .linea {
+    left: calc(16px + var(--tam-nodo) / 2);
+    right: calc(16px + var(--tam-nodo) / 2);
+    top: calc(10px + var(--tam-nodo) / 2 - 1px);
+    bottom: auto;
+    width: auto;
+    height: 2px;
+  }
+
+  .relleno {
+    height: 100%;
+    width: calc(var(--progreso) * 100%);
+    transition-property: width;
+  }
+
+  /* Nodo con su contador debajo; el nombre y la lista de pasos no caben. */
+  .item {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .nombre,
+  .alternar,
+  .proximamente,
+  .pasos,
+  .item:hover .pasos,
+  .item[data-abierta='true'] .pasos {
+    display: none;
+  }
+
+  .etiqueta {
+    flex: none;
+    min-height: 20px;
+  }
+
+  .contador {
+    padding: 0 6px;
+  }
+}

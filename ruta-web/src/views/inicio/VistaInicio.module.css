@@ -1,0 +1,174 @@
+﻿.inicio {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.presentacion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.antetitulo {
+  font-size: var(--fs-label);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.reto {
+  font-family: var(--font-display);
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+  max-width: 720px;
+}
+
+.idea {
+  color: var(--text-muted);
+}
+
+.tituloSeccion {
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* Accesos: una tarjeta por etapa y una oscura destacada para el tablero. */
+.accesos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.accesos > li {
+  display: flex;
+}
+
+.acceso {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px;
+  border-radius: var(--radius-card);
+  background: var(--fondo, var(--bg-soft));
+  color: var(--text);
+  text-decoration: none;
+  border: var(--borde-panel);
+  box-shadow: var(--sombra-panel);
+  transition: border-color 150ms ease;
+}
+
+a.acceso:hover {
+  border-color: var(--text);
+}
+
+.acceso[data-oscuro='true'] {
+  border-color: var(--bg-dark);
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+}
+
+.acceso[data-vacio='true'] {
+  justify-content: center;
+  align-items: flex-start;
+  background: transparent;
+  box-shadow: none;
+}
+
+.letra {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.acceso[data-vacio='true'] .letra {
+  background: var(--bg-soft);
+}
+
+.nombreAcceso {
+  font-family: var(--font-display);
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+}
+
+.descripcion {
+  font-size: var(--fs-label);
+  flex: 1;
+}
+
+.pasos {
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+
+.proximamente {
+  font-size: var(--fs-label);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.recorrido {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.paso {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border-radius: var(--radius-card);
+  background: var(--fondo, var(--bg-soft));
+  border: var(--borde-panel);
+}
+
+.numero {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+
+.verbo {
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+
+.pregunta {
+  font-weight: 500;
+}
+
+.herramienta {
+  font-size: var(--fs-small);
+}
+
+@media (max-width: 1100px) {
+  .accesos,
+  .recorrido {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .accesos,
+  .recorrido {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

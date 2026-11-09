@@ -1,0 +1,27 @@
+.queSeHace {
+  font-weight: 500;
+}
+
+.datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0;
+}
+
+.datos dt {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.datos dd {
+  margin: 0;
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+.detalle {
+  color: var(--text-muted);
+  font-size: var(--fs-label);
+}

@@ -1,0 +1,32 @@
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.etiqueta {
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+.control {
+  width: 100%;
+  height: var(--alto-control);
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radio-control);
+  background: var(--bg-card);
+  font-size: var(--fs-body);
+}
+
+textarea.control {
+  height: auto;
+  padding: 10px 14px;
+  resize: vertical;
+}
+
+.ayuda {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
