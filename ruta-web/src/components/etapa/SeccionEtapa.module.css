@@ -1,0 +1,115 @@
+.seccion {
+  scroll-margin-top: 24px;
+}
+
+.seccion:focus {
+  outline: none;
+}
+
+.cabecera {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.letra {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-etapa);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-card-title);
+}
+
+.descripcion {
+  margin-top: 4px;
+  color: var(--text-muted);
+  max-width: 640px;
+}
+
+.pasos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/*
+ * Tarjeta pastel (color sólido, sin vidrio). Sobre pastel el gris de
+ * DESIGN.md no llega a 4,5:1, así que aquí el texto secundario usa el
+ * color de texto principal.
+ */
+.paso {
+  --text-muted: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  border-radius: var(--radius-card);
+  background: var(--fondo-paso);
+  border: var(--borde-panel);
+  box-shadow: var(--sombra-panel);
+  scroll-margin-top: 24px;
+}
+
+/*
+ * Manchas de luz como las del fondo de la página (mismos colores y opacidades
+ * que Marco.module.css), dibujadas dentro de la tarjeta.
+ */
+.paso[data-manchas='true'] {
+  background:
+    radial-gradient(circle at 8% 12%, color-mix(in srgb, var(--blob-beige) 60%, transparent), transparent 45%),
+    radial-gradient(circle at 92% 30%, color-mix(in srgb, var(--blob-violet) 18%, transparent), transparent 40%),
+    radial-gradient(circle at 70% 100%, color-mix(in srgb, var(--blob-cyan) 18%, transparent), transparent 45%),
+    var(--fondo-paso);
+}
+
+.paso:focus {
+  outline: none;
+}
+
+.paso[data-ancho='completo'] {
+  grid-column: 1 / -1;
+}
+
+.tituloPaso {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+}
+
+/* Pegada a su título y separada del formulario: se lee como parte del encabezado. */
+.descripcionPaso {
+  max-width: 640px;
+  margin-top: -8px;
+  margin-bottom: 12px;
+  font-size: var(--fs-body);
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+.idPaso {
+  font-family: var(--font-ui);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-card);
+}
+
+@media (max-width: 767px) {
+  .pasos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .paso {
+    padding: 20px;
+  }
+}

@@ -1,0 +1,72 @@
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: var(--alto-control);
+  padding: 0 20px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+}
+
+.boton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.principal {
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+}
+
+.secundario {
+  background: var(--accent-action);
+  color: var(--text);
+}
+
+/* Botón + / − */
+.icono {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.circulo {
+  display: grid;
+  place-items: center;
+  width: var(--alto-control);
+  height: var(--alto-control);
+  border-radius: 50%;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.icono[data-accion='agregar'] .circulo {
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+}
+
+.icono[data-accion='quitar'] .circulo {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+/* Dentro de tablas y chips el − es más pequeño. */
+.icono[data-accion='quitar'][data-con-etiqueta='false'] .circulo {
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+}
