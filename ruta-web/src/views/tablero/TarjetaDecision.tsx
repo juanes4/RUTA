@@ -3,7 +3,7 @@ import { useRuta } from '../../navegacion/RutaContexto';
 import estilos from './Tablero.module.css';
 
 /** Tarjeta oscura destacada: la recomendación R7. La herramienta recomienda; la persona decide. */
-export function TarjetaDecision({ decision }: { decision: ResultadoR7 }) {
+export function TarjetaDecision({ decision, conEnlace = true }: { decision: ResultadoR7; conEnlace?: boolean }) {
   const { enlace } = useRuta();
   const calculada = decision.estado === 'calculada';
 
@@ -18,9 +18,11 @@ export function TarjetaDecision({ decision }: { decision: ResultadoR7 }) {
           <li key={m}>{m}</li>
         ))}
       </ul>
-      <a className={estilos.enlaceOscuro} href={enlace({ pagina: 'etapa', etapaId: 'etapa-r', pasoId: 'R7' })}>
-        Ver R7 <span aria-hidden="true">→</span>
-      </a>
+      {conEnlace && (
+        <a className={estilos.enlaceOscuro} href={enlace({ pagina: 'etapa', etapaId: 'etapa-r', pasoId: 'R7' })}>
+          Ver R7 <span aria-hidden="true">→</span>
+        </a>
+      )}
     </section>
   );
 }

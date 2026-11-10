@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DATOS_VACIOS } from '../modelo/proyecto';
 import { crearProyecto } from '../proyecto/crearProyecto';
 import { AlmacenLocal, type AlmacenamientoClaveValor } from './almacenLocal';
 
@@ -24,7 +25,7 @@ describe('almacén en localStorage', () => {
   it('eliminar un proyecto borra también sus datos', async () => {
     const almacen = new AlmacenLocal(almacenamientoFalso());
     await almacen.guardar(crearProyecto('2026-11-08T10:00:00Z', 'p1'));
-    await almacen.guardarDatos('p1', { respuestas: [], kotter: [], uso: [] });
+    await almacen.guardarDatos('p1', { ...DATOS_VACIOS });
     await almacen.eliminar('p1');
     expect(await almacen.listar()).toEqual([]);
   });

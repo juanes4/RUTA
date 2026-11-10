@@ -26,7 +26,8 @@ export class AlmacenMemoria implements Almacen {
   }
 
   async obtenerDatos(idProyecto: string): Promise<DatosProyecto> {
-    return structuredClone(this.datos.get(idProyecto) ?? DATOS_VACIOS);
+    // Se completa con las tablas vacías: los proyectos antiguos no tienen las tablas nuevas.
+    return structuredClone({ ...DATOS_VACIOS, ...this.datos.get(idProyecto) });
   }
 
   async guardarDatos(idProyecto: string, datos: DatosProyecto): Promise<void> {

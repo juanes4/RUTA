@@ -32,8 +32,12 @@ export interface Etapa {
   activa: boolean;
   /** Pastel que identifica la etapa (nodo, encabezado, acceso). Las vacías no tienen. */
   color?: Pastel;
+  /** Tonos de la etapa para sus pasos en el recorrido del Inicio, en orden. */
+  tonos?: readonly string[];
   /** Tarjetas de los pasos. Las vacías no tienen. */
   tarjetas?: TarjetasEtapa;
+  /** true: índice de pasos y una página por paso. false: todos los pasos en una página. */
+  paginasPorPaso?: boolean;
   pasos: readonly PasoEtapa[];
 }
 
@@ -58,7 +62,9 @@ export const ETAPAS: readonly Etapa[] = [
     nombre: 'Reconocer',
     activa: true,
     color: 'var(--pastel-blue)',
+    tonos: ['var(--tono-r-1)', 'var(--tono-r-2)', 'var(--tono-r-3)', 'var(--tono-r-4)', 'var(--tono-r-5)', 'var(--tono-r-6)', 'var(--tono-r-7)'],
     tarjetas: { fondos: ['var(--pastel-blue)', GRIS], manchas: false },
+    paginasPorPaso: true,
     pasos: [
       { id: 'R1', titulo: 'Lienzo del cambio' },
       { id: 'R2', titulo: 'FODA del cambio' },
@@ -75,6 +81,7 @@ export const ETAPAS: readonly Etapa[] = [
     nombre: 'Unir',
     activa: true,
     color: 'var(--pastel-lavender)',
+    tonos: ['var(--tono-u-1)', 'var(--tono-u-2)'],
     tarjetas: { fondos: ['var(--pastel-lavender)'], manchas: false },
     pasos: [
       { id: 'U1', titulo: 'Comunicación por grupo' },

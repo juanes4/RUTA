@@ -1,4 +1,4 @@
-import { NO_SE, ORDEN_ADKAR, type Dimension, type FilaRespuesta } from '../modelo/tipos';
+import { ORDEN_ADKAR, type Dimension, type FilaRespuesta } from '../modelo/tipos';
 import { esNumeroValido, promedio, proporcion } from './estadistica';
 
 /**
@@ -30,7 +30,7 @@ export function resumirAdkar(
 
   for (const fila of filas) {
     if (!esDimensionAdkar(fila.dimension)) continue;
-    if (fila.valor === NO_SE) {
+    if (fila.no_se) {
       noSe.set(fila.dimension, (noSe.get(fila.dimension) ?? 0) + 1);
     } else if (esNumeroValido(fila.valor)) {
       valores.get(fila.dimension)?.push(fila.valor);

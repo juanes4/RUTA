@@ -9,34 +9,40 @@ interface Props {
   etapas: readonly Etapa[];
   etapa: Etapa;
   pasoId: string | null;
-  Vista: ComponentType<{ etapa: Etapa }>;
+  Vista: ComponentType<{ etapa: Etapa; pasoId: string | null }>;
 }
 
 /**
- * Página de una etapa: su vista con las subsecciones (pasos) y la barra
- * flotante. Si la ruta trae un paso, se desplaza hasta él.
+ * Página de una etapa: su vista y la barra flotante. Si la etapa tiene una
+ * página por paso, la ruta elige cuál; si no, se desplaza hasta el paso.
  */
 export function PaginaEtapa({ etapas, etapa, pasoId, Vista }: Props) {
   const { marcar } = usePasosVistos();
   const menosMovimiento = usePrefiereMenosMovimiento();
-  const { vistos } = useSeguimientoScroll(etapa.pasos.map((p) => anclaPaso(p.id)));
+  const porPagina = Boolean(etapa.paginasPorPaso);
+  const { vistos } = useSeguimientoScroll(porPagina ? [] : etapa.pasos.map((p) => anclaPaso(p.id)));
 
   useEffect(() => marcar(vistos), [vistos, marcar]);
 
+  // Con una página por paso, abrir la página es haber visto el paso.
+  useEffect(() => {
+    if (porPagina && pasoId) marcar([anclaPaso(pasoId)]);
+  }, [porPagina, pasoId, marcar]);
+
   useEffect(() => {
     const destino = document.getElementById(pasoId ? anclaPaso(pasoId) : etapa.id);
-    if (pasoId && destino) {
+    if (!porPagina && pasoId && destino) {
       destino.scrollIntoView({ behavior: menosMovimiento ? 'auto' : 'smooth', block: 'start' });
     } else {
       window.scrollTo({ top: 0 });
     }
     destino?.focus({ preventScroll: true });
-  }, [etapa.id, pasoId, menosMovimiento]);
+  }, [etapa.id, pasoId, menosMovimiento, porPagina]);
 
   return (
     <>
       <NavegacionEtapas etapas={etapas} idEtapaActual={etapa.id} />
-      <Vista etapa={etapa} />
+      <Vista etapa={etapa} pasoId={pasoId} />
     </>
   );
 }

@@ -11,6 +11,7 @@ interface ValorProyecto {
   crear(): Promise<void>;
   seleccionar(id: string): void;
   actualizar(cambio: (proyecto: Proyecto) => Proyecto): Promise<void>;
+  actualizarDatos(cambio: (datos: DatosProyecto) => DatosProyecto): Promise<void>;
 }
 
 const Contexto = createContext<ValorProyecto | null>(null);
@@ -66,9 +67,20 @@ export function ProveedorProyecto({ almacen, children }: Props) {
     [almacen, activo, recargar],
   );
 
+  const actualizarDatos = useCallback(
+    async (cambio: (datos: DatosProyecto) => DatosProyecto) => {
+      if (!idActivo) return;
+      // Se parte de lo guardado para no perder cambios hechos justo antes.
+      const nuevos = cambio(await almacen.obtenerDatos(idActivo));
+      await almacen.guardarDatos(idActivo, nuevos);
+      setDatos(nuevos);
+    },
+    [almacen, idActivo],
+  );
+
   const valor = useMemo<ValorProyecto>(
-    () => ({ cargando, proyectos, activo, datos, crear, seleccionar: setIdActivo, actualizar }),
-    [cargando, proyectos, activo, datos, crear, actualizar],
+    () => ({ cargando, proyectos, activo, datos, crear, seleccionar: setIdActivo, actualizar, actualizarDatos }),
+    [cargando, proyectos, activo, datos, crear, actualizar, actualizarDatos],
   );
 
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>;

@@ -22,11 +22,10 @@ export type Instrumento = 'buzon1' | 'buzon2' | 'pulso_completo' | 'verificacion
 
 export type Momento = 'base' | `ciclo_${number}` | 'dia30' | 'dia60' | 'dia90';
 
-/** Valor que representa "No sé": no entra al promedio y se cuenta aparte. */
-export const NO_SE = 'NS' as const;
-export type NoSe = typeof NO_SE;
-
-/** Tabla `respuestas`. */
+/**
+ * Tabla `respuestas`. "No sé" se guarda como `valor: null` con
+ * `no_se: true` (CONTEXTO §5): no entra al promedio y se cuenta aparte.
+ */
 export interface FilaRespuesta {
   id_respuesta: string;
   instrumento: Instrumento;
@@ -37,7 +36,8 @@ export interface FilaRespuesta {
   antiguedad_rango: string;
   pregunta_id: string;
   dimension: Dimension | 'proceso' | 'otra';
-  valor: number | NoSe | string;
+  valor: number | string | null;
+  no_se: boolean;
 }
 
 /** Roles de la pregunta R0 del Instrumento 2. */
@@ -76,6 +76,51 @@ export interface FilaUso {
   transacciones_nuevo: number;
   transacciones_antiguo: number;
   registros_con_error: number;
+}
+
+export type Cuadrante = 'F' | 'O' | 'D' | 'A';
+
+/** Tabla `foda`. `id` se agrega para poder editar y quitar ítems. */
+export interface FilaFoda {
+  id: string;
+  item: string;
+  cuadrante: Cuadrante;
+  evidencia: string;
+  puntaje_inicial: number;
+  puntaje_dia90: number | null;
+  votos: number;
+}
+
+export type Influencia = 'baja' | 'media' | 'alta';
+export type Postura = 'se_opone' | 'neutral' | 'apoya';
+export type Estrategia = 'educar' | 'hacer_participe' | 'apoyar' | 'negociar';
+
+/** Tabla `actores`. `id` se agrega para poder quitar filas. */
+export interface FilaActor {
+  id: string;
+  actor: string;
+  n_personas: number;
+  influencia: Influencia;
+  postura: Postura;
+  motivo: string;
+  estrategia: Estrategia | null;
+  accion: string;
+  responsable: string;
+  fecha: string;
+}
+
+export type LetraLiderazgo = 'A' | 'B' | 'C' | 'D';
+export type RespondenteLiderazgo = 'auto' | 'equipo';
+
+/** Tabla `liderazgo`. `id` identifica cada encuesta registrada. */
+export interface FilaLiderazgo {
+  id: string;
+  lider_id: string;
+  respondente: RespondenteLiderazgo;
+  conteo_A: number;
+  conteo_B: number;
+  conteo_C: number;
+  conteo_D: number;
 }
 
 export type Sentido = 'mayor_mejor' | 'menor_mejor';

@@ -4,7 +4,8 @@ import estilos from './SeccionEtapa.module.css';
 
 interface PropsSeccion {
   etapa: Etapa;
-  descripcion: string;
+  /** Se omite en la página de un paso: ahí lo importante es el paso. */
+  descripcion?: string;
   children: ReactNode;
 }
 
@@ -20,7 +21,7 @@ export function SeccionEtapa({ etapa, descripcion, children }: PropsSeccion) {
         </span>
         <div>
           <h1 id={idTitulo}>{etapa.nombre}</h1>
-          <p className={estilos.descripcion}>{descripcion}</p>
+          {descripcion && <p className={estilos.descripcion}>{descripcion}</p>}
         </div>
       </header>
       <div className={estilos.pasos}>{children}</div>
