@@ -1,0 +1,1025 @@
+/*
+ * Visualizaciones creativas y accesibles para el tablero de KPIs.
+ * Se rige 100% por los tokens de DESIGN.md y tokens.css.
+ * Sin emojis; tipografía Plus Jakarta Sans e Inter con tabular-nums.
+ */
+
+.contenedorDashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+}
+
+/* Barra superior: título de sección y conmutador de vista */
+.barraSuperior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+
+.tituloGrupo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tituloSeccion {
+  font-family: var(--font-display);
+  font-size: var(--fs-card-title);
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.insigniaConteo {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Conmutador de vista tipo píldora */
+.conmutadorVista {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  gap: 2px;
+}
+
+.botonVista {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.botonVista:hover {
+  color: var(--text);
+}
+
+.botonVistaActivo {
+  background: var(--bg-card);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(17, 17, 17, 0.08);
+}
+
+/* Fila Superior: 3 tarjetas principales estilo hero con gauges */
+.rejillaHero {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.tarjetaHero {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 22px;
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(17, 17, 17, 0.04);
+  position: relative;
+  overflow: hidden;
+  gap: 20px;
+}
+
+.cabeceraHero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.infoHero {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.etiquetaEtapa {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.puntoEtapa {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-etapa, var(--pastel-blue));
+}
+
+.tituloHero {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cuerpoHeroGauge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+/* SVG Circular Gauge */
+.contenedorSvgGauge {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.svgGauge {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.circuloFondo {
+  fill: none;
+  stroke: var(--bg-soft);
+  stroke-width: 8;
+}
+
+.circuloProgreso {
+  fill: none;
+  stroke: var(--color-progreso, var(--positive));
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s ease;
+}
+
+.circuloGuiaMeta {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 2;
+  stroke-dasharray: 2 4;
+}
+
+.centroSvgGauge {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.valorHeroCentrado {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.subtextoHeroCentrado {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+/* SVG Semicircular Arc Gauge */
+.contenedorSvgSemi {
+  position: relative;
+  width: 130px;
+  height: 80px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.svgSemi {
+  width: 100%;
+  height: 100%;
+}
+
+.arcoFondo {
+  fill: none;
+  stroke: var(--bg-soft);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.arcoProgreso {
+  fill: none;
+  stroke: var(--color-progreso, var(--positive));
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s ease;
+}
+
+.centroSvgSemi {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Slider Track al pie de la tarjeta Hero (estilo barra deslizadora con pin) */
+.pistaHeroContenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.pistaSlider {
+  position: relative;
+  width: 100%;
+  height: 7px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  overflow: visible;
+}
+
+.barraRelleno {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--color-progreso, var(--positive));
+  transition: width 0.4s ease;
+}
+
+.pinIndicador {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 3px solid var(--color-progreso, var(--positive));
+  box-shadow: 0 1px 4px rgba(17, 17, 17, 0.2);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.marcaMetaPista {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  background: var(--text);
+  transform: translateX(-50%);
+  border-radius: 1px;
+}
+
+.piePistaHero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.metaTexto {
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Fila Media: Grid de Métricas Secundarias + Gráfico de Barras Píldora */
+.filaMedia {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) minmax(320px, 1.2fr);
+  gap: 20px;
+}
+
+/* Tarjeta contenedora de métricas secundarias */
+.panelSecundario {
+  display: flex;
+  flex-direction: column;
+  padding: 22px;
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(17, 17, 17, 0.04);
+  gap: 18px;
+}
+
+.cabeceraPanel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tituloPanel {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.subtituloPanel {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.rejillaMetricasSecundarias {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tarjetaMetricaSecundaria {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  transition: transform 0.15s ease;
+}
+
+.cabeceraMetricaSecundaria {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.iconoYEtapa {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+}
+
+.nombreMetricaSecundaria {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.valorMetricaSecundaria {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 2px 0;
+}
+
+.barraProgresoSutil {
+  position: relative;
+  width: 100%;
+  height: 5px;
+  background: rgba(17, 17, 17, 0.06);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.rellenoProgresoSutil {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--color-progreso, var(--positive));
+}
+
+.detalleMetricaSecundaria {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Gráfico de Barras Píldora (Estilo SUBSCRIPTIONS) */
+.panelGraficoBarras {
+  display: flex;
+  flex-direction: column;
+  padding: 22px;
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(17, 17, 17, 0.04);
+  gap: 18px;
+}
+
+.cabeceraConPestañas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.grupoPestañasBarra {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  gap: 2px;
+}
+
+.botonPestañaBarra {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.botonPestañaBarra:hover {
+  color: var(--text);
+}
+
+.botonPestañaBarraActivo {
+  background: var(--bg-card);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(17, 17, 17, 0.08);
+}
+
+.cuerpoGraficoBarras {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(240px, 1fr);
+  gap: 28px;
+  align-items: center;
+  min-width: 0;
+}
+
+@media (max-width: 960px) {
+  .cuerpoGraficoBarras {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+.areaVisualBarras {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 200px;
+  position: relative;
+  min-width: 0;
+}
+
+.rejillaBarras {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 12px;
+  height: 180px;
+  padding: 10px 8px 0 8px;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+  min-width: 0;
+}
+
+/* Línea de meta horizontal al 70% */
+.lineaGuiaMetaHorizontal {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1.5px dashed var(--text-muted);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.etiquetaMetaHorizontal {
+  position: absolute;
+  right: 4px;
+  top: -16px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.columnaBarra {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  height: 100%;
+  justify-content: flex-end;
+  min-width: 24px;
+  max-width: 44px;
+}
+
+.barraPildora {
+  width: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--fondo-barra, var(--pastel-blue));
+  border: 1px solid rgba(17, 17, 17, 0.08);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 6px;
+  transition: height 0.4s ease, transform 0.15s ease;
+  position: relative;
+}
+
+.barraPildora:hover {
+  transform: scaleY(1.03);
+}
+
+.valorDentroBarra {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.etiquetaAreaEje {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-align: center;
+  max-width: 60px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Leyenda estilo lista lateral con viñetas coloreadas */
+.leyendaBarras {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.itemLeyenda {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--bg-soft);
+}
+
+.puntoColorLeyenda {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--fondo-barra, var(--pastel-blue));
+  flex: none;
+  margin-top: 4px;
+}
+
+.contenidoLeyenda {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nombreAreaLeyenda {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.datosAreaLeyenda {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Fila Inferior: Gráfico de Ondas / Curva de Adopción (Estilo EARNING) */
+.panelOnda {
+  display: flex;
+  flex-direction: column;
+  padding: 22px;
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(17, 17, 17, 0.04);
+  gap: 18px;
+}
+
+.svgOndaContenedor {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  overflow: visible;
+}
+
+.svgOnda {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.areaOndaGradiente {
+  opacity: 0.7;
+}
+
+.trazoOnda {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Pines de valor flotantes (estilo "300", "600", "350" con forma de gota / pin) */
+.pinFlotanteValor {
+  filter: drop-shadow(0 2px 6px rgba(17, 17, 17, 0.14));
+}
+
+.cuerpoPin {
+  fill: var(--bg-dark);
+}
+
+.textoPin {
+  fill: var(--text-on-dark);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.ejeCiclos {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 10px 16px 0 16px;
+  border-top: 1px solid var(--border);
+  list-style: none;
+  margin: 0;
+}
+
+.puntoEjeCiclo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.marcaEjeCiclo {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.etiquetaEjeCiclo {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.resumenOndaPie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  padding-top: 8px;
+}
+
+.leyendaOnda {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.indicadorMuestraOnda {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lineaMuestraOnda {
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--text);
+}
+
+.lineaMuestraSecundaria {
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border);
+}
+
+/* Estado de indicador sin datos */
+.estadoSinDatoHero {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  line-height: 1.4;
+  text-align: center;
+  padding: 10px;
+  background: var(--bg-soft);
+  border-radius: 10px;
+}
+
+/* Adaptación responsive */
+@media (max-width: 1024px) {
+  .rejillaHero {
+    grid-template-columns: 1fr;
+  }
+
+  .filaMedia {
+    grid-template-columns: 1fr;
+  }
+
+  .cuerpoGraficoBarras {
+    grid-template-columns: 1fr;
+  }
+
+  .rejillaFasesPie {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .rejillaMetricasSecundarias {
+    grid-template-columns: 1fr;
+  }
+
+  .barraSuperior {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .rejillaFasesPie {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Fila inferior doble para métricas secundarias y curva de adopción */
+.filaInferiorDoble {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(360px, 1.2fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+@media (max-width: 1024px) {
+  .filaInferiorDoble {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Panel del Mapa del Colaborador (Curva de experiencia del cambio con caras) - TEMA CLARO */
+.panelMapaColaborador {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  color: var(--text);
+  box-shadow: 0 4px 16px rgba(17, 17, 17, 0.04);
+  gap: 20px;
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.cabeceraMapa {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.bloqueTituloMapa {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.iconoMapaContenedor {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  flex: none;
+}
+
+.tituloMapa {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.subtituloMapa {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 2px 0 0 0;
+}
+
+.leyendaMapa {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.itemLeyendaMapa {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.puntoLeyendaMapa {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.botonAlternarCurva {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  font-family: var(--font-ui);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.botonAlternarCurva:hover {
+  background: var(--border);
+}
+
+.svgMapaContenedor {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: visible;
+}
+
+.svgMapa {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Líneas de guía horizontal del eje Y */
+.lineaEjeYMapa {
+  stroke: var(--border);
+  stroke-dasharray: 3 4;
+  stroke-width: 1;
+}
+
+.textoEjeYMapa {
+  fill: var(--text-muted);
+  font-size: 10px;
+  font-family: var(--font-ui);
+  text-anchor: end;
+  dominant-baseline: middle;
+}
+
+/* Líneas guía verticales hacia las fases */
+.lineaGuiaFase {
+  stroke: var(--border);
+  stroke-dasharray: 2 4;
+  stroke-width: 1;
+}
+
+/* Globitos de porcentaje sobre cada cara */
+.globoPorcentaje {
+  filter: drop-shadow(0 2px 5px rgba(17, 17, 17, 0.12));
+}
+
+.fondoGlobo {
+  fill: var(--bg-card);
+  stroke: var(--color-globo, var(--positive));
+  stroke-width: 1.5;
+}
+
+.textoGlobo {
+  fill: var(--color-globo, var(--positive));
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+/* Pie con las 4 fases numeradas */
+.rejillaFasesPie {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.tarjetaFase {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cabeceraFasePie {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.circuloNumeroFase {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.nombreFasePie {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subtituloFasePie {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.detalleFasePie {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
