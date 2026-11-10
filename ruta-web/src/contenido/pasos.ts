@@ -112,9 +112,16 @@ export const ACCIONES_POR_BLOQUEO: Readonly<Record<'C' | 'D' | 'K' | 'H' | 'R', 
   R: 'Reconocimiento; ajustar metas; retirar la forma antigua; seguimiento mensual.',
 };
 
+export interface PasoRecorrido {
+  verbo: string;
+  pregunta: string;
+  herramienta: string;
+  /** Etapa a la que pertenece el paso; null si su etapa aún no está definida. */
+  etapaId: string | null;
+}
+
 /** Recorrido en 10 pasos (CONTEXTO §2). */
-/** etapaId: etapa a la que pertenece el paso; null si su etapa aún no está definida. */
-export const RECORRIDO: readonly { verbo: string; pregunta: string; herramienta: string; etapaId: string | null }[] = [
+export const RECORRIDO: readonly PasoRecorrido[] = [
   { verbo: 'Entender', pregunta: '¿Qué cambiamos y por qué?', herramienta: 'Lienzo del cambio (R1)', etapaId: 'etapa-r' },
   { verbo: 'Entender', pregunta: '¿Qué hay a favor y en contra?', herramienta: 'FODA del cambio (R2)', etapaId: 'etapa-r' },
   { verbo: 'Entender', pregunta: '¿Quién apoya y quién se resiste?', herramienta: 'Mapa de actores (R3)', etapaId: 'etapa-r' },

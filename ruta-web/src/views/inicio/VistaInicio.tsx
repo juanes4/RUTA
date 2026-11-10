@@ -1,8 +1,8 @@
 import type { CSSProperties } from 'react';
 import type { Etapa } from '../../config/etapas';
-import type { Pastel } from '../../config/paleta';
 import { DESCRIPCION_ETAPA, RECORRIDO } from '../../contenido/pasos';
 import { useProyecto } from '../../estado/ProyectoContexto';
+import { fasesDelRecorrido, type PasoNumerado } from '../../lib/recorrido';
 import { useRuta } from '../../navegacion/RutaContexto';
 import estilos from './VistaInicio.module.css';
 
@@ -10,12 +10,28 @@ interface Props {
   etapas: readonly Etapa[];
 }
 
-const fondo = (color: Pastel | undefined) => ({ '--fondo': color ?? 'var(--bg-soft)' }) as CSSProperties;
+/** Línea de tiempo: la última fase es la llegada, bajo la punta de la flecha. */
+const FASES = fasesDelRecorrido(RECORRIDO);
+const TRAMO = FASES.slice(0, -1);
+const LLEGADA = FASES.at(-1);
+
+const fondo = (color: string | undefined) => ({ '--fondo': color ?? 'var(--bg-soft)' }) as CSSProperties;
+
+function TextoPaso({ paso }: { paso: PasoNumerado }) {
+  return (
+    <>
+      <p className={estilos.pregunta}>{paso.pregunta}</p>
+      <p className={estilos.herramienta}>{paso.herramienta}</p>
+    </>
+  );
+}
 
 /** Página principal: el reto, el recorrido en 10 pasos y el acceso a todo (PLAN §4). */
 export function VistaInicio({ etapas }: Props) {
   const { activo } = useProyecto();
   const { enlace } = useRuta();
+  const tono = (paso: PasoNumerado) =>
+    ({ '--tono': etapas.find((e) => e.id === paso.etapaId)?.tonos?.[paso.posicionEnEtapa] ?? 'var(--bg-page)' }) as CSSProperties;
 
   return (
     <div className={estilos.inicio}>
@@ -26,7 +42,7 @@ export function VistaInicio({ etapas }: Props) {
           ¿Cómo lograr que los colaboradores de las empresas afiliadas comprendan, adopten y se apropien de los cambios
           organizacionales?
         </p>
-        <p className={estilos.idea}>Entender → comunicar → escuchar → decidir → acompañar → comprobar.</p>
+        <p className={estilos.ruta}>Entender → comunicar → escuchar → decidir → acompañar → comprobar.</p>
       </header>
 
       <section aria-labelledby="titulo-accesos">
@@ -76,18 +92,46 @@ export function VistaInicio({ etapas }: Props) {
         <h2 id="titulo-recorrido" className={estilos.tituloSeccion}>
           El recorrido en 10 pasos
         </h2>
-        <ol className={estilos.recorrido}>
-          {RECORRIDO.map((r, i) => (
-            <li key={r.pregunta} className={estilos.paso} style={fondo(etapas.find((e) => e.id === r.etapaId)?.color)}>
-              <span className={`${estilos.numero} numero`}>{i + 1}</span>
-              <div>
-                <p className={estilos.verbo}>{r.verbo}</p>
-                <p className={estilos.pregunta}>{r.pregunta}</p>
-                <p className={estilos.herramienta}>{r.herramienta}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+        <div className={estilos.recorrido}>
+          <div className={estilos.tramo}>
+            <ol className={estilos.fases}>
+              {TRAMO.map((fase) => (
+                <li key={fase.verbo} className={estilos.fase}>
+                  <p className={estilos.verbo}>{fase.verbo}</p>
+                  <ol className={estilos.pasosFase}>
+                    {fase.pasos.map((p) => (
+                      <li key={p.numero} className={estilos.paso} data-lado={p.numero % 2 === 1 ? 'derecha' : 'izquierda'} style={tono(p)}>
+                        <span className={estilos.nodo} aria-hidden="true" />
+                        <div className={estilos.contenido}>
+                          <div className={estilos.cabeza}>
+                            <span className={estilos.numeroGrande}>{String(p.numero).padStart(2, '0')}</span>
+                            <span className={estilos.punto} aria-hidden="true" />
+                            <span className={estilos.conector} aria-hidden="true" />
+                          </div>
+                          <TextoPaso paso={p} />
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                </li>
+              ))}
+            </ol>
+            <svg className={estilos.punta} viewBox="0 0 20 16" aria-hidden="true">
+              <path d="M0 0h20L10 16z" />
+            </svg>
+          </div>
+          {LLEGADA && (
+            <div className={estilos.llegada}>
+              <p className={estilos.verbo}>{LLEGADA.verbo}</p>
+              {LLEGADA.pasos.map((p) => (
+                <div key={p.numero} className={estilos.pasoLlegada} style={tono(p)}>
+                  <span className={estilos.numeroGrande}>{String(p.numero).padStart(2, '0')}</span>
+                  <TextoPaso paso={p} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </section>
     </div>
   );

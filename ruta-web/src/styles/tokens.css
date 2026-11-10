@@ -20,6 +20,17 @@
   --pastel-cream: #FBF1CC;
   --pastel-blue: #DCEBFB;
 
+  /* Tonos del recorrido: de la etapa, de su pastel hacia más intenso. */
+  --tono-r-1: var(--pastel-blue);
+  --tono-r-2: #CFE3FA;
+  --tono-r-3: var(--accent-action);
+  --tono-r-4: #B0D3F8;
+  --tono-r-5: #A0C9F5;
+  --tono-r-6: #8FBFF2;
+  --tono-r-7: #7FB5EF;
+  --tono-u-1: var(--pastel-lavender);
+  --tono-u-2: #CDBCE6;
+
   /* Estados */
   --positive: #2F9E6B;
   --negative: #D64550;
