@@ -1,0 +1,29 @@
+/* Tabla limpia con separadores finos (DESIGN.md, "Estructura"). */
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-label);
+}
+
+.tabla th,
+.tabla td {
+  text-align: left;
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.tabla thead th {
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.tabla tbody th {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.tabla tbody tr:last-child th,
+.tabla tbody tr:last-child td {
+  border-bottom: 0;
+}

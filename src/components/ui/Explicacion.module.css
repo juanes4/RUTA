@@ -1,0 +1,62 @@
+.contenedor {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+
+.contenedor:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+/* Tooltip negro (DESIGN.md), encima del campo y alineado a su izquierda. */
+.tooltip {
+  position: absolute;
+  z-index: 30;
+  left: 0;
+  bottom: calc(100% + 8px);
+  width: max-content;
+  max-width: min(340px, 90vw);
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+  box-shadow: var(--sombra-panel);
+  text-align: left;
+  white-space: normal;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity 150ms ease, transform 150ms ease, visibility 150ms;
+}
+
+/* Primero de qué campo se habla; debajo, la explicación. */
+.tituloTooltip {
+  display: block;
+  margin-bottom: 2px;
+  font-size: var(--fs-label);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.textoTooltip {
+  display: block;
+  font-size: var(--fs-small);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.contenedor:hover > .tooltip,
+.contenedor:focus-within > .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tooltip {
+    transition: none;
+  }
+}

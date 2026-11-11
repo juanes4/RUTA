@@ -1,0 +1,48 @@
+/*
+ * Texto siempre #111111 para cumplir 4,5:1 (DESIGN.md). El verde y el rojo
+ * de la guía solo van en el punto, porque como texto no llegan al contraste.
+ */
+.semaforo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.punto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.semaforo[data-estado='en_meta'] {
+  background: var(--pastel-mint);
+}
+
+.semaforo[data-estado='en_meta'] .punto {
+  background: var(--positive);
+}
+
+/* Decisión del equipo: "Atención" usa el pastel crema de DESIGN.md. */
+.semaforo[data-estado='atencion'] {
+  background: var(--pastel-cream);
+}
+
+.semaforo[data-estado='atencion'] .punto {
+  background: var(--text);
+}
+
+.semaforo[data-estado='intervenir'] {
+  background: var(--bg-card);
+  border-color: var(--negative);
+}
+
+.semaforo[data-estado='intervenir'] .punto {
+  background: var(--negative);
+}

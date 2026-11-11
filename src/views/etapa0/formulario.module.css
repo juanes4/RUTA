@@ -1,0 +1,151 @@
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ancho {
+  grid-column: 1 / -1;
+}
+
+.pie {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Campo con etiqueta arriba + botón: el botón se alinea con el campo, no con la etiqueta. */
+.filaControles {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.selector {
+  min-width: 260px;
+}
+
+.estado {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.errores {
+  margin: 0;
+  padding: 12px 16px 12px 32px;
+  border-radius: var(--radio-control);
+  background: var(--bg-card);
+  border: 1px solid var(--negative);
+  font-size: var(--fs-label);
+}
+
+.subtitulo {
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+/* Tabla limpia con separadores finos (DESIGN.md, "Estructura"). */
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-label);
+}
+
+.tabla th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--text-muted);
+  padding: 8px 8px 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabla .nombreFila {
+  color: var(--text);
+}
+
+.tabla td {
+  padding: 8px 8px 8px 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.tabla tbody tr:last-child td,
+.tabla tbody tr:last-child th {
+  border-bottom: 0;
+}
+
+.tabla tfoot td {
+  border-top: 1px solid var(--border);
+  border-bottom: 0;
+  font-weight: 500;
+}
+
+.columnaAccion {
+  width: 1%;
+  text-align: right;
+}
+
+.control {
+  width: 100%;
+  height: var(--alto-control);
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radio-control);
+  background: var(--bg-card);
+}
+
+.controlCorto {
+  width: 96px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 2px 0 14px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  font-size: var(--fs-label);
+}
+
+/* Campo + botón en la misma fila y a la misma altura. */
+.agregar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.insignia {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 767px) {
+  .rejilla {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

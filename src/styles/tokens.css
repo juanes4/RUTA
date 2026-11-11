@@ -1,0 +1,81 @@
+/*
+ * Tokens de DESIGN.md. Es el ÚNICO lugar con colores, fuentes y medidas
+ * base. Los componentes solo usan estas variables.
+ * Regla de DESIGN.md: no usar colores ni fuentes fuera de esta guía.
+ */
+:root {
+  /* Base (refs 01 y 03) */
+  --bg-page: #E8ECF4;
+  --bg-card: #FFFFFF;
+  --bg-soft: #F3F5FA;
+  --bg-dark: #1C1C1E;
+  --text: #111111;
+  --text-on-dark: #FFFFFF;
+  --text-muted: #6B7280;
+  --border: #E5E8EF;
+
+  /* Tarjetas pastel (ref 03), una por categoría */
+  --pastel-lavender: #E6DDF3;
+  --pastel-mint: #D5EDDC;
+  --pastel-cream: #FBF1CC;
+  --pastel-blue: #DCEBFB;
+
+  /* Tonos del recorrido: de la etapa, de su pastel hacia más intenso. */
+  --tono-r-1: var(--pastel-blue);
+  --tono-r-2: #CFE3FA;
+  --tono-r-3: var(--accent-action);
+  --tono-r-4: #B0D3F8;
+  --tono-r-5: #A0C9F5;
+  --tono-r-6: #8FBFF2;
+  --tono-r-7: #7FB5EF;
+  --tono-u-1: var(--pastel-lavender);
+  --tono-u-2: #CDBCE6;
+
+  /* Estados */
+  --positive: #2F9E6B;
+  --negative: #D64550;
+  --accent-action: #BFDDFB;
+  --accent-link: #3445D6;
+
+  /* Vidrio (refs 02 y 04) */
+  --glass-bg: rgba(255, 255, 255, 0.60);
+  --glass-border: rgba(255, 255, 255, 0.45);
+  --glass-blur: 20px;
+  --glass-shadow: 0 8px 32px rgba(17, 17, 17, 0.10);
+  /* Vidrio mate: menús que se abren sobre texto (más opaco y más difuso). */
+  --glass-mate-bg: rgba(255, 255, 255, 0.85);
+  --glass-mate-blur: 32px;
+
+  /* Manchas de luz del fondo */
+  --blob-beige: #F3E7DB;
+  --blob-violet: #7C7BE8;
+  --blob-cyan: #5CE0E0;
+
+  /* Insignias de variación (ref 04) */
+  --badge-bg: #CFEFE0;
+  --badge-text: #2E9E6B;
+
+  /* Tipografía */
+  --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --fs-page-title: 30px; /* 28-32px · 700 */
+  --fs-card-title: 19px; /* 18-20px · 600 */
+  --fs-number: 44px; /* 40-48px · 600 */
+  --fs-body: 14px; /* 400 */
+  --fs-label: 13px; /* 500 */
+  --fs-small: 12px; /* 500 */
+
+  /* Controles: misma altura para campos y botones, así quedan alineados. */
+  --alto-control: 40px;
+  --radio-control: 12px;
+
+  /* Paneles con texto importante: borde fino y sombra difusa, algo más marcada que la del vidrio. */
+  --borde-panel: 1px solid var(--border);
+  --sombra-panel: 0 8px 32px rgba(17, 17, 17, 0.16);
+
+  /* Forma: contenedor principal 24-32px (DESIGN.md "Estructura") */
+  --radius-container: 28px;
+  --radius-card: 20px;
+  --radius-pill: 999px;
+}

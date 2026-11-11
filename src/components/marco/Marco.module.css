@@ -1,0 +1,218 @@
+/* Manchas de luz suaves y difuminadas para que se note el vidrio (DESIGN.md). */
+.fondo {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fondo span {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+}
+
+.manchaBeige {
+  width: 520px;
+  height: 520px;
+  top: -120px;
+  left: -80px;
+  background: var(--blob-beige);
+  opacity: 0.6;
+}
+
+.manchaVioleta {
+  width: 420px;
+  height: 420px;
+  top: 40%;
+  left: -160px;
+  background: var(--blob-violet);
+  opacity: 0.18;
+}
+
+.manchaCian {
+  width: 380px;
+  height: 380px;
+  bottom: -120px;
+  right: -60px;
+  background: var(--blob-cyan);
+  opacity: 0.18;
+}
+
+/*
+ * Ancla de la navegación general: fija en la pantalla, siempre en el mismo
+ * lugar. Panel de vidrio igual al de la barra de etapas de la derecha.
+ */
+.ancla {
+  --margen: 24px;
+  --ancho-riel: 72px;
+  position: fixed;
+  z-index: 10;
+  top: var(--margen);
+  bottom: var(--margen);
+  left: var(--margen);
+  padding: 8px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-container);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+.riel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: var(--ancho-riel);
+  height: 100%;
+  padding: 20px 0;
+  background: var(--bg-dark);
+  border-radius: calc(var(--radius-container) - 8px);
+}
+
+.marca {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-small);
+  letter-spacing: 0.08em;
+  color: var(--text-on-dark);
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.enlace {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  color: var(--text-on-dark);
+  text-decoration: none;
+}
+
+button.enlace {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Cerrar sesión: al fondo de la columna. */
+.salir {
+  margin-top: auto;
+}
+
+/* Elemento activo: píldora más clara (DESIGN.md, ref 04). */
+.enlace[data-activo='true'] {
+  background: var(--bg-card);
+  color: var(--text);
+}
+
+.letra {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-label);
+}
+
+/* Tooltip oscuro (DESIGN.md: tooltips en negro). */
+.ayuda {
+  position: absolute;
+  left: calc(100% + 20px);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+  z-index: 20;
+}
+
+.enlace:hover .ayuda,
+.enlace:focus-visible .ayuda {
+  opacity: 1;
+}
+
+/*
+ * Contenedor blanco: siempre empieza después del ancla
+ * (margen 24 + borde 2 + relleno 16 + riel 72 + separación 24 = 138),
+ * así el ancla no cambia de lugar entre páginas.
+ */
+.contenido {
+  max-width: 1280px;
+  min-height: calc(100vh - 48px);
+  margin: 24px 24px 24px 138px;
+  padding: 40px 48px 48px;
+  background: var(--bg-card);
+  border-radius: var(--radius-container);
+}
+
+.contenido:focus {
+  outline: none;
+}
+
+/* En las páginas de etapa deja espacio a la barra flotante de la derecha. */
+@media (min-width: 768px) {
+  .contenido[data-con-barra='true'] {
+    margin-right: 264px;
+  }
+}
+
+/* Celular: el ancla pasa a barra superior fija; la de etapas queda abajo. */
+@media (max-width: 767px) {
+  .ancla {
+    --margen: 12px;
+    bottom: auto;
+    right: var(--margen);
+    padding: 6px;
+  }
+
+  .riel {
+    flex-direction: row;
+    justify-content: space-between;
+    width: auto;
+    height: auto;
+    padding: 6px 12px;
+  }
+
+  .lista {
+    flex-direction: row;
+    gap: 6px;
+  }
+
+  .enlace {
+    width: 40px;
+    height: 40px;
+  }
+
+  .ayuda {
+    display: none;
+  }
+
+  .salir {
+    margin-top: 0;
+  }
+
+  .contenido {
+    min-height: 0;
+    margin: 88px 12px 112px;
+    padding: 24px 16px;
+  }
+}

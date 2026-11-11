@@ -1,0 +1,75 @@
+.login {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+/* Misma tarjeta negra de la portada del inicio. */
+.presentacion {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px;
+  border-radius: var(--radius-container);
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+  box-shadow: var(--sombra-panel);
+}
+
+.presentacion h1 {
+  font-size: var(--fs-number);
+  line-height: 1.1;
+}
+
+.antetitulo {
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+.mensaje {
+  font-family: var(--font-display);
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+  line-height: 1.35;
+  max-width: 420px;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px;
+  border: var(--borde-panel);
+  border-radius: var(--radius-container);
+  background: var(--bg-soft);
+  box-shadow: var(--sombra-panel);
+}
+
+.titulo {
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+}
+
+.error {
+  padding: 10px 14px;
+  border-radius: var(--radio-control);
+  background: var(--bg-card);
+  border: 1px solid var(--negative);
+  color: var(--text);
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+@media (max-width: 900px) {
+  .login {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .presentacion,
+  .formulario {
+    padding: 28px;
+  }
+}
