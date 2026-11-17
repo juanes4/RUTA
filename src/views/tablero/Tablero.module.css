@@ -1,0 +1,258 @@
+.cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 28px;
+}
+
+/* Esquema de la referencia: panel suave a la izquierda, contenido a la derecha. */
+.rejilla {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 20px;
+  border-radius: var(--radius-card);
+  background: var(--bg-soft);
+  border: var(--borde-panel);
+}
+
+.principal {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-width: 0;
+}
+
+.bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tituloBloque {
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+}
+
+.detalle {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.nombreArea {
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+/* Tarjeta destacada en negro (DESIGN.md). */
+.tarjetaOscura {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  border-radius: var(--radius-card);
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+  box-shadow: var(--sombra-panel);
+}
+
+.antetituloOscuro {
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+
+.decision {
+  font-family: var(--font-display);
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+}
+
+.motivos {
+  margin: 0;
+  padding-left: 18px;
+  font-size: var(--fs-small);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Botón claro con el acento de acción (DESIGN.md), también sobre la tarjeta oscura. */
+.enlaceOscuro,
+.enlaceSecundario {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--alto-control);
+  padding: 0 18px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-action);
+  color: var(--text);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.listaAreas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.listaAreas li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.porcentaje {
+  font-weight: 600;
+  font-size: var(--fs-label);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--fondo-porcentaje);
+}
+
+/* Cuadro con la letra de la etapa, en su pastel (como los iconos de la referencia). */
+.celdaIndicador {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cuadroEtapa {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--fondo-etapa);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-label);
+}
+
+/* Tarjetas pastel, una por categoría. */
+.categorias {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.categoria {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  border-radius: var(--radius-card);
+  background: var(--fondo-categoria);
+  border: var(--borde-panel);
+  box-shadow: var(--sombra-panel);
+}
+
+.nombreCategoria {
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+
+.ejemplos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.ejemplos .detalle,
+.pieCategoria {
+  color: var(--text);
+}
+
+.pieCategoria {
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+
+/* Tabla limpia con separadores finos. */
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla thead th {
+  text-align: left;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text-muted);
+  padding: 0 12px 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabla tbody th,
+.tabla td {
+  text-align: left;
+  padding: 14px 12px 14px 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.tabla tbody th {
+  font-weight: 400;
+}
+
+.tabla tbody tr:last-child th,
+.tabla tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.valor {
+  font-weight: 600;
+  font-size: var(--fs-label);
+}
+
+@media (max-width: 1100px) {
+  .rejilla {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .categorias {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .tabla thead {
+    display: none;
+  }
+
+  .tabla tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tabla tbody th,
+  .tabla td {
+    padding: 0;
+    border: 0;
+  }
+}

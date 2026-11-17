@@ -1,0 +1,403 @@
+﻿.inicio {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* Portada: tarjeta destacada en negro (DESIGN.md), la sección principal de la app. */
+.presentacion {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 48px;
+  border-radius: var(--radius-container);
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+  box-shadow: var(--sombra-panel);
+}
+
+.presentacion h1 {
+  font-size: var(--fs-number);
+  line-height: 1.1;
+}
+
+.antetitulo {
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+.reto {
+  font-family: var(--font-display);
+  font-size: var(--fs-page-title);
+  font-weight: 600;
+  line-height: 1.25;
+  max-width: 760px;
+}
+
+.ruta {
+  margin-top: 8px;
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+.ingreso {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.ingresoTexto {
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+.idea {
+  color: var(--text-muted);
+}
+
+.tituloSeccion {
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* Accesos: una tarjeta por etapa y una oscura destacada para el tablero. */
+.accesos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.accesos > li {
+  display: flex;
+}
+
+.acceso {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px;
+  border-radius: var(--radius-card);
+  background: var(--fondo, var(--bg-soft));
+  color: var(--text);
+  text-decoration: none;
+  border: var(--borde-panel);
+  box-shadow: var(--sombra-panel);
+  transition: border-color 150ms ease;
+}
+
+a.acceso:hover {
+  border-color: var(--text);
+}
+
+.acceso[data-oscuro='true'] {
+  border-color: var(--bg-dark);
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+}
+
+.acceso[data-vacio='true'] {
+  justify-content: center;
+  align-items: flex-start;
+  background: transparent;
+  box-shadow: none;
+}
+
+.letra {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.acceso[data-vacio='true'] .letra {
+  background: var(--bg-soft);
+}
+
+.nombreAcceso {
+  font-family: var(--font-display);
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+}
+
+.descripcion {
+  font-size: var(--fs-label);
+  flex: 1;
+}
+
+.pasos {
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+
+.proximamente {
+  font-size: var(--fs-label);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* Recorrido: línea de tiempo vertical con eje, nodos y pasos alternados a cada lado. */
+.recorrido {
+  --nodo: 44px;
+  --ancho-eje: 72px;
+  --medio-eje: 50%;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.tramo {
+  position: relative;
+  padding-bottom: 20px;
+}
+
+/* El eje recorre todo el tramo y termina en la punta de la flecha. */
+.tramo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 12px;
+  left: var(--medio-eje);
+  width: 2px;
+  margin-left: -1px;
+  background: var(--text-muted);
+}
+
+.punta {
+  position: absolute;
+  bottom: 0;
+  left: var(--medio-eje);
+  width: 20px;
+  height: 16px;
+  margin-left: -10px;
+  fill: var(--text-muted);
+}
+
+.fases,
+.pasosFase {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fases,
+.fase {
+  gap: 20px;
+}
+
+.pasosFase {
+  gap: 16px;
+}
+
+.fase {
+  display: flex;
+  flex-direction: column;
+}
+
+.verbo {
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 6px 18px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+  font-family: var(--font-display);
+  font-size: var(--fs-label);
+  font-weight: 600;
+}
+
+.paso {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--ancho-eje) minmax(0, 1fr);
+  align-items: start;
+}
+
+.nodo {
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
+  justify-self: center;
+  display: grid;
+  place-items: center;
+  width: var(--nodo);
+  height: var(--nodo);
+  border: 2px solid var(--text);
+  border-radius: 50%;
+  background: var(--tono);
+}
+
+.nodo::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg-dark);
+}
+
+.contenido {
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.paso[data-lado='izquierda'] .contenido {
+  grid-column: 1;
+  align-items: flex-start;
+}
+
+.paso[data-lado='derecha'] .contenido {
+  grid-column: 3;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.cabeza {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
+  height: var(--nodo);
+}
+
+/* La línea sale del nodo: se extiende sobre el hueco del eje hasta tocarlo. */
+.paso[data-lado='izquierda'] .cabeza {
+  margin-right: calc((var(--nodo) - var(--ancho-eje)) / 2);
+}
+
+.paso[data-lado='derecha'] .cabeza {
+  flex-direction: row-reverse;
+  margin-left: calc((var(--nodo) - var(--ancho-eje)) / 2);
+}
+
+.numeroGrande {
+  font-family: var(--font-display);
+  font-size: var(--fs-number);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.punto {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--text);
+  border-radius: 50%;
+  background: var(--tono);
+}
+
+.conector {
+  flex: 1;
+  height: 2px;
+  margin-inline: -10px;
+  background: var(--text);
+}
+
+.pregunta {
+  max-width: 300px;
+  padding: 8px 14px;
+  border-radius: var(--radio-control);
+  background: var(--tono);
+  font-weight: 600;
+}
+
+.herramienta {
+  max-width: 300px;
+  font-size: var(--fs-label);
+}
+
+.llegada {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.pasoLlegada {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 1100px) {
+  .accesos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Sin ancho para dos lados: el eje pasa a la izquierda y todo queda a su derecha. */
+@media (max-width: 720px) {
+  .recorrido {
+    --ancho-eje: 56px;
+    --medio-eje: 28px;
+  }
+
+  .verbo {
+    margin: 0 0 0 calc(var(--ancho-eje) + 8px);
+  }
+
+  .paso {
+    grid-template-columns: var(--ancho-eje) minmax(0, 1fr);
+  }
+
+  .nodo {
+    grid-column: 1;
+  }
+
+  .paso[data-lado] .contenido {
+    grid-column: 2;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .paso[data-lado] .cabeza {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    margin: 0 0 0 calc((var(--nodo) - var(--ancho-eje)) / 2);
+  }
+
+  .conector {
+    flex: 0 0 28px;
+  }
+
+  .llegada {
+    align-items: flex-start;
+    padding-left: calc(var(--ancho-eje) + 8px);
+    text-align: left;
+  }
+
+  .llegada .verbo {
+    margin: 0;
+  }
+
+  .pasoLlegada {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .accesos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .presentacion {
+    padding: 28px;
+  }
+}
