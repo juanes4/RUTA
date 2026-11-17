@@ -2,12 +2,12 @@
  * Constructores de filas SOLO para pruebas. La app nunca usa datos
  * inventados (PLAN §2); estas filas no se importan fuera de *.test.ts.
  */
-import type { FilaKotter, FilaRespuesta, NoSe, RolKotter } from '../../modelo/tipos';
+import type { FilaKotter, FilaRespuesta, RolKotter } from '../../modelo/tipos';
 
 export function filaBuzon1(
   persona: string,
   dimension: FilaRespuesta['dimension'],
-  valor: number | NoSe,
+  valor: number | 'NS',
   extra: Partial<FilaRespuesta> = {},
 ): FilaRespuesta {
   return {
@@ -20,7 +20,8 @@ export function filaBuzon1(
     antiguedad_rango: '1-3 años',
     pregunta_id: `p_${dimension}`,
     dimension,
-    valor,
+    valor: valor === 'NS' ? null : valor,
+    no_se: valor === 'NS',
     ...extra,
   };
 }

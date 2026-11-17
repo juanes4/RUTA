@@ -1,5 +1,6 @@
 import type { DatosProyecto, Proyecto } from '../modelo/proyecto';
 import type { FilaUso } from '../modelo/tipos';
+import { coberturaActores } from '../calculo/actores';
 import { contarPersonas, proporcion } from '../calculo/estadistica';
 import { participacionTotal } from '../calculo/participacion';
 
@@ -46,7 +47,10 @@ export const CALCULADORAS: Readonly<Record<string, Calculadora>> = {
   utilizacion: ({ datos }) => proporcionUltimoCiclo(datos.uso, (u) => u.transacciones_nuevo),
   uso_residual: ({ datos }) => proporcionUltimoCiclo(datos.uso, (u) => u.transacciones_antiguo),
   competencia: () => sinDato('Pendiente de definir: el total de la fórmula (registros nuevos o todos los registros).'),
-  cobertura_actores: () => sinDato('El mapa de actores (R3) todavía no se captura en la herramienta.'),
+  cobertura_actores: ({ datos }) => {
+    const valor = coberturaActores(datos.actores);
+    return valor === null ? sinDato('Sin actores registrados en el mapa (R3) todavía.') : { valor };
+  },
   dudas_atendidas: () => sinDato('El muro de dudas todavía no se captura en la herramienta.'),
   conducta_lideres: () => sinDato('El pulso completo y Kotter parte B todavía no se capturan.'),
   preparacion: () => sinDato('El pulso completo todavía no se captura.'),

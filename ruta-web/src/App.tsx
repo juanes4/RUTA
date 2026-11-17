@@ -14,7 +14,7 @@ import { VistaUnir } from './views/unir/VistaUnir';
  * Vista de cada etapa activa. Para activar T o A: agregar sus pasos en
  * config/etapas.ts, crear su vista y registrarla aquí.
  */
-const VISTAS: Readonly<Record<string, ComponentType<{ etapa: Etapa }>>> = {
+const VISTAS: Readonly<Record<string, ComponentType<{ etapa: Etapa; pasoId: string | null }>>> = {
   'etapa-0': VistaEtapa0,
   'etapa-r': VistaReconocer,
   'etapa-u': VistaUnir,

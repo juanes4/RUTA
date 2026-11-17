@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type EstadoGuardado = 'sin_cambios' | 'pendiente' | 'guardando' | 'guardado';
 
@@ -11,20 +11,31 @@ export function useBorrador<T>(origen: T, guardar: (valor: T) => Promise<void>) 
   const [borrador, setBorrador] = useState<T>(origen);
   const [estado, setEstado] = useState<EstadoGuardado>('sin_cambios');
   const firma = JSON.stringify(origen);
+  // El origen también cambia al guardar: en ese caso debe seguir viéndose "Guardado".
+  const recienGuardado = useRef(false);
 
   useEffect(() => {
     setBorrador(JSON.parse(firma) as T);
-    setEstado('sin_cambios');
+    if (recienGuardado.current) recienGuardado.current = false;
+    else setEstado('sin_cambios');
   }, [firma]);
 
   const editar = (cambio: (actual: T) => T) => {
+    recienGuardado.current = false;
     setBorrador(cambio);
     setEstado('pendiente');
   };
 
   const confirmar = async (valor: T = borrador) => {
+    recienGuardado.current = true;
     setEstado('guardando');
-    await guardar(valor);
+    try {
+      await guardar(valor);
+    } catch (error) {
+      recienGuardado.current = false;
+      setEstado('pendiente');
+      throw error;
+    }
     setEstado('guardado');
   };
 

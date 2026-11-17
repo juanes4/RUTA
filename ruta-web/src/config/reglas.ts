@@ -12,6 +12,12 @@ export const REGLAS = {
     /** Alerta de falta de información: % "No sé" mayor a este valor (CONTEXTO §6). */
     alertaNoSe: 0.2,
   },
+  /** Escala de las preguntas de los buzones (CONTEXTO §5). */
+  escala: { minimo: 1, maximo: 5 },
+  foda: {
+    /** Los ítems más votados pasan al backlog de la etapa 2 (CONTEXTO §3, R2). */
+    itemsAlBacklog: 5,
+  },
   anonimato: {
     /** Mínimo de personas por grupo para colaboradores (Instrumento 1). */
     minimoColaboradores: 5,
