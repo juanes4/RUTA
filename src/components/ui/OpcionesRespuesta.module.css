@@ -1,0 +1,80 @@
+.grupo {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.leyenda {
+  padding: 0;
+  margin-bottom: 8px;
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+.maximo {
+  font-weight: 400;
+}
+
+.opciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.opciones[data-disposicion='lista'] {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.opcion {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+/* El control sigue existiendo para teclado y lectores de pantalla. */
+.opcion input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.opcion span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--alto-control);
+  min-height: var(--alto-control);
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radio-control);
+  background: var(--bg-card);
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+.opciones[data-disposicion='lista'] .opcion span {
+  justify-content: flex-start;
+}
+
+.opcion input:checked + span {
+  background: var(--bg-dark);
+  border-color: var(--bg-dark);
+  color: var(--text-on-dark);
+}
+
+.opcion input:focus-visible + span {
+  outline: 2px solid var(--accent-link);
+  outline-offset: 2px;
+}
+
+.opcion input:disabled {
+  cursor: not-allowed;
+}
+
+.opcion input:disabled + span {
+  background: transparent;
+}
