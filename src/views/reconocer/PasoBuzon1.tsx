@@ -24,7 +24,7 @@ const OPCIONES_ESCALA = [
 ];
 const MAX_ERRORES_VISIBLES = 8;
 
-/** R6: buzón 1. El papel se digita; Google Forms entra por CSV (CONTEXTO §12.5). */
+/** Captura histórica de buzón 1; la escucha diagnóstica R5 usa PasoEscuchaInicial. */
 export function PasoBuzon1() {
   const { activo } = useProyecto();
   if (!activo) return null;

@@ -9,6 +9,16 @@ export interface Usuario {
   rol: Rol;
 }
 
+/** Resultado del simulador de un micro-curso (T2). */
+export interface ResultadoSimulador {
+  aciertos: number;
+  total: number;
+  /** Aprobación práctica: 2 de 3 aciertos o más. */
+  aprobado: boolean;
+  /** Autoevaluación de seguridad, de 1 a 5. */
+  seguridad: number;
+}
+
 export interface VideoCapacitacion {
   id: string;
   titulo: string;
@@ -17,6 +27,7 @@ export interface VideoCapacitacion {
   audiencia: Rol;
   visto: boolean;
   vistoEn: string | null;
+  simulador: ResultadoSimulador | null;
 }
 
 export interface RegistroVista {
@@ -24,6 +35,7 @@ export interface RegistroVista {
   nombre: string;
   rol: Rol;
   vistoEn: string;
+  simulador: ResultadoSimulador | null;
 }
 
 export interface VideoHistorial {
@@ -40,6 +52,97 @@ export interface Historial {
   /** true: líder, ve a todas las personas. false: empleado, solo ve lo suyo. */
   verTodos: boolean;
   videos: VideoHistorial[];
+}
+
+export interface PreguntaSimulador {
+  texto: string;
+  opciones: string[];
+}
+
+export type TipoRegistro = 'pulso' | 'voto' | 'acuerdo' | 'termometro' | 'dinamica' | 'balance' | 'merito';
+
+export interface RegistroPulso {
+  id: number;
+  sesion: string;
+  claridad: number;
+  utilidad: number;
+  confianza: number;
+  nombre: string | null;
+  creadoEn: string;
+}
+
+export interface Voto {
+  ciclo: number;
+  momento: 'inicio' | 'cierre';
+  nivel: number;
+}
+
+export interface ConteoVotos {
+  ciclo: number;
+  momento: 'inicio' | 'cierre';
+  /** Personas que votaron cada escalón (posición 0 = escalón 1). */
+  niveles: number[];
+}
+
+export interface Acuerdo extends Voto {
+  id: number;
+  meta: number | null;
+  creadoEn: string;
+}
+
+export interface CicloTermometro {
+  ciclo: number;
+  respuestas: number;
+  /** null mientras haya menos respuestas que el mínimo del grupo. */
+  promedio: number | null;
+  porAfirmacion: number[] | null;
+}
+
+export interface RegistroDinamica {
+  id: number;
+  dinamica: string;
+  ciclo: number;
+  hoja: Record<string, string | Record<string, string | boolean>[]>;
+  nombre: string | null;
+  creadoEn: string;
+}
+
+export interface BalanceCiclo {
+  id: number;
+  ciclo: number;
+  meritos: string;
+  factores: string;
+  dificultades: string;
+  nombre: string | null;
+  creadoEn: string;
+}
+
+export interface Publicacion {
+  titulo: string;
+  logramos: string;
+  protagonistas: string;
+  importancia: string;
+  mensaje: string;
+  autorizacion: boolean;
+}
+
+export interface Merito {
+  id: number;
+  creadoEn: string;
+  nombre?: string | null;
+  area?: string;
+  fecha?: string;
+  cambio?: string;
+  avance?: string;
+  participantes?: string;
+  comoAyuda?: string;
+  pasaAValoracion?: boolean;
+  criterios?: Record<string, { puntaje: number; evidencia: string }>;
+  total?: number;
+  clasificacion?: 'destacado' | 'favorable' | 'desarrollo';
+  reconocimiento?: string;
+  publicar?: boolean;
+  publicacion?: Publicacion;
 }
 
 export class ErrorApi extends Error {
@@ -75,6 +178,12 @@ export const api = {
   videos: () => llamar<{ videos: VideoCapacitacion[] }>('/api/videos'),
   marcarVisto: (videoId: string) => llamar<{ videoId: string; vistoEn: string }>('/api/vistas', { videoId }),
   historial: () => llamar<Historial>('/api/historial'),
+  preguntas: (videoId: string) =>
+    llamar<{ videoId: string; preguntas: PreguntaSimulador[]; aprobacionMinima: number }>(`/api/preguntas?videoId=${encodeURIComponent(videoId)}`),
+  responderSimulador: (videoId: string, respuestas: number[], seguridad: number) =>
+    llamar<ResultadoSimulador>('/api/simulador', { videoId, respuestas, seguridad }),
+  guardarRegistro: (tipo: TipoRegistro, datos: unknown) => llamar<{ id: number; tipo: TipoRegistro }>('/api/registros', { tipo, datos }),
+  registros: <T>(tipo: TipoRegistro) => llamar<T>(`/api/registros?tipo=${tipo}`),
 };
 
 /** SQLite guarda la fecha en UTC como "2026-11-11 21:59:00". */

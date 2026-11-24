@@ -7,12 +7,10 @@
 /** Qué se registra en cada paso, bajo el título. */
 export const DESCRIPCION_PASO_R: Readonly<Record<string, string>> = {
   R1: 'El lienzo se hace en papelógrafo y aquí se registra su resultado. Es interno: lo usa el equipo de cambio, no se muestra a colaboradores y no alimenta el tablero.',
-  R2: 'El FODA se hace en sesión. Aquí se registra cada ítem con su evidencia, su puntaje y sus votos.',
-  R3: 'El mapa se construye en taller. Aquí se registra cada actor o grupo para medir cuántos tienen una acción definida.',
-  R4: 'La encuesta se responde en papel o en línea. Aquí se digita cada respuesta para contar los estilos de liderazgo.',
-  R5: 'La ficha y la narrativa son un texto, no generan datos: este paso solo se explica.',
-  R6: 'Los colaboradores responden en Google Forms o en papel. El papel se digita aquí y lo de Google Forms se carga como CSV.',
-  R7: 'Quienes dirigen el cambio responden el chequeo Kotter parte A. Con eso y el buzón 1, la herramienta recomienda; la decisión la toma una persona y se registra aquí.',
+  R2: 'Registra las condiciones de la iniciativa y puntúa su impacto en las personas, complejidad organizacional y riesgo operativo para caracterizar la ruta.',
+  R3: 'El FODA se construye con el equipo. Aquí se registran los factores cualitativos junto con evidencia y puntajes.',
+  R4: 'El mapa se construye con dirección y jefes. Registra las necesidades de cada grupo, su poder e interés y la brecha entre el compromiso actual y el deseado.',
+  R5: 'Buzón breve y anónimo de diagnóstico. No anuncia un cambio específico: recoge fallas actuales, inquietudes y propuestas de mejora.',
 };
 
 export const NOMBRE_BLOQUE_LIENZO = {
@@ -55,6 +53,11 @@ export const EXPLICACION_FODA = {
 
 export const EXPLICACION_ACTORES = {
   actor: 'El actor o grupo, por su cargo o función. No escribas nombres de colaboradores.',
+  descripcion: 'Qué rol cumple este grupo o cómo se relaciona con la iniciativa.',
+  necesidades: 'Qué necesita o espera este grupo del proceso de cambio.',
+  poder: 'Capacidad de decidir, frenar la iniciativa o asignar recursos.',
+  interes: 'Qué tanto le afecta o le importa el resultado de la iniciativa.',
+  compromiso: 'Nivel actual o posición que se desea alcanzar para este grupo.',
   n_personas: 'Cuántas personas representa este actor o grupo.',
   influencia: 'Cuánto puede favorecer o frenar el cambio.',
   postura: 'Cómo se ubica hoy frente al cambio.',

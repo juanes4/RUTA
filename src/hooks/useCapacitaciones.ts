@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSesion } from '../estado/SesionContexto';
-import { api, ErrorApi, type VideoCapacitacion } from '../lib/api';
+import { api, ErrorApi, type ResultadoSimulador, type VideoCapacitacion } from '../lib/api';
 
 type Estado = { fase: 'cargando' } | { fase: 'error'; mensaje: string } | { fase: 'listo'; videos: VideoCapacitacion[] };
 
@@ -44,5 +44,12 @@ export function useCapacitaciones() {
     [fallo],
   );
 
-  return { estado, marcarVisto };
+  /** Guarda en la lista el resultado del simulador que acaba de responder la persona. */
+  const guardarSimulador = useCallback((videoId: string, simulador: ResultadoSimulador) => {
+    setEstado((e) =>
+      e.fase === 'listo' ? { fase: 'listo', videos: e.videos.map((v) => (v.id === videoId ? { ...v, simulador } : v)) } : e,
+    );
+  }, []);
+
+  return { estado, marcarVisto, guardarSimulador };
 }

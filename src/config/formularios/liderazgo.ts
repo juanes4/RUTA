@@ -99,7 +99,7 @@ export const PREGUNTAS_LIDERAZGO: readonly PreguntaLiderazgo[] = [
   },
 ];
 
-/** Qué significa cada estilo para el cambio (CONTEXTO §3, R4). */
+/** Qué significa cada estilo para comunicar el cambio (U1). */
 export const ESTILOS_LIDERAZGO: Readonly<Record<LetraLiderazgo, { nombre: string; implicacion: string }>> = {
   A: { nombre: 'Directivo y estructurado', implicacion: 'Viabilidad media; emparejar con agente de cambio.' },
   B: { nombre: 'Participativo y colaborativo', implicacion: 'Viabilidad alta; dirige el mapa de empatía.' },

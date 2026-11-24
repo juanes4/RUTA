@@ -45,6 +45,26 @@ export async function abrirBase(ruta = process.env.RUTA_DB ?? resolve(process.cw
       visto_en   TEXT NOT NULL DEFAULT (datetime('now')),
       PRIMARY KEY (usuario_id, video_id)
     );
+    -- T2: resultado del simulador (3 preguntas + autoevaluación de seguridad). Un intento vigente por persona y video.
+    CREATE TABLE IF NOT EXISTS simulacros (
+      usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+      video_id   TEXT NOT NULL REFERENCES videos(id) ON DELETE CASCADE,
+      aciertos   INTEGER NOT NULL,
+      total      INTEGER NOT NULL,
+      seguridad  INTEGER NOT NULL CHECK (seguridad BETWEEN 1 AND 5),
+      hecho_en   TEXT NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (usuario_id, video_id)
+    );
+    -- T1, T3 y T4: pulsos, votos, termómetro, dinámicas, méritos y balances (datos en JSON).
+    -- usuario_id queda en NULL en el termómetro, que es anónimo.
+    CREATE TABLE IF NOT EXISTS registros (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      tipo       TEXT NOT NULL,
+      usuario_id INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
+      datos      TEXT NOT NULL,
+      creado_en  TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS registros_tipo ON registros (tipo, creado_en);
   `);
 
   if (db.prepare('SELECT COUNT(*) AS n FROM videos').get().n === 0) {

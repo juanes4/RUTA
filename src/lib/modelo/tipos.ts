@@ -94,11 +94,18 @@ export interface FilaFoda {
 export type Influencia = 'baja' | 'media' | 'alta';
 export type Postura = 'se_opone' | 'neutral' | 'apoya';
 export type Estrategia = 'educar' | 'hacer_participe' | 'apoyar' | 'negociar';
+export type NivelCompromiso = 'desconoce' | 'se_resiste' | 'neutral' | 'apoya' | 'lidera';
 
 /** Tabla `actores`. `id` se agrega para poder quitar filas. */
 export interface FilaActor {
   id: string;
   actor: string;
+  descripcion?: string;
+  necesidades?: string;
+  poder?: 'alto' | 'bajo';
+  interes?: 'alto' | 'bajo';
+  compromiso_actual?: NivelCompromiso;
+  compromiso_deseado?: NivelCompromiso;
   n_personas: number;
   influencia: Influencia;
   postura: Postura;
@@ -107,6 +114,49 @@ export interface FilaActor {
   accion: string;
   responsable: string;
   fecha: string;
+}
+
+/** Una respuesta anónima del buzón diagnóstico R5. */
+export interface FilaEscuchaInicial {
+  id: string;
+  falla_proceso: string;
+  preocupacion: string;
+  mejora: string;
+}
+
+export type PuntajeTriaje = 1 | 2 | 3;
+export type AlcanceTriaje = 'piloto' | 'departamento' | 'organizacion';
+
+/** Evaluación inicial de una iniciativa, antes de definir su despliegue. */
+export interface TriajeCambio {
+  motivo_ahora: string;
+  consecuencia_no_cambiar: string;
+  poblacion_afectada: string;
+  dimension_tecnica: string;
+  alcance: AlcanceTriaje;
+  impacto_personas: PuntajeTriaje;
+  complejidad_organizacional: PuntajeTriaje;
+  riesgo_operativo: PuntajeTriaje;
+}
+
+/** Narrativa de cambio preparada para comunicarse en la etapa U2. */
+export interface NarrativaCambio {
+  portavoz_codigo: string;
+  de_donde_venimos: string;
+  hacia_donde_vamos: string;
+  como_sera_el_camino: string;
+}
+
+/** Mapa de empatía de un grupo, completado después de comunicar el cambio. */
+export interface FilaEmpatia {
+  id: string;
+  grupo: string;
+  que_oye: string;
+  que_ve: string;
+  piensa_siente: string;
+  dice_hace: string;
+  dolores: string;
+  necesidades_ganancias: string;
 }
 
 export type LetraLiderazgo = 'A' | 'B' | 'C' | 'D';

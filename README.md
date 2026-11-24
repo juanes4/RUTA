@@ -20,3 +20,23 @@ Agregar un usuario: `npm run usuario -- maria "María Pérez" empleado UnaClaveL
 
 Los videos (YouTube) están en `server/videos.mjs`. Para cambiarlos: edita ese archivo, borra
 `server/data/ruta.db` y vuelve a iniciar (esto también borra usuarios e historial).
+
+## Etapa T (Transformar)
+
+Sigue la sección «Etapa #3: Transformar» del documento de metodología (niveles de Kirkpatrick). El texto del documento está en
+`src/config/transformar.ts`; las reglas de cálculo en `server/reglasT.mjs` y `src/lib/transformar/victorias.ts`.
+
+| Paso | Qué hay | Quién |
+| --- | --- | --- |
+| T1 Comunicación | Encuesta de pulso (claridad, utilidad, formato; 1 a 5). El líder ve el promedio por sesión | Todos responden |
+| T2 Capacitación | Micro-cursos en video, simulador de 3 preguntas, autoevaluación de seguridad e historial con los resultados | Empleado: sus videos y resultados. Líder: todo y quién lo hizo |
+| T3 Acompañamiento | Votación de escalones (escalera de autonomía), tres dinámicas con su hoja de trabajo (máximo 2 por ciclo) y termómetro de apropiación | Votan y responden todos; el líder acuerda el escalón y guarda las hojas |
+| T4 Victorias tempranas | Ficha FIMT, matriz MRMT (8 criterios, 8 a 40), matriz de reconocimiento, formato de publicación y balance del ciclo | Registra el líder; todos ven los méritos publicados |
+
+Reglas: un 4 o un 5 en la matriz MRMT exige evidencia; solo se publica con 24 puntos o más y con la autorización de los protagonistas;
+el termómetro es anónimo y solo se reporta con 5 respuestas o más por ciclo.
+
+Pendiente de revisar con el equipo: las 21 preguntas del simulador (`server/simulador.mjs`) son un borrador escrito a partir del tema de cada
+video, y la aprobación (2 de 3 aciertos) no está definida en el documento.
+
+Las tablas nuevas (`simulacros` y `registros`) se crean solas; una base existente conserva usuarios, videos e historial.

@@ -1,26 +1,3 @@
-# Herramientas de IA y editor
-.claude/
-.agents/
-.vscode/
-skills-lock.json
-
-# Documentación
-*.md
-*.MD
-ruta-web/docs/
-
-# Dependencias y compilados
-node_modules/
-dist/
-coverage/
-*.tsbuildinfo
-
-# Variables de entorno y archivos locales
-.env
-.env.*
+node_modules
+dist
 *.local
-
-# Registros y archivos del sistema
-*.log
-.DS_Store
-Thumbs.db

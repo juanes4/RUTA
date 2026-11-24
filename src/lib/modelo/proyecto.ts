@@ -1,5 +1,16 @@
 import type { DecisionR7 } from '../calculo/decisionR7';
-import type { FilaActor, FilaFoda, FilaKotter, FilaLiderazgo, FilaRespuesta, FilaUso } from './tipos';
+import type {
+  FilaActor,
+  FilaEmpatia,
+  FilaEscuchaInicial,
+  FilaFoda,
+  FilaKotter,
+  FilaLiderazgo,
+  FilaRespuesta,
+  FilaUso,
+  NarrativaCambio,
+  TriajeCambio,
+} from './tipos';
 
 /**
  * Datos de la Etapa 0 (PLAN §4, pasos 0.1 a 0.4, propuesta de software
@@ -102,6 +113,10 @@ export interface DatosProyecto {
   uso: FilaUso[];
   foda: FilaFoda[];
   actores: FilaActor[];
+  narrativaCambio: NarrativaCambio | null;
+  mapaEmpatia: FilaEmpatia[];
+  triaje: TriajeCambio | null;
+  escuchaInicial: FilaEscuchaInicial[];
   liderazgo: FilaLiderazgo[];
   lienzo: Lienzo;
   decision: RegistroDecision | null;
@@ -113,6 +128,10 @@ export const DATOS_VACIOS: DatosProyecto = {
   uso: [],
   foda: [],
   actores: [],
+  narrativaCambio: null,
+  mapaEmpatia: [],
+  triaje: null,
+  escuchaInicial: [],
   liderazgo: [],
   lienzo: LIENZO_VACIO,
   decision: null,

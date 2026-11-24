@@ -51,7 +51,7 @@ export const METAS: readonly DefinicionMeta[] = [
     meta: 1,
     sentido: 'mayor_mejor',
     unidad: 'porcentaje',
-    fuenteDato: 'Mapa de actores (R3)',
+    fuenteDato: 'Mapa de actores (R4)',
     fuente: 'Mendelow (1991), adaptado',
   },
   {

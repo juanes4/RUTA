@@ -28,7 +28,7 @@ function TextoPaso({ paso }: { paso: PasoNumerado }) {
   );
 }
 
-/** Página principal: el reto, el recorrido en 10 pasos y el acceso a todo (PLAN §4). */
+/** Página principal: el reto, el recorrido y el acceso a todo (PLAN §4). */
 export function VistaInicio({ etapas }: Props) {
   const { activo } = useProyecto();
   const { usuario } = useSesion();
@@ -45,7 +45,7 @@ export function VistaInicio({ etapas }: Props) {
           ¿Cómo lograr que los colaboradores de las empresas afiliadas comprendan, adopten y se apropien de los cambios
           organizacionales?
         </p>
-        <p className={estilos.ruta}>Entender → comunicar → escuchar → decidir → acompañar → comprobar.</p>
+        <p className={estilos.ruta}>Entender → escuchar → comunicar → acompañar → comprender → comprobar.</p>
         {!usuario && (
           <div className={estilos.ingreso}>
             <Boton variante="secundario" onClick={() => navegar({ pagina: 'ingresar' })}>
@@ -101,7 +101,7 @@ export function VistaInicio({ etapas }: Props) {
 
       <section aria-labelledby="titulo-recorrido">
         <h2 id="titulo-recorrido" className={estilos.tituloSeccion}>
-          El recorrido en 10 pasos
+          El recorrido en {RECORRIDO.length} pasos
         </h2>
         <div className={estilos.recorrido}>
           <div className={estilos.tramo}>

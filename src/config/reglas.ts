@@ -15,7 +15,7 @@ export const REGLAS = {
   /** Escala de las preguntas de los buzones (CONTEXTO §5). */
   escala: { minimo: 1, maximo: 5 },
   foda: {
-    /** Los ítems más votados pasan al backlog de la etapa 2 (CONTEXTO §3, R2). */
+    /** Los ítems más votados pasan al backlog de la etapa 2 (CONTEXTO §3, FODA R3). */
     itemsAlBacklog: 5,
   },
   anonimato: {

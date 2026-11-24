@@ -1,7 +1,7 @@
 import { LETRAS_LIDERAZGO } from '../../config/formularios/liderazgo';
 import type { FilaLiderazgo, LetraLiderazgo, RespondenteLiderazgo } from '../modelo/tipos';
 
-/** Encuesta de liderazgo: se cuenta A/B/C/D sobre el total de preguntas (CONTEXTO §3, R4). */
+/** Encuesta de liderazgo: se cuenta A/B/C/D sobre el total de preguntas (U1). */
 
 export type Conteos = Record<LetraLiderazgo, number>;
 
