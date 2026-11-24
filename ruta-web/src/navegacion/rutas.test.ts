@@ -18,9 +18,16 @@ describe('rutas', () => {
   });
 
   it('las etapas vacías y los pasos que no existen no tienen página', () => {
-    expect(parsear('#/etapa/t')).toEqual({ pagina: 'no_encontrada' });
+    expect(parsear('#/etapa/a')).toEqual({ pagina: 'no_encontrada' });
     expect(parsear('#/etapa/r/U1')).toEqual({ pagina: 'no_encontrada' });
     expect(parsear('#/otra')).toEqual({ pagina: 'no_encontrada' });
+  });
+
+  it('la etapa T y sus dos subsecciones; el inicio de sesión', () => {
+    expect(parsear('#/etapa/t')).toEqual({ pagina: 'etapa', etapaId: 'etapa-t', pasoId: null });
+    expect(parsear('#/etapa/t/t2')).toEqual({ pagina: 'etapa', etapaId: 'etapa-t', pasoId: 'T2' });
+    expect(parsear('#/ingresar')).toEqual({ pagina: 'ingresar' });
+    expect(hashDe({ pagina: 'ingresar' }, ETAPAS)).toBe('#/ingresar');
   });
 
   it('ida y vuelta: el hash generado se vuelve a leer igual', () => {

@@ -101,6 +101,7 @@ export const DESCRIPCION_ETAPA: Readonly<Record<string, string>> = {
     'Dejar claro por qué se cambia, saber quién apoya y quién se resiste, medir desde dónde parte cada grupo y decidir con datos si se lanza, se ajusta o se pospone. De 2 a 3 semanas antes del lanzamiento.',
   'etapa-u':
     'Desde el lanzamiento hasta el día 90, en ciclos de 2 semanas. Salida: el cambio en uso, medido y ajustado cada ciclo.',
+  'etapa-t': 'Acompañamiento de equipos: ¿cómo lo construimos con quienes lo van a vivir?',
 };
 
 /** Acciones de U1 según el punto de bloqueo (CONTEXTO §4). */

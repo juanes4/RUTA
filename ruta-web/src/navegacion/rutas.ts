@@ -5,6 +5,7 @@ import type { Etapa } from '../config/etapas';
  * configurar redirecciones). Formato:
  *   #/                    inicio
  *   #/tablero             tablero
+ *   #/ingresar            inicio de sesión
  *   #/etapa/r             página de una etapa
  *   #/etapa/r/R6          página de una etapa, en un paso
  */
@@ -12,6 +13,7 @@ import type { Etapa } from '../config/etapas';
 export type Ruta =
   | { pagina: 'inicio' }
   | { pagina: 'tablero' }
+  | { pagina: 'ingresar' }
   | { pagina: 'etapa'; etapaId: string; pasoId: string | null }
   | { pagina: 'no_encontrada' };
 
@@ -26,6 +28,7 @@ export function parsearRuta(hash: string, etapas: readonly Etapa[]): Ruta {
 
   if (partes.length === 0) return { pagina: 'inicio' };
   if (primera === 'tablero' && partes.length === 1) return { pagina: 'tablero' };
+  if (primera === 'ingresar' && partes.length === 1) return { pagina: 'ingresar' };
   if (primera === 'etapa' && segunda && partes.length <= 3) {
     const etapa = etapas.find((e) => e.activa && segmentoEtapa(e) === segunda.toLowerCase());
     if (!etapa) return { pagina: 'no_encontrada' };
@@ -43,6 +46,8 @@ export function hashDe(ruta: Ruta, etapas: readonly Etapa[]): string {
       return '#/';
     case 'tablero':
       return '#/tablero';
+    case 'ingresar':
+      return '#/ingresar';
     case 'etapa': {
       const etapa = etapas.find((e) => e.id === ruta.etapaId);
       if (!etapa) return '#/';

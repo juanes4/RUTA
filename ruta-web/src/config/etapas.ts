@@ -91,7 +91,19 @@ export const ETAPAS: readonly Etapa[] = [
       { id: 'U5', titulo: 'Indicadores y tablero' },
     ],
   },
-  { id: 'etapa-t', letra: 'T', nombre: 'Por definir', activa: false, pasos: [] },
+  {
+    id: 'etapa-t',
+    letra: 'T',
+    nombre: 'Transformar',
+    activa: true,
+    color: 'var(--pastel-mint)',
+    tarjetas: { fondos: ['var(--pastel-mint)', 'var(--pastel-mint)'], manchas: false },
+    paginasPorPaso: true,
+    pasos: [
+      { id: 'T1', titulo: 'Capacitaciones' },
+      { id: 'T2', titulo: 'Historial' },
+    ],
+  },
   { id: 'etapa-a', letra: 'A', nombre: 'Por definir', activa: false, pasos: [] },
 ];
 
