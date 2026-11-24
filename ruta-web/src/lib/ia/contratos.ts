@@ -6,16 +6,16 @@
  */
 
 export type UsoIA =
-  | 'leer_documento' //       lienzo, ficha, documento maestro
-  | 'clasificar_abiertas' //  tema y dimensión ADKAR, mapa de empatía
-  | 'explicar_indicador' //   por qué un indicador está en rojo
-  | 'sugerir_acciones' //     acciones de U1 según el punto de bloqueo
+  | 'leer_documento' //       lienzo, narrativa, documento maestro
+  | 'clasificar_abiertas' //  respuestas del buzón 1 hacia el mapa de empatía
+  | 'explicar_indicador' //   por qué el triaje dio una ruta
+  | 'sugerir_acciones' //     estrategias de acompañamiento (U4)
   | 'preparar_retrospectiva';
 
 /** Solo datos agregados de grupos con el mínimo de personas; nunca respuestas individuales. */
 export interface ContextoIA {
   uso: UsoIA;
-  /** Resultados ya calculados por `lib/calculo` (promedios, bloqueos, semáforos). */
+  /** Resultados ya calculados por `lib/calculo` (triaje, FODA, actores, liderazgo). */
   agregados: Record<string, unknown>;
   /** Texto de documentos de la empresa, solo si el proveedor lo permite. */
   documentos?: string[];

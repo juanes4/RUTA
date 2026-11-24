@@ -7,7 +7,7 @@ import type { Etapa } from '../config/etapas';
  *   #/tablero             tablero
  *   #/ingresar            inicio de sesión
  *   #/etapa/r             página de una etapa
- *   #/etapa/r/R6          página de una etapa, en un paso
+ *   #/etapa/r/R5          página de una etapa, en un paso
  */
 
 export type Ruta =

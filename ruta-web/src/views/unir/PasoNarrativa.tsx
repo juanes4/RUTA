@@ -1,113 +1,135 @@
 import { useState, type FormEvent } from 'react';
-import { CampoArea, CampoTexto } from '../../components/ui/Campo';
-import { useBorrador } from '../../hooks/useBorrador';
+import { Boton } from '../../components/ui/Boton';
+import { CampoArea, CampoSeleccion, CampoTexto } from '../../components/ui/Campo';
+import { ESTILOS_LIDERAZGO } from '../../config/formularios/liderazgo';
+import { PARTES_NARRATIVA } from '../../config/formularios/unir';
+import { EXPLICACION_NARRATIVA as EX } from '../../contenido/unir';
 import { useProyecto } from '../../estado/ProyectoContexto';
-import type { NarrativaCambio } from '../../lib/modelo/tipos';
-import formulario from '../etapa0/formulario.module.css';
+import { useBorrador } from '../../hooks/useBorrador';
+import { resumirLiderazgo, vocerosSugeridos } from '../../lib/calculo/liderazgo';
+import type { Lienzo, Narrativa } from '../../lib/modelo/proyecto';
 import { PieFormulario } from '../etapa0/PieFormulario';
+import formulario from '../etapa0/formulario.module.css';
 import { MENSAJE_SIN_ESPACIO } from '../reconocer/ayudas';
 import estilos from '../reconocer/reconocer.module.css';
 
-type BorradorNarrativa = NarrativaCambio;
-
-function origenNarrativa(datos: ReturnType<typeof useProyecto>['datos']): BorradorNarrativa {
-  if (datos.narrativaCambio) return datos.narrativaCambio;
-
-  const motivos = datos.lienzo.urgencia
-    .map(({ motivo, dato }) => [motivo, dato && `Dato: ${dato}`].filter(Boolean).join(' — '))
-    .filter(Boolean);
-  if (datos.triaje?.consecuencia_no_cambiar) motivos.push(`Si no se hace: ${datos.triaje.consecuencia_no_cambiar}`);
-  const beneficios = datos.lienzo.beneficios.map(({ grupo, beneficio }) => `${grupo}: ${beneficio}`).filter((texto) => texto !== ': ');
-  const camino = [
-    datos.lienzo.que_cambia && `Qué cambia: ${datos.lienzo.que_cambia}`,
-    datos.lienzo.que_no_cambia && `Qué se mantiene: ${datos.lienzo.que_no_cambia}`,
-  ].filter(Boolean);
-
+/** Lo que el lienzo (R1) ya dice para cada campo de la narrativa. */
+function desdeLienzo(l: Lienzo): Omit<Narrativa, 'vocero' | 'acompanamiento'> {
+  const lineas = (filas: string[]) => filas.filter((f) => f.trim()).join('\n');
   return {
-    portavoz_codigo: '',
-    de_donde_venimos: motivos.join('\n'),
-    hacia_donde_vamos: [datos.lienzo.vision, ...beneficios].filter(Boolean).join('\n'),
-    como_sera_el_camino: camino.join('\n'),
+    urgencia: lineas(l.urgencia.map((m) => [m.motivo, m.dato].filter((t) => t.trim()).join(': '))),
+    vision: l.vision,
+    que_cambia: l.que_cambia,
+    que_se_mantiene: l.que_no_cambia,
+    que_gano: lineas(l.beneficios.map((b) => `${b.grupo}: ${b.beneficio}`)),
   };
 }
 
+const limpiar = (n: Narrativa): Narrativa => ({
+  vocero: n.vocero.trim(),
+  urgencia: n.urgencia.trim(),
+  vision: n.vision.trim(),
+  que_cambia: n.que_cambia.trim(),
+  que_se_mantiene: n.que_se_mantiene.trim(),
+  acompanamiento: n.acompanamiento.trim(),
+  que_gano: n.que_gano.trim(),
+});
+
+/** U2: narrativa del cambio en 3 partes y su vocero. */
 export function PasoNarrativa() {
   const { datos, actualizarDatos } = useProyecto();
-  const [errores, setErrores] = useState<string[]>([]);
-  const [errorGuardado, setErrorGuardado] = useState('');
-  const { borrador, editar, confirmar, estado } = useBorrador<BorradorNarrativa>(origenNarrativa(datos), async (narrativa) => {
-    await actualizarDatos((d) => ({
-      ...d,
-      narrativaCambio: {
-        portavoz_codigo: narrativa.portavoz_codigo.trim(),
-        de_donde_venimos: narrativa.de_donde_venimos.trim(),
-        hacia_donde_vamos: narrativa.hacia_donde_vamos.trim(),
-        como_sera_el_camino: narrativa.como_sera_el_camino.trim(),
-      },
-    }));
-  });
-  const campo = <K extends keyof BorradorNarrativa>(clave: K, valor: BorradorNarrativa[K]) =>
-    editar((actual) => ({ ...actual, [clave]: valor }));
+  const [error, setError] = useState('');
+  const { borrador, editar, confirmar, estado } = useBorrador<Narrativa>(datos.narrativa, async (n) =>
+    actualizarDatos((d) => ({ ...d, narrativa: limpiar(n) })),
+  );
+  const lideres = resumirLiderazgo(datos.liderazgo);
+  const sugeridos = new Set(vocerosSugeridos(lideres).map((l) => l.lider_id));
+  const ordenados = [...lideres].sort((a, b) => Number(sugeridos.has(b.lider_id)) - Number(sugeridos.has(a.lider_id)));
+  const delLienzo = desdeLienzo(datos.lienzo);
+  const hayLienzo = Object.values(delLienzo).some((v) => v.trim());
 
-  const guardar = async (evento: FormEvent) => {
+  const traerDelLienzo = () =>
+    editar((n) => {
+      const nueva = { ...n };
+      for (const [clave, valor] of Object.entries(delLienzo) as [keyof typeof delLienzo, string][]) {
+        if (!nueva[clave].trim()) nueva[clave] = valor;
+      }
+      return nueva;
+    });
+
+  const enviar = async (evento: FormEvent) => {
     evento.preventDefault();
-    setErrorGuardado('');
-    const faltantes = [
-      !borrador.de_donde_venimos.trim() && 'Completa de dónde venimos y por qué ya no basta.',
-      !borrador.hacia_donde_vamos.trim() && 'Describe hacia dónde vamos y qué beneficios trae.',
-      !borrador.como_sera_el_camino.trim() && 'Explica cómo será el camino y qué acompañamiento habrá.',
-    ].filter((falta): falta is string => Boolean(falta));
-    setErrores(faltantes);
-    if (faltantes.length > 0) return;
+    setError('');
     try {
       await confirmar();
     } catch {
-      setErrorGuardado(MENSAJE_SIN_ESPACIO);
+      setError(MENSAJE_SIN_ESPACIO);
     }
   };
 
   return (
-    <form className={formulario.formulario} onSubmit={(e) => void guardar(e)}>
-      <p className={estilos.nota}>
-        Usa el resultado de U1 para escoger quién presenta el mensaje. La narrativa se puede completar con la información registrada en R1 y R2.
-      </p>
-      <div className={formulario.rejilla}>
-        <CampoTexto
-          etiqueta="Código del vocero"
-          ayuda="Usa el mismo código registrado en la encuesta de liderazgo; no hace falta escribir su nombre."
-          value={borrador.portavoz_codigo}
-          onChange={(e) => campo('portavoz_codigo', e.target.value)}
-        />
-        <div className={formulario.ancho}>
-          <CampoArea
-            etiqueta="De dónde venimos y por qué ya no basta"
-            ayuda="Explica las razones internas o externas y el riesgo de mantener la situación actual."
-            required
-            value={borrador.de_donde_venimos}
-            onChange={(e) => campo('de_donde_venimos', e.target.value)}
+    <form className={formulario.formulario} onSubmit={(e) => void enviar(e)}>
+      <section className={estilos.bloque} aria-labelledby="narrativa-vocero">
+        <h3 id="narrativa-vocero" className={estilos.tituloBloque}>
+          Quién comunica el cambio
+        </h3>
+        {lideres.length > 0 ? (
+          <CampoSeleccion etiqueta="Vocero" explicacion={EX.vocero} value={borrador.vocero} onChange={(e) => editar((n) => ({ ...n, vocero: e.target.value }))}>
+            <option value="">Elegir…</option>
+            {ordenados.map((l) => (
+              <option key={l.lider_id} value={l.lider_id}>
+                {l.lider_id} · {l.dominantes.map((d) => ESTILOS_LIDERAZGO[d].nombre).join(' / ')}
+                {sugeridos.has(l.lider_id) ? ' (sugerido)' : ''}
+              </option>
+            ))}
+          </CampoSeleccion>
+        ) : (
+          <CampoTexto
+            etiqueta="Vocero (código o cargo)"
+            explicacion={EX.vocero}
+            ayuda="Registra la encuesta de liderazgo (U1) para ver los voceros sugeridos."
+            value={borrador.vocero}
+            onChange={(e) => editar((n) => ({ ...n, vocero: e.target.value }))}
           />
+        )}
+      </section>
+
+      {hayLienzo && (
+        <div>
+          <Boton variante="secundario" onClick={traerDelLienzo}>
+            Completar con el lienzo del cambio (R1)
+          </Boton>
+          <p className={estilos.nota}>Solo llena los campos vacíos; no reemplaza lo que ya escribiste.</p>
         </div>
-        <div className={formulario.ancho}>
-          <CampoArea
-            etiqueta="Hacia dónde vamos: visión y esperanza"
-            ayuda="Describe el futuro deseado y sus beneficios para las personas, los clientes y la organización."
-            required
-            value={borrador.hacia_donde_vamos}
-            onChange={(e) => campo('hacia_donde_vamos', e.target.value)}
-          />
-        </div>
-        <div className={formulario.ancho}>
-          <CampoArea
-            etiqueta="Cómo será el camino: transición y transparencia"
-            ayuda="Aclara las etapas, qué cambia, qué se mantiene y cómo se acompañará a las personas."
-            required
-            value={borrador.como_sera_el_camino}
-            onChange={(e) => campo('como_sera_el_camino', e.target.value)}
-          />
-        </div>
-      </div>
-      {errorGuardado && <p className={estilos.aviso} role="alert">{errorGuardado}</p>}
-      <PieFormulario estado={estado} errores={errores} />
+      )}
+
+      {PARTES_NARRATIVA.map((parte) => (
+        <section key={parte.numero} className={estilos.bloque} aria-labelledby={`narrativa-${parte.numero}`}>
+          <h3 id={`narrativa-${parte.numero}`} className={estilos.tituloBloque}>
+            <span className="numero">{parte.numero}.</span> {parte.titulo}
+          </h3>
+          <dl className={estilos.guiaNarrativa}>
+            <dt>Propósito</dt>
+            <dd>{parte.proposito}</dd>
+            <dt>Mensaje clave</dt>
+            <dd>{parte.mensajeClave}</dd>
+          </dl>
+          <div className={formulario.rejilla}>
+            {parte.campos.map((c) => (
+              <div key={c.clave} className={parte.campos.length === 1 ? formulario.ancho : undefined}>
+                <CampoArea etiqueta={c.etiqueta} value={borrador[c.clave]} onChange={(e) => editar((n) => ({ ...n, [c.clave]: e.target.value }))} />
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {error && (
+        <p className={estilos.aviso} role="alert">
+          {error}
+        </p>
+      )}
+      <PieFormulario estado={estado} />
     </form>
   );
 }

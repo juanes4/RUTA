@@ -28,7 +28,7 @@ function TextoPaso({ paso }: { paso: PasoNumerado }) {
   );
 }
 
-/** Página principal: el reto, el recorrido y el acceso a todo (PLAN §4). */
+/** Página principal: el reto, el recorrido en 11 pasos y el acceso a todo (PLAN §4). */
 export function VistaInicio({ etapas }: Props) {
   const { activo } = useProyecto();
   const { usuario } = useSesion();
@@ -42,10 +42,10 @@ export function VistaInicio({ etapas }: Props) {
         <p className={estilos.antetitulo}>Metodología de transformación organizacional</p>
         <h1>RUTA</h1>
         <p className={estilos.reto}>
-          ¿Cómo lograr que los colaboradores de las empresas afiliadas comprendan, adopten y se apropien de los cambios
-          organizacionales?
+          RUTA es una aplicación que acompaña a las empresas en sus procesos de transformación organizacional mediante
+          etapas, herramientas y un tablero para orientar y dar seguimiento al cambio.
         </p>
-        <p className={estilos.ruta}>Entender → escuchar → comunicar → acompañar → comprender → comprobar.</p>
+        <p className={estilos.ruta}>Entender → escuchar → comunicar → acompañar → transformar → comprobar.</p>
         {!usuario && (
           <div className={estilos.ingreso}>
             <Boton variante="secundario" onClick={() => navegar({ pagina: 'ingresar' })}>
@@ -86,7 +86,7 @@ export function VistaInicio({ etapas }: Props) {
             <a className={estilos.acceso} data-oscuro="true" href={enlace({ pagina: 'tablero' })}>
               <span className={estilos.nombreAcceso}>Tablero</span>
               <span className={estilos.descripcion}>
-                Decisión de lanzamiento, participación por área, categorías e indicadores con semáforo.
+                Ruta del cambio con semáforo, participación del buzón, FODA, actores, liderazgo y avance de cada paso.
               </span>
               <span className={estilos.pasos}>
                 Abrir <span aria-hidden="true">→</span>
@@ -101,7 +101,7 @@ export function VistaInicio({ etapas }: Props) {
 
       <section aria-labelledby="titulo-recorrido">
         <h2 id="titulo-recorrido" className={estilos.tituloSeccion}>
-          El recorrido en {RECORRIDO.length} pasos
+          El recorrido en 11 pasos
         </h2>
         <div className={estilos.recorrido}>
           <div className={estilos.tramo}>

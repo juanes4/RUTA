@@ -1,12 +1,12 @@
-import { PALABRA_SEMAFORO, type EstadoSemaforo } from '../../lib/calculo/semaforo';
+import type { NivelSemaforoTriaje } from '../../config/formularios/reconocer';
 import estilos from './Semaforo.module.css';
 
-/** Estado del semáforo: siempre con palabra, nunca solo color (PLAN §6). */
-export function Semaforo({ estado }: { estado: EstadoSemaforo }) {
+/** Semáforo: siempre con palabra, nunca solo color. */
+export function Semaforo({ estado, texto }: { estado: NivelSemaforoTriaje; texto: string }) {
   return (
     <span className={estilos.semaforo} data-estado={estado}>
       <span className={estilos.punto} aria-hidden="true" />
-      {PALABRA_SEMAFORO[estado]}
+      {texto}
     </span>
   );
 }

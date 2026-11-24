@@ -1,3 +1,5 @@
+import type { EstadoCarita, IdFaseViaje, IdIndicadorA } from '../config/analizar';
+
 /** Cliente de la API del servidor (/api/*). La sesión viaja en una cookie HttpOnly. */
 
 export type Rol = 'lider' | 'empleado';
@@ -17,6 +19,20 @@ export interface ResultadoSimulador {
   aprobado: boolean;
   /** Autoevaluación de seguridad, de 1 a 5. */
   seguridad: number;
+  /** Cruce entre seguridad y resultado. */
+  brecha: BrechaSeguridad;
+  mensaje: string;
+  /** Solo viene justo al responder: qué acertó cada pregunta y por qué. */
+  detalle?: DetalleRespuesta[] | null;
+}
+
+export type BrechaSeguridad = 'sobreconfianza' | 'subestima' | 'necesita_apoyo' | 'alineado';
+
+export interface DetalleRespuesta {
+  acerto: boolean;
+  elegida: number;
+  correcta: number;
+  explicacion: string | null;
 }
 
 export interface VideoCapacitacion {
@@ -57,6 +73,29 @@ export interface Historial {
 export interface PreguntaSimulador {
   texto: string;
   opciones: string[];
+}
+
+/** Preguntas del simulador para gestionar (solo líderes). `explicacion` no está en el banco base. */
+export interface PreguntaCompleta extends PreguntaSimulador {
+  correcta: number;
+  explicacion?: string;
+}
+export interface JuegoPreguntas {
+  creadoEn: string | null;
+  preguntas: PreguntaCompleta[];
+  /** true: es el banco base de server/simulador.mjs, no preguntas aprobadas. */
+  base?: boolean;
+}
+export interface GestionVideo {
+  id: string;
+  titulo: string;
+  audiencia: Rol;
+  publicadas: JuegoPreguntas;
+  borrador: JuegoPreguntas | null;
+}
+export interface GestionPreguntasIA {
+  iaDisponible: boolean;
+  videos: GestionVideo[];
 }
 
 export type TipoRegistro = 'pulso' | 'voto' | 'acuerdo' | 'termometro' | 'dinamica' | 'balance' | 'merito';
@@ -145,6 +184,84 @@ export interface Merito {
   publicacion?: Publicacion;
 }
 
+/* ---------- Etapa A · Analizar ---------- */
+
+export interface RegistroAuditoriaA {
+  id: number;
+  periodo: string;
+  fecha: string;
+  equipo: string;
+  observaciones: string;
+  valores: Record<IdIndicadorA, number | null>;
+  metas: Record<IdIndicadorA, number>;
+  registradoPor: string | null;
+  creadoEn: string;
+}
+
+export interface SugeridosEtapaT {
+  apropiacion: { valor: number; ciclo: number; respuestas: number } | null;
+  ultimoAcuerdo: { ciclo: number; momento: 'inicio' | 'cierre'; nivel: number; meta: number | null } | null;
+  sesionesPulso: number;
+}
+
+export interface RespuestaTableroA {
+  auditorias: RegistroAuditoriaA[];
+  metasActuales: Record<IdIndicadorA, number>;
+  sugeridosT: SugeridosEtapaT;
+  balancesT: BalanceCiclo[];
+}
+
+export interface PreguntaResumenViaje {
+  indice: number;
+  conteos: { a: number; b: number; c: number };
+  promedio: number | null;
+  porcentaje: number | null;
+  carita: EstadoCarita | null;
+}
+
+export interface FaseResumenViaje {
+  id: IdFaseViaje;
+  promedio: number | null;
+  porcentaje: number | null;
+  carita: EstadoCarita | null;
+  preguntas: PreguntaResumenViaje[];
+}
+
+export interface ResumenViaje {
+  totalRespuestas: number;
+  promedioGeneral: number | null;
+  porcentajeGeneral: number | null;
+  caritaGeneral: EstadoCarita | null;
+  fases: FaseResumenViaje[];
+  preguntas: PreguntaResumenViaje[];
+}
+
+export interface RespuestaViajePropia {
+  id: number;
+  periodo: string;
+  area: string;
+  comentario: string;
+  respuestas: number[];
+  creadoEn: string;
+  resumen: ResumenViaje;
+}
+
+export interface ComentarioViaje {
+  id: number;
+  periodo: string;
+  area: string;
+  comentario: string;
+  creadoEn: string;
+}
+
+export interface RespuestaViajeA {
+  periodo: string;
+  periodosDisponibles: string[];
+  resumenEquipo: ResumenViaje;
+  propias: RespuestaViajePropia[];
+  comentarios: ComentarioViaje[];
+}
+
 export class ErrorApi extends Error {
   constructor(
     readonly estado: number,
@@ -182,8 +299,29 @@ export const api = {
     llamar<{ videoId: string; preguntas: PreguntaSimulador[]; aprobacionMinima: number }>(`/api/preguntas?videoId=${encodeURIComponent(videoId)}`),
   responderSimulador: (videoId: string, respuestas: number[], seguridad: number) =>
     llamar<ResultadoSimulador>('/api/simulador', { videoId, respuestas, seguridad }),
+  gestionPreguntasIA: () => llamar<GestionPreguntasIA>('/api/ia/preguntas'),
+  generarPreguntasIA: (videoId: string, contexto: string) =>
+    llamar<{ videoId: string; borrador: JuegoPreguntas }>('/api/ia/preguntas/generar', { videoId, contexto }),
+  aprobarPreguntasIA: (videoId: string) => llamar<{ videoId: string; publicadas: JuegoPreguntas }>('/api/ia/preguntas/aprobar', { videoId }),
+  descartarPreguntasIA: (videoId: string) => llamar<{ ok: true }>('/api/ia/preguntas/descartar', { videoId }),
+  resumenIA: () => llamar<{ texto: string; origen: 'ia' | 'reglas' }>('/api/ia/resumen', {}),
   guardarRegistro: (tipo: TipoRegistro, datos: unknown) => llamar<{ id: number; tipo: TipoRegistro }>('/api/registros', { tipo, datos }),
   registros: <T>(tipo: TipoRegistro) => llamar<T>(`/api/registros?tipo=${tipo}`),
+  tableroA: () => llamar<RespuestaTableroA>('/api/etapa-a/tablero'),
+  guardarAuditoriaA: (datos: {
+    periodo: string;
+    fecha: string;
+    equipo: string;
+    observaciones: string;
+    valores: Record<IdIndicadorA, number | null>;
+    metas: Record<IdIndicadorA, number>;
+  }) => llamar<{ id: number }>('/api/etapa-a/auditoria', datos),
+  viajeA: (periodo?: string) =>
+    llamar<RespuestaViajeA>(
+      periodo && periodo !== 'todos' ? `/api/etapa-a/viaje?periodo=${encodeURIComponent(periodo)}` : '/api/etapa-a/viaje',
+    ),
+  guardarViajeA: (datos: { periodo: string; area: string; comentario: string; respuestas: number[] }) =>
+    llamar<{ id: number; resumen: ResumenViaje }>('/api/etapa-a/viaje', datos),
 };
 
 /** SQLite guarda la fecha en UTC como "2026-11-11 21:59:00". */

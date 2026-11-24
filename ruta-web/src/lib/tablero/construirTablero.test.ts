@@ -1,45 +1,42 @@
 import { describe, expect, it } from 'vitest';
 import { REGLAS } from '../../config/reglas';
-import { personasEnArea } from '../calculo/pruebas/fabricas';
-import { DATOS_VACIOS, type DatosProyecto, type Proyecto } from '../modelo/proyecto';
+import { DATOS_VACIOS } from '../modelo/proyecto';
+import type { RespuestaBuzon1 } from '../modelo/tipos';
 import { crearProyecto } from '../proyecto/crearProyecto';
 import { construirTablero } from './construirTablero';
 
-function proyectoCon(areas: Proyecto['segmentacion']['areas'], metas: Proyecto['metas'] = {}): Proyecto {
-  const base = crearProyecto('2026-11-08T00:00:00Z', 'p');
-  return { ...base, metas, segmentacion: { ...base.segmentacion, areas } };
-}
+const proyecto = {
+  ...crearProyecto('2026-11-01T00:00:00Z', 'p1'),
+  segmentacion: {
+    areas: [
+      { area: 'Bodega', afectados: 4 },
+      { area: 'Calidad', afectados: 0 },
+    ],
+  },
+};
 
-const fila = (id: string) => (t: ReturnType<typeof construirTablero>) => t.indicadores.find((i) => i.meta.id === id);
+const respuesta = (id: string, area: string): RespuestaBuzon1 => ({ id, fecha: '2026-11-01', area, falla: 'x', preocupa: '', harias: '' });
 
 describe('tablero', () => {
-  it('sin datos: ningún valor inventado, cada indicador dice qué le falta', () => {
-    const tablero = construirTablero(proyectoCon([]), DATOS_VACIOS, REGLAS);
-    expect(tablero.indicadores.every((i) => i.valor === null && i.estado === null && i.motivo)).toBe(true);
-    expect(tablero.decision.estado).toBe('datos_insuficientes');
+  it('sin datos no inventa resultados', () => {
+    const t = construirTablero(proyecto, DATOS_VACIOS, REGLAS);
+    expect(t.triaje).toMatchObject({ total: null, nivel: null, alcance: null });
+    expect(t.foda.estrategia).toBeNull();
+    expect(t.buzon.total).toBe(0);
+    expect(t.liderazgo).toEqual({ lideres: 0, porEstilo: { A: 0, B: 0, C: 0, D: 0 }, voceros: [] });
   });
 
-  it('participación = personas que respondieron ÷ afectados', () => {
-    const datos: DatosProyecto = { ...DATOS_VACIOS, respuestas: personasEnArea('Bodega', 7) };
-    const tablero = construirTablero(proyectoCon([{ area: 'Bodega', afectados: 10 }]), datos, REGLAS);
-    expect(fila('participacion')(tablero)).toMatchObject({ valor: 0.7, estado: 'en_meta' });
-    expect(tablero.participacion).toEqual([{ area: 'Bodega', respondentes: 7, afectados: 10, participacion: 0.7 }]);
+  it('calcula la participación del buzón por área y en total', () => {
+    const t = construirTablero(proyecto, { ...DATOS_VACIOS, buzon1: [respuesta('1', 'Bodega'), respuesta('2', 'Bodega'), respuesta('3', 'Calidad')] }, REGLAS);
+    expect(t.buzon.areas.map((a) => [a.area, a.respondentes, a.participacion])).toEqual([
+      ['Bodega', 2, 0.5],
+      ['Calidad', 1, null],
+    ]);
+    expect(t.buzon.total).toBe(0.75);
   });
 
-  it('utilización y uso residual salen del último ciclo, sumando grupos', () => {
-    const uso = [
-      { fecha: '', ciclo: 1, grupo: 'A', transacciones_nuevo: 10, transacciones_antiguo: 90, registros_con_error: 0 },
-      { fecha: '', ciclo: 2, grupo: 'A', transacciones_nuevo: 40, transacciones_antiguo: 10, registros_con_error: 0 },
-      { fecha: '', ciclo: 2, grupo: 'B', transacciones_nuevo: 45, transacciones_antiguo: 5, registros_con_error: 0 },
-    ];
-    const tablero = construirTablero(proyectoCon([]), { ...DATOS_VACIOS, uso }, REGLAS);
-    expect(fila('utilizacion')(tablero)).toMatchObject({ valor: 0.85, estado: 'atencion' });
-    expect(fila('uso_residual')(tablero)).toMatchObject({ valor: 0.15, estado: 'intervenir' });
-  });
-
-  it('una meta ajustada en la Etapa 0 cambia el semáforo sin tocar componentes', () => {
-    const uso = [{ fecha: '', ciclo: 1, grupo: 'A', transacciones_nuevo: 85, transacciones_antiguo: 15, registros_con_error: 0 }];
-    const tablero = construirTablero(proyectoCon([], { utilizacion: 0.8 }), { ...DATOS_VACIOS, uso }, REGLAS);
-    expect(fila('utilizacion')(tablero)?.estado).toBe('en_meta');
+  it('lleva el triaje y su alcance', () => {
+    const triaje = { ...DATOS_VACIOS.triaje, impacto_personas: 3 as const, elementos: ['sistemas' as const], riesgo_operativo: 3 as const, alcance: 'piloto' as const };
+    expect(construirTablero(proyecto, { ...DATOS_VACIOS, triaje }, REGLAS).triaje).toMatchObject({ total: 7, nivel: 'amarillo', alcance: 'piloto' });
   });
 });

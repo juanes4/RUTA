@@ -1,54 +1,51 @@
 import { useState, type FormEvent } from 'react';
 import { BotonIcono } from '../../components/ui/Boton';
 import { CampoSeleccion, CampoTexto } from '../../components/ui/Campo';
-import { CUADRANTES, PREGUNTAS_FODA } from '../../config/formularios/reconocer';
+import { EstadoVacio } from '../../components/ui/EstadoVacio';
+import { Pestanas } from '../../components/ui/Pestanas';
+import { CUADRANTES, ESTRATEGIAS_FODA } from '../../config/formularios/reconocer';
 import { REGLAS } from '../../config/reglas';
 import { EXPLICACION_FODA as EX } from '../../contenido/reconocer';
 import { useProyecto } from '../../estado/ProyectoContexto';
-import { masVotados, variacionFoda } from '../../lib/calculo/foda';
+import { evaluarFoda } from '../../lib/calculo/foda';
+import { conSigno } from '../../lib/formato';
 import type { Cuadrante, FilaFoda } from '../../lib/modelo/tipos';
 import formulario from '../etapa0/formulario.module.css';
 import { EntradaNumero } from './ayudas';
 import estilos from './reconocer.module.css';
 
-const VACIO = { cuadrante: 'F' as Cuadrante, item: '', evidencia: '', puntaje: '', votos: '' };
-const { minimo, maximo } = REGLAS.escala;
-const nombreCuadrante = (c: Cuadrante) => CUADRANTES.find((q) => q.valor === c)?.nombre ?? c;
-const ordenCuadrante = (c: Cuadrante) => CUADRANTES.findIndex((q) => q.valor === c);
+const VACIO = { cuadrante: 'F' as Cuadrante, item: '', puntaje: '' };
+const { minimo, maximo } = REGLAS.foda.escala;
 
-/** Errores del formulario; vacío si se puede agregar. */
-function validar({ item, evidencia, puntaje, votos }: typeof VACIO): string[] {
-  const nPuntaje = Number(puntaje);
-  const nVotos = votos === '' ? 0 : Number(votos);
-  return [
-    !item.trim() && 'Escribe el ítem.',
-    !evidencia.trim() && 'Cada ítem necesita su evidencia.',
-    (puntaje === '' || !Number.isInteger(nPuntaje) || nPuntaje < minimo || nPuntaje > maximo) && `El puntaje va de ${minimo} a ${maximo}.`,
-    (!Number.isInteger(nVotos) || nVotos < 0) && 'Los votos son un número entero, 0 o más.',
-  ].filter((e): e is string => typeof e === 'string');
+/** R3: FODA híbrido. Se registra cada ítem con su puntaje y la herramienta suma cada cuadrante. */
+export function PasoFoda() {
+  return (
+    <Pestanas
+      etiqueta="FODA del cambio"
+      pestanas={[
+        { id: 'registrar', etiqueta: 'Registrar', contenido: <RegistroFoda /> },
+        { id: 'resultados', etiqueta: 'Resultados', contenido: <ResultadosFoda /> },
+      ]}
+    />
+  );
 }
 
-/** R3: registra el resultado de la sesión FODA. */
-export function PasoFoda() {
+function RegistroFoda() {
   const { datos, actualizarDatos } = useProyecto();
   const [nuevo, setNuevo] = useState(VACIO);
   const [errores, setErrores] = useState<string[]>([]);
-  const campo = <K extends keyof typeof VACIO>(clave: K, valor: (typeof VACIO)[K]) => setNuevo((n) => ({ ...n, [clave]: valor }));
+  const guia = CUADRANTES.find((c) => c.valor === nuevo.cuadrante);
 
   const agregar = async (evento: FormEvent) => {
     evento.preventDefault();
-    const problemas = validar(nuevo);
+    const puntaje = Number(nuevo.puntaje);
+    const problemas = [
+      !nuevo.item.trim() && 'Escribe el ítem.',
+      (nuevo.puntaje === '' || !Number.isInteger(puntaje) || puntaje < minimo || puntaje > maximo) && `El puntaje va de ${minimo} a ${maximo}.`,
+    ].filter((e): e is string => typeof e === 'string');
     setErrores(problemas);
     if (problemas.length > 0) return;
-    const fila: FilaFoda = {
-      id: crypto.randomUUID(),
-      item: nuevo.item.trim(),
-      cuadrante: nuevo.cuadrante,
-      evidencia: nuevo.evidencia.trim(),
-      puntaje_inicial: Number(nuevo.puntaje),
-      puntaje_dia90: null,
-      votos: nuevo.votos === '' ? 0 : Number(nuevo.votos),
-    };
+    const fila: FilaFoda = { id: crypto.randomUUID(), cuadrante: nuevo.cuadrante, item: nuevo.item.trim(), puntaje };
     await actualizarDatos((d) => ({ ...d, foda: [...d.foda, fila] }));
     setNuevo({ ...VACIO, cuadrante: nuevo.cuadrante });
   };
@@ -56,9 +53,6 @@ export function PasoFoda() {
   const editar = (id: string, cambio: Partial<FilaFoda>) =>
     actualizarDatos((d) => ({ ...d, foda: d.foda.map((f) => (f.id === id ? { ...f, ...cambio } : f)) }));
   const quitar = (id: string) => actualizarDatos((d) => ({ ...d, foda: d.foda.filter((f) => f.id !== id) }));
-
-  const filas = [...datos.foda].sort((a, b) => ordenCuadrante(a.cuadrante) - ordenCuadrante(b.cuadrante));
-  const backlog = masVotados(datos.foda, REGLAS.foda.itemsAlBacklog);
 
   return (
     <div className={estilos.resultados}>
@@ -68,30 +62,38 @@ export function PasoFoda() {
             etiqueta="Cuadrante"
             explicacion={EX.cuadrante}
             value={nuevo.cuadrante}
-            onChange={(e) => campo('cuadrante', e.target.value as Cuadrante)}
+            onChange={(e) => setNuevo((n) => ({ ...n, cuadrante: e.target.value as Cuadrante }))}
           >
             {CUADRANTES.map((c) => (
               <option key={c.valor} value={c.valor}>
-                {c.nombre} ({c.escala})
+                {c.nombre}
               </option>
             ))}
           </CampoSeleccion>
-          <CampoTexto etiqueta="Ítem" explicacion={EX.item} value={nuevo.item} onChange={(e) => campo('item', e.target.value)} />
-          <div className={formulario.ancho}>
-            <CampoTexto etiqueta="Evidencia" explicacion={EX.evidencia} value={nuevo.evidencia} onChange={(e) => campo('evidencia', e.target.value)} />
-          </div>
           <CampoTexto
-            etiqueta="Puntaje inicial"
+            etiqueta="Puntaje"
             explicacion={EX.puntaje}
             type="number"
             min={minimo}
             max={maximo}
             step={1}
             value={nuevo.puntaje}
-            onChange={(e) => campo('puntaje', e.target.value)}
+            onChange={(e) => setNuevo((n) => ({ ...n, puntaje: e.target.value }))}
           />
-          <CampoTexto etiqueta="Votos" explicacion={EX.votos} type="number" min={0} step={1} value={nuevo.votos} onChange={(e) => campo('votos', e.target.value)} />
+          <div className={formulario.ancho}>
+            <CampoTexto etiqueta="Ítem" explicacion={EX.item} value={nuevo.item} onChange={(e) => setNuevo((n) => ({ ...n, item: e.target.value }))} />
+          </div>
         </div>
+        {guia && (
+          <details className={estilos.guia}>
+            <summary>Preguntas guía para identificar {guia.plural.toLowerCase()}</summary>
+            <ul>
+              {guia.preguntas.map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
+          </details>
+        )}
         {errores.length > 0 && (
           <ul className={formulario.errores} role="alert">
             {errores.map((e) => (
@@ -104,89 +106,93 @@ export function PasoFoda() {
         </div>
       </form>
 
-      <section className={estilos.bloque} aria-labelledby="preguntas-foda">
-        <h3 id="preguntas-foda" className={estilos.tituloBloque}>Preguntas orientadoras</h3>
-        <p className={estilos.nota}>Usa estas preguntas para identificar factores del cambio y registrar cada hallazgo con evidencia.</p>
-        {CUADRANTES.map((cuadrante) => (
-          <details key={cuadrante.valor}>
-            <summary>{cuadrante.nombre}</summary>
-            <ul className={estilos.backlog}>
-              {PREGUNTAS_FODA[cuadrante.valor].map((pregunta) => <li key={pregunta}>{pregunta}</li>)}
-            </ul>
-          </details>
-        ))}
-      </section>
-
-      {filas.length > 0 && (
-        <section className={estilos.bloque} aria-labelledby="titulo-foda">
-          <h3 id="titulo-foda" className={estilos.tituloBloque}>
-            Ítems registrados
-          </h3>
-          <div className={estilos.desplazable}>
+      {CUADRANTES.map((c) => {
+        const filas = datos.foda.filter((f) => f.cuadrante === c.valor);
+        if (filas.length === 0) return null;
+        return (
+          <section key={c.valor} className={estilos.bloque} aria-labelledby={`foda-${c.valor}`}>
+            <h3 id={`foda-${c.valor}`} className={estilos.tituloBloque}>
+              {c.plural}
+            </h3>
             <table className={estilos.tabla}>
               <thead>
                 <tr>
-                  <th scope="col">Cuadrante</th>
-                  <th scope="col">Ítem y evidencia</th>
-                  <th scope="col">Inicial</th>
-                  <th scope="col">Votos</th>
-                  <th scope="col">Día 90</th>
-                  <th scope="col">Variación</th>
+                  <th scope="col">Ítem</th>
+                  <th scope="col">Puntaje</th>
                   <th scope="col">
                     <span className="solo-lectores">Acciones</span>
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {filas.map((f) => {
-                  const variacion = variacionFoda(f);
-                  return (
-                    <tr key={f.id}>
-                      <td>{nombreCuadrante(f.cuadrante)}</td>
-                      <th scope="row">
-                        {f.item}
-                        <span className={estilos.secundario}>{f.evidencia}</span>
-                      </th>
-                      <td className="numero">{f.puntaje_inicial}</td>
-                      <td>
-                        <EntradaNumero etiqueta={`Votos de ${f.item}`} valor={f.votos} min={0} alCambiar={(v) => void editar(f.id, { votos: v ?? 0 })} />
-                      </td>
-                      <td>
-                        <EntradaNumero
-                          etiqueta={`Puntaje del día 90 de ${f.item}`}
-                          valor={f.puntaje_dia90}
-                          min={minimo}
-                          max={maximo}
-                          alCambiar={(v) => void editar(f.id, { puntaje_dia90: v })}
-                        />
-                      </td>
-                      <td className="numero">{variacion === null ? '—' : variacion > 0 ? `+${variacion}` : variacion}</td>
-                      <td>
-                        <BotonIcono accion="quitar" etiqueta={`Quitar ${f.item}`} onClick={() => void quitar(f.id)} />
-                      </td>
-                    </tr>
-                  );
-                })}
+                {filas.map((f) => (
+                  <tr key={f.id}>
+                    <th scope="row">{f.item}</th>
+                    <td>
+                      <EntradaNumero
+                        etiqueta={`Puntaje de ${f.item}`}
+                        valor={f.puntaje}
+                        min={minimo}
+                        max={maximo}
+                        alCambiar={(v) => v !== null && void editar(f.id, { puntaje: v })}
+                      />
+                    </td>
+                    <td>
+                      <BotonIcono accion="quitar" etiqueta={`Quitar ${f.item}`} onClick={() => void quitar(f.id)} />
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-          </div>
-        </section>
-      )}
+          </section>
+        );
+      })}
+    </div>
+  );
+}
 
-      {backlog.length > 0 && (
-        <section className={estilos.bloque} aria-labelledby="titulo-backlog">
-          <h3 id="titulo-backlog" className={estilos.tituloBloque}>
-            Los {REGLAS.foda.itemsAlBacklog} más votados pasan al backlog de la etapa Unir
-          </h3>
-          <ol className={estilos.backlog}>
-            {backlog.map((f) => (
-              <li key={f.id}>
-                {f.item} ({nombreCuadrante(f.cuadrante)}, <span className="numero">{f.votos}</span> votos)
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
+function ResultadosFoda() {
+  const { datos } = useProyecto();
+  const { totales, interno, externo, estrategia } = evaluarFoda(datos.foda);
+  if (!estrategia) return <EstadoVacio titulo="Sin ítems registrados">Los puntajes y la estrategia salen de los ítems que registres.</EstadoVacio>;
+
+  return (
+    <div className={estilos.resultados}>
+      <section className={estilos.bloque} aria-labelledby="foda-totales">
+        <h3 id="foda-totales" className={estilos.tituloBloque}>
+          Puntaje por cuadrante
+        </h3>
+        <div className={estilos.matriz}>
+          {CUADRANTES.map((c) => (
+            <div key={c.valor} className={estilos.celdaMatriz}>
+              <span className={estilos.secundario}>{c.plural}</span>
+              <span className={`${estilos.cifra} numero`}>{totales[c.valor]}</span>
+              <span className={estilos.secundario}>
+                {datos.foda.filter((f) => f.cuadrante === c.valor).length} {datos.foda.filter((f) => f.cuadrante === c.valor).length === 1 ? 'ítem' : 'ítems'}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+      <section className={estilos.bloque} aria-labelledby="foda-balance">
+        <h3 id="foda-balance" className={estilos.tituloBloque}>
+          Balance y estrategia
+        </h3>
+        <table className={estilos.tabla}>
+          <tbody>
+            <tr>
+              <th scope="row">Balance interno (Fortalezas − Debilidades)</th>
+              <td className="numero">{conSigno(interno)}</td>
+            </tr>
+            <tr>
+              <th scope="row">Balance externo (Oportunidades − Amenazas)</th>
+              <td className="numero">{conSigno(externo)}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p className={estilos.mensaje}>Estrategia: {ESTRATEGIAS_FODA[estrategia].nombre}</p>
+        <p className={estilos.nota}>{ESTRATEGIAS_FODA[estrategia].descripcion}</p>
+      </section>
     </div>
   );
 }

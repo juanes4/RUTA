@@ -1,30 +1,23 @@
 import { useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Boton } from '../../components/ui/Boton';
 import { CampoArea, CampoSeleccion, CampoTexto } from '../../components/ui/Campo';
-import { OpcionesMultiples, OpcionesRespuesta } from '../../components/ui/OpcionesRespuesta';
-import { Pestanas } from '../../components/ui/Pestanas';
 import { EstadoVacio } from '../../components/ui/EstadoVacio';
-import { BUZON1_ABIERTAS, BUZON1_ESCALA, BUZON1_SELECCION } from '../../config/formularios/buzon1';
-import { REGLAS } from '../../config/reglas';
+import { Pestanas } from '../../components/ui/Pestanas';
+import { PREGUNTAS_BUZON1, type CampoBuzon1 } from '../../config/formularios/buzon1';
 import { EXPLICACION_BUZON1 as EX } from '../../contenido/reconocer';
 import { useProyecto } from '../../estado/ProyectoContexto';
-import { CATALOGO_BUZON1, filasDeEncuesta, VALOR_NO_SE, type EncuestaBuzon1 } from '../../lib/captura/buzon1';
-import { COLUMNAS_RESPUESTAS, fusionarRespuestas, importarRespuestas } from '../../lib/captura/respuestasCsv';
-import { contarPersonas } from '../../lib/calculo/estadistica';
+import { COLUMNAS_PLANTILLA, fusionarBuzon1, importarBuzon1 } from '../../lib/captura/buzon1Csv';
+import { participacionPorArea, participacionTotal } from '../../lib/calculo/participacion';
+import { formatearPorcentaje } from '../../lib/formato';
+import type { RespuestaBuzon1 } from '../../lib/modelo/tipos';
 import formulario from '../etapa0/formulario.module.css';
-import { hoy, MENSAJE_SIN_ESPACIO } from './ayudas';
+import { BorrarRespuestas, hoy, MENSAJE_SIN_ESPACIO } from './ayudas';
 import estilos from './reconocer.module.css';
-import { ResultadosBuzon1 } from './ResultadosBuzon1';
 
-const VACIA: EncuestaBuzon1 = { area: '', turno: '', antiguedad_rango: '', escala: {}, seleccion: {}, abiertas: {} };
-const { minimo, maximo } = REGLAS.escala;
-const OPCIONES_ESCALA = [
-  ...Array.from({ length: maximo - minimo + 1 }, (_, i) => String(minimo + i)).map((v) => ({ valor: v, texto: v })),
-  { valor: VALOR_NO_SE, texto: 'No sé' },
-];
+const VACIA: Record<CampoBuzon1, string> & { area: string } = { area: '', falla: '', preocupa: '', harias: '' };
 const MAX_ERRORES_VISIBLES = 8;
 
-/** Captura histórica de buzón 1; la escucha diagnóstica R5 usa PasoEscuchaInicial. */
+/** R5: buzón 1, escucha inicial. El papel se digita; Google Forms entra por CSV. */
 export function PasoBuzon1() {
   const { activo } = useProyecto();
   if (!activo) return null;
@@ -32,42 +25,52 @@ export function PasoBuzon1() {
     return <EstadoVacio titulo="Faltan las áreas">Registra las áreas y sus afectados en la Etapa 0 (paso 0.2): cada respuesta pertenece a un área.</EstadoVacio>;
   }
   return (
-    <Pestanas
-      etiqueta="Buzón 1"
-      pestanas={[
-        { id: 'digitar', etiqueta: 'Digitar papel', contenido: <FormBuzon1 /> },
-        { id: 'csv', etiqueta: 'Cargar CSV', contenido: <CargaCsv /> },
-        { id: 'resultados', etiqueta: 'Resultados', contenido: <ResultadosBuzon1 /> },
-      ]}
-    />
+    <>
+      <p className={estilos.aviso}>
+        Este buzón no debe servir para informar el cambio: es una fase de diagnóstico y reconocimiento. Por ahora no hay un cambio, la organización se está
+        preparando.
+      </p>
+      <Pestanas
+        etiqueta="Buzón 1"
+        pestanas={[
+          { id: 'digitar', etiqueta: 'Digitar papel', contenido: <FormBuzon1 /> },
+          { id: 'csv', etiqueta: 'Cargar CSV', contenido: <CargaCsv /> },
+          { id: 'resultados', etiqueta: 'Resultados', contenido: <ResultadosBuzon1 /> },
+        ]}
+      />
+    </>
   );
 }
 
 function FormBuzon1() {
   const { activo, datos, actualizarDatos } = useProyecto();
-  const [encuesta, setEncuesta] = useState(VACIA);
+  const [respuesta, setRespuesta] = useState(VACIA);
   const [error, setError] = useState('');
   const [mensaje, setMensaje] = useState('');
   const inicio = useRef<HTMLFormElement>(null);
   if (!activo) return null;
-  const { areas, turnos, rangos_antiguedad } = activo.segmentacion;
 
   const guardar = async (evento: FormEvent) => {
     evento.preventDefault();
     setMensaje('');
-    if (!encuesta.area) return setError('Elige el área de quien respondió.');
-    const filas = filasDeEncuesta(encuesta, crypto.randomUUID(), hoy());
-    if (filas.length === 0) return setError('La encuesta está vacía: marca al menos una respuesta.');
+    if (!respuesta.area) return setError('Elige el área de quien respondió.');
+    if (PREGUNTAS_BUZON1.every((p) => !respuesta[p.campo].trim())) return setError('La respuesta está vacía: escribe al menos una.');
     setError('');
+    const fila: RespuestaBuzon1 = {
+      id: crypto.randomUUID(),
+      fecha: hoy(),
+      area: respuesta.area,
+      falla: respuesta.falla.trim(),
+      preocupa: respuesta.preocupa.trim(),
+      harias: respuesta.harias.trim(),
+    };
     try {
-      await actualizarDatos((d) => ({ ...d, respuestas: [...d.respuestas, ...filas] }));
+      await actualizarDatos((d) => ({ ...d, buzon1: [...d.buzon1, fila] }));
     } catch {
       return setError(MENSAJE_SIN_ESPACIO);
     }
-    const personas = contarPersonas(datos.respuestas.filter((r) => r.instrumento === 'buzon1')) + 1;
-    const enBlanco = BUZON1_ESCALA.filter((p) => !encuesta.escala[p.id]).length;
-    setEncuesta(VACIA);
-    setMensaje(`Encuesta guardada. Van ${personas}.${enBlanco > 0 ? ` Quedaron ${enBlanco} preguntas de escala en blanco.` : ''}`);
+    setRespuesta({ ...VACIA, area: respuesta.area });
+    setMensaje(`Respuesta guardada. Van ${datos.buzon1.length + 1}.`);
     inicio.current?.scrollIntoView({ block: 'start' });
   };
 
@@ -76,87 +79,40 @@ function FormBuzon1() {
       <p className={estilos.mensaje} aria-live="polite">
         {mensaje}
       </p>
-      <div className={formulario.rejilla}>
-        <CampoSeleccion etiqueta="Área" explicacion={EX.area} value={encuesta.area} onChange={(e) => setEncuesta((v) => ({ ...v, area: e.target.value }))}>
-          <option value="">Elegir…</option>
-          {areas.map((a) => (
-            <option key={a.area} value={a.area}>
-              {a.area}
-            </option>
-          ))}
-        </CampoSeleccion>
-        {turnos.length > 0 && (
-          <CampoSeleccion etiqueta="Turno o sede" explicacion={EX.turno} value={encuesta.turno} onChange={(e) => setEncuesta((v) => ({ ...v, turno: e.target.value }))}>
-            <option value="">Sin dato</option>
-            {turnos.map((t) => (
-              <option key={t}>{t}</option>
-            ))}
-          </CampoSeleccion>
-        )}
-        {rangos_antiguedad.length > 0 && (
-          <CampoSeleccion
-            etiqueta="Antigüedad"
-            explicacion={EX.antiguedad}
-            value={encuesta.antiguedad_rango}
-            onChange={(e) => setEncuesta((v) => ({ ...v, antiguedad_rango: e.target.value }))}
-          >
-            <option value="">Sin dato</option>
-            {rangos_antiguedad.map((r) => (
-              <option key={r}>{r}</option>
-            ))}
-          </CampoSeleccion>
-        )}
-      </div>
-
-      <p className={estilos.nota}>
-        Escala: {minimo} = totalmente en desacuerdo, {maximo} = totalmente de acuerdo. "No sé" no suma al promedio. Lo que quedó en blanco en el papel se deja sin marcar.
-      </p>
-      <div className={estilos.preguntas}>
-        {BUZON1_ESCALA.map((p, i) => (
-          <OpcionesRespuesta
-            key={p.id}
-            etiqueta={`${i + 1}. ${p.texto}`}
-            opciones={OPCIONES_ESCALA}
-            valor={encuesta.escala[p.id] ?? ''}
-            alCambiar={(valor) => setEncuesta((v) => ({ ...v, escala: { ...v.escala, [p.id]: valor } }))}
-          />
+      <CampoSeleccion etiqueta="Área" explicacion={EX.area} value={respuesta.area} onChange={(e) => setRespuesta((r) => ({ ...r, area: e.target.value }))}>
+        <option value="">Elegir…</option>
+        {activo.segmentacion.areas.map((a) => (
+          <option key={a.area} value={a.area}>
+            {a.area}
+          </option>
         ))}
-        {BUZON1_SELECCION.map((p) => (
-          <OpcionesMultiples
-            key={p.id}
-            etiqueta={p.texto}
-            maximo={p.maximo}
-            opciones={p.opciones.map((o) => ({ valor: o, texto: o }))}
-            valores={encuesta.seleccion[p.id] ?? []}
-            alCambiar={(valores) => setEncuesta((v) => ({ ...v, seleccion: { ...v.seleccion, [p.id]: valores } }))}
-          />
-        ))}
-        {BUZON1_ABIERTAS.map((p) => (
-          <CampoArea
-            key={p.id}
-            etiqueta={p.texto}
-            value={encuesta.abiertas[p.id] ?? ''}
-            onChange={(e) => setEncuesta((v) => ({ ...v, abiertas: { ...v.abiertas, [p.id]: e.target.value } }))}
-          />
-        ))}
-      </div>
+      </CampoSeleccion>
+      {PREGUNTAS_BUZON1.map((p, i) => (
+        <CampoArea
+          key={p.campo}
+          etiqueta={`${i + 1}. ${p.texto}`}
+          value={respuesta[p.campo]}
+          onChange={(e) => setRespuesta((r) => ({ ...r, [p.campo]: e.target.value }))}
+        />
+      ))}
       {error && (
         <p className={estilos.aviso} role="alert">
           {error}
         </p>
       )}
       <div className={formulario.pie}>
-        <Boton type="submit">Guardar encuesta</Boton>
+        <Boton type="submit">Guardar respuesta</Boton>
       </div>
     </form>
   );
 }
 
 function descargarPlantilla() {
-  const url = URL.createObjectURL(new Blob([`${COLUMNAS_RESPUESTAS.join(',')}\n`], { type: 'text/csv;charset=utf-8' }));
+  const contenido = `${COLUMNAS_PLANTILLA.map((c) => `"${c.replace(/"/g, '""')}"`).join(',')}\n`;
+  const url = URL.createObjectURL(new Blob([contenido], { type: 'text/csv;charset=utf-8' }));
   const enlace = document.createElement('a');
   enlace.href = url;
-  enlace.download = 'plantilla_respuestas.csv';
+  enlace.download = 'plantilla_buzon1.csv';
   enlace.click();
   URL.revokeObjectURL(url);
 }
@@ -172,16 +128,17 @@ function CargaCsv() {
     evento.target.value = ''; // Permite volver a elegir el mismo archivo tras corregirlo.
     if (!archivo) return;
     setMensaje('');
-    const { filas, errores: problemas } = importarRespuestas(await archivo.text(), {
-      catalogo: CATALOGO_BUZON1,
-      areas: activo.segmentacion.areas.map((a) => a.area),
-      escala: REGLAS.escala,
-    });
+    const { filas, errores: problemas } = importarBuzon1(await archivo.text(), activo.segmentacion.areas.map((a) => a.area), hoy());
     setErrores(problemas);
     if (problemas.length > 0) return;
     try {
-      await actualizarDatos((d) => ({ ...d, respuestas: fusionarRespuestas(d.respuestas, filas) }));
-      setMensaje(`Archivo cargado: ${contarPersonas(filas)} personas, ${filas.length} filas.`);
+      let nuevas = 0;
+      await actualizarDatos((d) => {
+        const buzon1 = fusionarBuzon1(d.buzon1, filas);
+        nuevas = buzon1.length - d.buzon1.length;
+        return { ...d, buzon1 };
+      });
+      setMensaje(`Archivo cargado: ${filas.length} respuestas, ${nuevas} nuevas.`);
     } catch {
       setErrores([MENSAJE_SIN_ESPACIO]);
     }
@@ -190,8 +147,8 @@ function CargaCsv() {
   return (
     <div className={estilos.bloque}>
       <p className={estilos.nota}>
-        Sube el CSV de Google Forms tal como sale. Cada título debe empezar con su código y las columnas de grupo con "Área", "Turno" y "Antigüedad". Las opciones se escriben igual
-        que aquí. Si alguna línea tiene un error, no se carga nada; volver a cargar el mismo archivo no duplica respuestas.
+        Sube el CSV de Google Forms tal como sale. La pregunta de área debe titularse "Área" y cada pregunta debe empezar con su código. Las áreas se escriben igual que en la
+        Etapa 0. Si alguna línea tiene un error, no se carga nada; volver a cargar el mismo archivo no duplica respuestas.
       </p>
       <CampoTexto etiqueta="Archivo CSV" explicacion={EX.archivo} type="file" accept=".csv,text/csv" onChange={(e) => void cargar(e)} />
       <p className={estilos.mensaje} aria-live="polite">
@@ -205,39 +162,85 @@ function CargaCsv() {
           {errores.length > MAX_ERRORES_VISIBLES && <li>Y {errores.length - MAX_ERRORES_VISIBLES} errores más.</li>}
         </ul>
       )}
-      <section className={estilos.bloque} aria-labelledby="titulo-codigos">
-        <h3 id="titulo-codigos" className={estilos.tituloBloque}>
-          Códigos para los títulos en Google Forms
-        </h3>
-        <div className={estilos.desplazable}>
-          <table className={estilos.tabla}>
-            <thead>
-              <tr>
-                <th scope="col">Código</th>
-                <th scope="col">Pregunta</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[...BUZON1_ESCALA, ...BUZON1_SELECCION, ...BUZON1_ABIERTAS].map((p) => (
-                <tr key={p.id}>
-                  <th scope="row" className="numero">
-                    {p.codigo}.
-                  </th>
-                  <td>{p.texto}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-      <p className={estilos.nota}>
-        ¿Sin Google Forms? También se acepta un CSV con las columnas <span className="numero">{COLUMNAS_RESPUESTAS.join(', ')}</span>.
-      </p>
+      <table className={estilos.tabla}>
+        <caption className={estilos.tituloBloque}>Títulos para las preguntas en Google Forms</caption>
+        <tbody>
+          {COLUMNAS_PLANTILLA.map((c) => (
+            <tr key={c}>
+              <td>{c}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <div>
         <Boton variante="secundario" onClick={descargarPlantilla}>
           Descargar plantilla
         </Boton>
       </div>
+    </div>
+  );
+}
+
+function ResultadosBuzon1() {
+  const { activo, datos, actualizarDatos } = useProyecto();
+  if (!activo) return null;
+  if (datos.buzon1.length === 0) return <EstadoVacio titulo="Sin respuestas todavía">La participación y las respuestas aparecen cuando registres el buzón.</EstadoVacio>;
+
+  const areas = participacionPorArea(datos.buzon1, activo.segmentacion.areas);
+  const total = participacionTotal(datos.buzon1, activo.segmentacion.areas);
+
+  return (
+    <div className={estilos.resultados}>
+      <section className={estilos.bloque} aria-labelledby="buzon-participacion">
+        <h3 id="buzon-participacion" className={estilos.tituloBloque}>
+          Participación: {total === null ? '—' : formatearPorcentaje(total)}
+        </h3>
+        <table className={estilos.tabla}>
+          <thead>
+            <tr>
+              <th scope="col">Área</th>
+              <th scope="col">Respondieron</th>
+              <th scope="col">Afectados</th>
+              <th scope="col">Participación</th>
+            </tr>
+          </thead>
+          <tbody>
+            {areas.map((a) => (
+              <tr key={a.area}>
+                <th scope="row">{a.area}</th>
+                <td className="numero">{a.respondentes}</td>
+                <td className="numero">{a.afectados}</td>
+                <td className="numero">{a.participacion === null ? '—' : formatearPorcentaje(a.participacion)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+      <p className={estilos.nota}>
+        Las respuestas se muestran sin su área para proteger el anonimato. Úsalas como insumo del mapa de empatía (U4) y del soporte para líderes (U3).
+      </p>
+      {PREGUNTAS_BUZON1.map((p) => {
+        const textos = datos.buzon1.map((r) => r[p.campo]).filter((t) => t.trim());
+        return (
+          <section key={p.campo} className={estilos.bloque} aria-labelledby={`buzon-${p.campo}`}>
+            <h3 id={`buzon-${p.campo}`} className={estilos.tituloBloque}>
+              {p.texto} <span className={`${estilos.secundario} numero`}>({textos.length} respuestas)</span>
+            </h3>
+            {textos.length > 0 && (
+              <ul className={estilos.listaTextos}>
+                {textos.map((t, i) => (
+                  <li key={i}>{t}</li>
+                ))}
+              </ul>
+            )}
+          </section>
+        );
+      })}
+      <BorrarRespuestas
+        texto="Borrar todas las respuestas"
+        confirmacion="¿Borrar todas las respuestas del buzón 1? No se puede deshacer."
+        alBorrar={() => void actualizarDatos((d) => ({ ...d, buzon1: [] }))}
+      />
     </div>
   );
 }

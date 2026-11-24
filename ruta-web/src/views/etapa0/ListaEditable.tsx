@@ -11,7 +11,7 @@ interface Props {
   alCambiar(valores: string[]): void;
 }
 
-/** Lista de textos cortos (turnos, rangos de antigüedad) que se agregan con + y se quitan con −. */
+/** Lista de textos cortos (riesgos, mensajes, pautas) que se agregan con + y se quitan con −. */
 export function ListaEditable({ etiqueta, explicacion, valores, alCambiar }: Props) {
   const id = useId();
   const [nuevo, setNuevo] = useState('');

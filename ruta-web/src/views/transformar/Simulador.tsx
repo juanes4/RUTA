@@ -76,6 +76,28 @@ export function Simulador({ video, alResponder }: Props) {
         <p className={estilos.texto}>
           Seguridad para aplicarlo solo: {r.seguridad} de 5 ({ETIQUETAS_SEGURIDAD[r.seguridad - 1]}). Tu líder ve este resultado en el historial.
         </p>
+        <p className={estilos.texto}>{r.mensaje}</p>
+        {r.detalle && (
+          <ol className={estilos.revision} aria-label="Revisión de tus respuestas">
+            {carga.preguntas.map((p, i) => {
+              const d = r.detalle?.[i];
+              if (!d) return null;
+              return (
+                <li key={p.texto} className={estilos.itemRevision} data-acerto={d.acerto}>
+                  <p className={estilos.enunciadoRevision}>
+                    <span aria-hidden="true">{d.acerto ? '✓' : '✗'}</span> {p.texto}
+                    <span className="solo-lectores">{d.acerto ? ' (correcta)' : ' (incorrecta)'}</span>
+                  </p>
+                  {!d.acerto && <p className={estilos.texto}>Tu respuesta: {p.opciones[d.elegida]}</p>}
+                  <p className={estilos.texto}>
+                    {d.acerto ? 'Respuesta: ' : 'Correcta: '}
+                    {p.opciones[d.correcta]}.{d.explicacion ? ` ${d.explicacion}` : ''}
+                  </p>
+                </li>
+              );
+            })}
+          </ol>
+        )}
         <Boton variante="secundario" onClick={() => { limpiar(); setSeguridad(''); setRespuestas(carga.preguntas.map(() => '')); setRepitiendo(true); }}>
           Repetir el simulador
         </Boton>

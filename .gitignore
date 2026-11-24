@@ -19,6 +19,7 @@ coverage/
 # Variables de entorno y archivos locales
 .env
 .env.*
+!.env.example
 *.local
 
 # Registros y archivos del sistema
@@ -28,3 +29,5 @@ Thumbs.db
 
 # Base de datos local del servidor (se crea sola al iniciar)
 ruta-web/server/data/
+
+.T2 IA/

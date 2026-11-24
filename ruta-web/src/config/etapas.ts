@@ -51,9 +51,7 @@ export const ETAPAS: readonly Etapa[] = [
     tarjetas: { fondos: ['var(--pastel-cream)'], manchas: true },
     pasos: [
       { id: '0.1', titulo: 'Empresa y cambio' },
-      { id: '0.2', titulo: 'Grupos y afectados' },
-      { id: '0.3', titulo: 'Metas' },
-      { id: '0.4', titulo: 'Dato de uso' },
+      { id: '0.2', titulo: 'Áreas y afectados' },
     ],
   },
   {
@@ -70,7 +68,7 @@ export const ETAPAS: readonly Etapa[] = [
       { id: 'R2', titulo: 'Triaje del cambio' },
       { id: 'R3', titulo: 'FODA del cambio' },
       { id: 'R4', titulo: 'Mapa de actores' },
-      { id: 'R5', titulo: 'Escucha inicial' },
+      { id: 'R5', titulo: 'Buzón 1: escucha inicial' },
     ],
   },
   {
@@ -79,10 +77,11 @@ export const ETAPAS: readonly Etapa[] = [
     nombre: 'Unir',
     activa: true,
     color: 'var(--pastel-lavender)',
-    tonos: ['var(--tono-u-1)', 'var(--tono-u-2)'],
-    tarjetas: { fondos: ['var(--pastel-lavender)'], manchas: false },
+    tonos: ['var(--tono-u-1)', 'var(--tono-u-2)', 'var(--tono-u-3)', 'var(--tono-u-4)'],
+    tarjetas: { fondos: ['var(--pastel-lavender)', GRIS], manchas: false },
+    paginasPorPaso: true,
     pasos: [
-      { id: 'U1', titulo: 'Encuesta de liderazgo' },
+      { id: 'U1', titulo: 'Análisis del tipo de liderazgo' },
       { id: 'U2', titulo: 'Narrativa del cambio' },
       { id: 'U3', titulo: 'Soporte para líderes' },
       { id: 'U4', titulo: 'Mapa de empatía' },
@@ -103,7 +102,20 @@ export const ETAPAS: readonly Etapa[] = [
       { id: 'T4', titulo: 'Victorias tempranas' },
     ],
   },
-  { id: 'etapa-a', letra: 'A', nombre: 'Por definir', activa: false, pasos: [] },
+  {
+    id: 'etapa-a',
+    letra: 'A',
+    nombre: 'Analizar',
+    activa: true,
+    color: 'var(--pastel-cream)',
+    tonos: ['var(--pastel-cream)'],
+    tarjetas: { fondos: ['var(--pastel-cream)'], manchas: false },
+    paginasPorPaso: true,
+    pasos: [
+      { id: 'A1', titulo: 'Auditorías de adopción' },
+      { id: 'A2', titulo: 'Mapa de viaje del colaborador' },
+    ],
+  },
 ];
 
 /** Id del elemento HTML de un paso, usado por la navegación para saltar a él. */

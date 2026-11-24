@@ -1,6 +1,7 @@
 import { IndicePasos, PasoAnteriorSiguiente, VolverAlIndice } from '../../components/etapa/IndicePasos';
 import { BloquePaso, SeccionEtapa } from '../../components/etapa/SeccionEtapa';
 import { Pestanas } from '../../components/ui/Pestanas';
+import { CONFIG_IA } from '../../config/ia';
 import { tarjetaDePaso, type Etapa } from '../../config/etapas';
 import { DESCRIPCION_PASO_T } from '../../config/transformar';
 import { DESCRIPCION_ETAPA } from '../../contenido/pasos';
@@ -10,6 +11,7 @@ import { Acompanamiento } from './Acompanamiento';
 import { Capacitaciones } from './Capacitaciones';
 import { Comunicacion } from './Comunicacion';
 import { FlujoEtapa } from './FlujoEtapa';
+import { GestionPreguntas } from './GestionPreguntas';
 import { Historial } from './Historial';
 import { Victorias } from './Victorias';
 
@@ -68,6 +70,7 @@ export function VistaTransformar({ etapa, pasoId }: Props) {
                 contenido: <Capacitaciones estado={estado} alVer={marcarVisto} alResponder={guardarSimulador} esLider={esLider} />,
               },
               { id: 'historial', etiqueta: 'Historial', contenido: <Historial clave={claveHistorial} /> },
+              ...(esLider && CONFIG_IA.habilitada ? [{ id: 'preguntas', etiqueta: 'Preguntas', contenido: <GestionPreguntas /> }] : []),
             ]}
           />
         )}

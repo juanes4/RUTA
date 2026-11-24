@@ -1,216 +1,172 @@
 import { useState, type FormEvent } from 'react';
-import { CampoArea, CampoSeleccion } from '../../components/ui/Campo';
-import { useBorrador } from '../../hooks/useBorrador';
+import { CampoArea } from '../../components/ui/Campo';
+import { OpcionesMultiples, OpcionesRespuesta } from '../../components/ui/OpcionesRespuesta';
+import { Semaforo } from '../../components/ui/Semaforo';
+import {
+  ALCANCES,
+  CRITERIOS_TRIAJE,
+  ELEMENTOS_ORGANIZACION,
+  NIVELES_COMPLEJIDAD,
+  NIVELES_IMPACTO_PERSONAS,
+  NIVELES_RIESGO_OPERATIVO,
+  PREGUNTAS_TRIAJE,
+  RUTAS_TRIAJE,
+  type NivelSemaforoTriaje,
+  type NivelTriaje,
+} from '../../config/formularios/reconocer';
+import { REGLAS } from '../../config/reglas';
+import { EXPLICACION_TRIAJE as EX } from '../../contenido/reconocer';
 import { useProyecto } from '../../estado/ProyectoContexto';
-import type { AlcanceTriaje, TriajeCambio } from '../../lib/modelo/tipos';
-import { puntajeTriaje, resumirTriaje } from '../../lib/reconocer/triaje';
-import formulario from '../etapa0/formulario.module.css';
+import { useBorrador } from '../../hooks/useBorrador';
+import { evaluarTriaje } from '../../lib/calculo/triaje';
+import type { Triaje } from '../../lib/modelo/proyecto';
+import type { AlcanceDespliegue, ElementoOrganizacion, PuntajeTriaje } from '../../lib/modelo/tipos';
 import { PieFormulario } from '../etapa0/PieFormulario';
+import formulario from '../etapa0/formulario.module.css';
 import { MENSAJE_SIN_ESPACIO } from './ayudas';
 import estilos from './reconocer.module.css';
 
-interface BorradorTriaje {
-  motivo_ahora: string;
-  consecuencia_no_cambiar: string;
-  poblacion_afectada: string;
-  dimension_tecnica: string;
-  alcance: '' | AlcanceTriaje;
-  impacto_personas: string;
-  complejidad_organizacional: string;
-  riesgo_operativo: string;
-}
+const opcionesNivel = (niveles: readonly NivelTriaje[]) =>
+  niveles.map((n) => ({ valor: String(n.puntaje), texto: `${n.nombre} (${n.puntaje} ${n.puntaje === 1 ? 'punto' : 'puntos'}): ${n.descripcion}` }));
 
-const VACIO: BorradorTriaje = {
-  motivo_ahora: '',
-  consecuencia_no_cambiar: '',
-  poblacion_afectada: '',
-  dimension_tecnica: '',
-  alcance: '',
-  impacto_personas: '',
-  complejidad_organizacional: '',
-  riesgo_operativo: '',
-};
+const NIVELES_SEMAFORO: readonly NivelSemaforoTriaje[] = ['verde', 'amarillo', 'rojo'];
 
-const OPCIONES_IMPACTO = [
-  { valor: '1', texto: 'Bajo (1): ajuste leve, sin desaprender conductas ni afectar la estabilidad laboral.' },
-  { valor: '2', texto: 'Medio (2): nuevas herramientas o flujos que requieren capacitación, sin cambiar roles o equipos.' },
-  { valor: '3', texto: 'Alto (3): transformación drástica, redefinición de cargos o nuevas competencias.' },
-];
-
-const OPCIONES_COMPLEJIDAD = [
-  { valor: '1', texto: 'Bajo (1): impacta un elemento (p. ej., un software o procedimiento de un área).' },
-  { valor: '2', texto: 'Medio (2): impacta 2 o 3 elementos simultáneamente.' },
-  { valor: '3', texto: 'Alto (3): impacta 4 o más elementos y varias áreas o toda la organización.' },
-];
-
-const OPCIONES_RIESGO = [
-  { valor: '1', texto: 'Bajo (1): no interrumpe operación o facturación; el equipo está dispuesto al cambio.' },
-  { valor: '2', texto: 'Medio (2): genera retrasos o sobrecostos manejables; el historial es mixto.' },
-  { valor: '3', texto: 'Alto (3): amenaza continuidad, servicio o seguridad; hay proyectos fallidos o fatiga de cambio.' },
-];
-
-function aBorrador(triaje: TriajeCambio | null): BorradorTriaje {
-  if (!triaje) return VACIO;
-  return {
-    ...triaje,
-    alcance: triaje.alcance,
-    impacto_personas: String(triaje.impacto_personas),
-    complejidad_organizacional: String(triaje.complejidad_organizacional),
-    riesgo_operativo: String(triaje.riesgo_operativo),
-  };
-}
-
-function aTriaje(borrador: BorradorTriaje): TriajeCambio | null {
-  const impacto_personas = puntajeTriaje(borrador.impacto_personas);
-  const complejidad_organizacional = puntajeTriaje(borrador.complejidad_organizacional);
-  const riesgo_operativo = puntajeTriaje(borrador.riesgo_operativo);
-  if (!borrador.alcance || !impacto_personas || !complejidad_organizacional || !riesgo_operativo) return null;
-  return {
-    motivo_ahora: borrador.motivo_ahora.trim(),
-    consecuencia_no_cambiar: borrador.consecuencia_no_cambiar.trim(),
-    poblacion_afectada: borrador.poblacion_afectada.trim(),
-    dimension_tecnica: borrador.dimension_tecnica.trim(),
-    alcance: borrador.alcance,
-    impacto_personas,
-    complejidad_organizacional,
-    riesgo_operativo,
-  };
-}
-
+/** R2: triaje del cambio. Puntúa 3 criterios de 1 a 3 y asigna la ruta con el semáforo. */
 export function PasoTriaje() {
   const { datos, actualizarDatos } = useProyecto();
-  const [errores, setErrores] = useState<string[]>([]);
-  const [errorGuardado, setErrorGuardado] = useState('');
-  const { borrador, editar, confirmar, estado } = useBorrador<BorradorTriaje>(aBorrador(datos.triaje), async (valor) => {
-    const triaje = aTriaje(valor);
-    if (!triaje) throw new Error('Completa los criterios de puntuación y el alcance.');
-    await actualizarDatos((d) => ({ ...d, triaje }));
-  });
-  const campo = <K extends keyof BorradorTriaje>(clave: K, valor: BorradorTriaje[K]) =>
-    editar((actual) => ({ ...actual, [clave]: valor }));
+  const [error, setError] = useState('');
+  const { borrador, editar, confirmar, estado } = useBorrador<Triaje>(datos.triaje, async (triaje) =>
+    actualizarDatos((d) => ({
+      ...d,
+      triaje: {
+        ...triaje,
+        por_que_ahora: triaje.por_que_ahora.trim(),
+        poblacion_afectada: triaje.poblacion_afectada.trim(),
+        dimension_tecnica: triaje.dimension_tecnica.trim(),
+      },
+    })),
+  );
+  const campo = <K extends keyof Triaje>(clave: K, valor: Triaje[K]) => editar((t) => ({ ...t, [clave]: valor }));
 
-  const guardar = async (evento: FormEvent) => {
+  const enviar = async (evento: FormEvent) => {
     evento.preventDefault();
-    setErrorGuardado('');
-    const faltantes = [
-      !borrador.motivo_ahora.trim() && 'Explica por qué hay que cambiar ahora.',
-      !borrador.consecuencia_no_cambiar.trim() && 'Describe qué pasa si no se hace el cambio.',
-      !borrador.poblacion_afectada.trim() && 'Indica a quiénes afecta la iniciativa.',
-      !borrador.dimension_tecnica.trim() && 'Describe qué dimensión técnica se afecta.',
-      !borrador.alcance && 'Elige el alcance del despliegue.',
-      !puntajeTriaje(borrador.impacto_personas) && 'Puntúa el impacto en las personas.',
-      !puntajeTriaje(borrador.complejidad_organizacional) && 'Puntúa la complejidad organizacional.',
-      !puntajeTriaje(borrador.riesgo_operativo) && 'Puntúa el riesgo operativo.',
-    ].filter((falta): falta is string => Boolean(falta));
-    setErrores(faltantes);
-    if (faltantes.length > 0) return;
+    setError('');
     try {
       await confirmar();
     } catch {
-      setErrorGuardado(MENSAJE_SIN_ESPACIO);
+      setError(MENSAJE_SIN_ESPACIO);
     }
   };
 
-  const resultado = aTriaje(aBorrador(datos.triaje));
-  const recomendacion = resultado ? resumirTriaje(resultado) : null;
+  const resultado = evaluarTriaje(borrador, REGLAS.triaje);
+  const nivelComplejidad = NIVELES_COMPLEJIDAD.find((n) => n.puntaje === resultado.complejidad);
 
   return (
-    <div className={estilos.resultados}>
-      <form className={formulario.formulario} onSubmit={(e) => void guardar(e)}>
-        <section className={estilos.bloque} aria-labelledby="triaje-contexto">
-          <h3 id="triaje-contexto" className={estilos.tituloBloque}>
-            Contexto y alcance
-          </h3>
-          <div className={formulario.rejilla}>
-            <div className={formulario.ancho}>
-              <CampoArea
-                etiqueta="¿Por qué hay que cambiar ahora?"
-                required
-                value={borrador.motivo_ahora}
-                onChange={(e) => campo('motivo_ahora', e.target.value)}
-              />
-            </div>
-            <div className={formulario.ancho}>
-              <CampoArea
-                etiqueta="¿Qué pasa si no se hace?"
-                required
-                value={borrador.consecuencia_no_cambiar}
-                onChange={(e) => campo('consecuencia_no_cambiar', e.target.value)}
-              />
-            </div>
-            <div className={formulario.ancho}>
-              <CampoArea
-                etiqueta="¿A quiénes y a cuántas personas les cambia la rutina o el trabajo?"
-                required
-                value={borrador.poblacion_afectada}
-                onChange={(e) => campo('poblacion_afectada', e.target.value)}
-              />
-            </div>
-            <div className={formulario.ancho}>
-              <CampoArea
-                etiqueta="¿Afecta procesos, herramientas tecnológicas, estructura u objetivos del negocio?"
-                required
-                value={borrador.dimension_tecnica}
-                onChange={(e) => campo('dimension_tecnica', e.target.value)}
-              />
-            </div>
-            <CampoSeleccion etiqueta="Alcance del despliegue" required value={borrador.alcance} onChange={(e) => campo('alcance', e.target.value as BorradorTriaje['alcance'])}>
-              <option value="">Elegir…</option>
-              <option value="piloto">Equipo puntual (piloto)</option>
-              <option value="departamento">Departamento completo</option>
-              <option value="organizacion">Toda la organización</option>
-            </CampoSeleccion>
-          </div>
-        </section>
+    <form className={formulario.formulario} onSubmit={(e) => void enviar(e)}>
+      <section className={estilos.bloque} aria-labelledby="triaje-preguntas">
+        <h3 id="triaje-preguntas" className={estilos.tituloBloque}>
+          1. Preguntas orientadoras
+        </h3>
+        {(Object.keys(PREGUNTAS_TRIAJE) as (keyof typeof PREGUNTAS_TRIAJE)[]).map((clave) => (
+          <CampoArea
+            key={clave}
+            etiqueta={`${PREGUNTAS_TRIAJE[clave].nombre}: ${PREGUNTAS_TRIAJE[clave].pregunta}`}
+            value={borrador[clave]}
+            onChange={(e) => campo(clave, e.target.value)}
+          />
+        ))}
+      </section>
 
-        <section className={estilos.bloque} aria-labelledby="triaje-puntajes">
-          <h3 id="triaje-puntajes" className={estilos.tituloBloque}>Puntuación (1 = bajo, 2 = medio, 3 = alto)</h3>
-          <div className={formulario.rejilla}>
-            <CampoSeleccion
-              etiqueta="Impacto en las personas"
-              ayuda="¿En qué medida altera la rutina diaria, los roles o la zona de confort de las personas afectadas?"
-              required
-              value={borrador.impacto_personas}
-              onChange={(e) => campo('impacto_personas', e.target.value)}
-            >
-              <option value="">Elegir…</option>
-              {OPCIONES_IMPACTO.map((opcion) => <option key={opcion.valor} value={opcion.valor}>{opcion.texto}</option>)}
-            </CampoSeleccion>
-            <CampoSeleccion
-              etiqueta="Complejidad organizacional"
-              ayuda="Cuenta los elementos simultáneos: estrategia, estructura, sistemas, habilidades, liderazgo y valores."
-              required
-              value={borrador.complejidad_organizacional}
-              onChange={(e) => campo('complejidad_organizacional', e.target.value)}
-            >
-              <option value="">Elegir…</option>
-              {OPCIONES_COMPLEJIDAD.map((opcion) => <option key={opcion.valor} value={opcion.valor}>{opcion.texto}</option>)}
-            </CampoSeleccion>
-            <CampoSeleccion
-              etiqueta="Riesgo operativo"
-              ayuda="Considera qué pasa si falla la adopción y el historial de cambios de los equipos involucrados."
-              required
-              value={borrador.riesgo_operativo}
-              onChange={(e) => campo('riesgo_operativo', e.target.value)}
-            >
-              <option value="">Elegir…</option>
-              {OPCIONES_RIESGO.map((opcion) => <option key={opcion.valor} value={opcion.valor}>{opcion.texto}</option>)}
-            </CampoSeleccion>
+      <section className={estilos.bloque} aria-labelledby="triaje-evaluacion">
+        <h3 id="triaje-evaluacion" className={estilos.tituloBloque}>
+          2. Evaluación (de 1 a 3 puntos)
+        </h3>
+        <p className={estilos.nota}>El equipo de gestión del cambio aplica la matriz rápida de puntuación.</p>
+        <div className={estilos.preguntas}>
+          <OpcionesRespuesta
+            etiqueta={`${CRITERIOS_TRIAJE.impacto_personas.nombre}. ${CRITERIOS_TRIAJE.impacto_personas.pregunta}`}
+            disposicion="lista"
+            opciones={opcionesNivel(NIVELES_IMPACTO_PERSONAS)}
+            valor={borrador.impacto_personas === null ? '' : String(borrador.impacto_personas)}
+            alCambiar={(v) => campo('impacto_personas', Number(v) as PuntajeTriaje)}
+          />
+          <div className={estilos.bloque}>
+            <OpcionesMultiples
+              etiqueta={`${CRITERIOS_TRIAJE.complejidad.nombre}. ${CRITERIOS_TRIAJE.complejidad.pregunta}`}
+              maximo={ELEMENTOS_ORGANIZACION.length}
+              opciones={ELEMENTOS_ORGANIZACION.map((e) => ({ valor: e.valor, texto: e.nombre }))}
+              valores={borrador.elementos}
+              alCambiar={(v) => campo('elementos', v as ElementoOrganizacion[])}
+            />
+            <p className={estilos.nota} aria-live="polite">
+              {nivelComplejidad
+                ? `${nivelComplejidad.nombre} (${nivelComplejidad.puntaje} ${nivelComplejidad.puntaje === 1 ? 'punto' : 'puntos'}): ${nivelComplejidad.descripcion}`
+                : EX.elementos}
+            </p>
           </div>
-        </section>
-        {errorGuardado && <p className={estilos.aviso} role="alert">{errorGuardado}</p>}
-        <PieFormulario estado={estado} errores={errores} />
-      </form>
+          <OpcionesRespuesta
+            etiqueta={`${CRITERIOS_TRIAJE.riesgo_operativo.nombre}. ${CRITERIOS_TRIAJE.riesgo_operativo.pregunta}`}
+            disposicion="lista"
+            opciones={opcionesNivel(NIVELES_RIESGO_OPERATIVO)}
+            valor={borrador.riesgo_operativo === null ? '' : String(borrador.riesgo_operativo)}
+            alCambiar={(v) => campo('riesgo_operativo', Number(v) as PuntajeTriaje)}
+          />
+          <div className={estilos.bloque}>
+            <OpcionesRespuesta
+              etiqueta={`${CRITERIOS_TRIAJE.alcance.nombre}. ${CRITERIOS_TRIAJE.alcance.pregunta}`}
+              opciones={ALCANCES.map((a) => ({ valor: a.valor, texto: a.nombre }))}
+              valor={borrador.alcance ?? ''}
+              alCambiar={(v) => campo('alcance', v as AlcanceDespliegue)}
+            />
+            <p className={estilos.nota}>{EX.alcance}</p>
+          </div>
+        </div>
+      </section>
 
-      {recomendacion && (
-        <section className={estilos.bloque} aria-labelledby="triaje-ruta">
-          <h3 id="triaje-ruta" className={estilos.tituloBloque}>Ruta sugerida</h3>
-          <p>
-            Puntaje total: <strong className="numero">{recomendacion.puntaje} de 9</strong> · {recomendacion.nombre}
-          </p>
-          <p className={estilos.nota}>{recomendacion.descripcion}</p>
-        </section>
+      <section className={estilos.bloque} aria-labelledby="triaje-ruta">
+        <h3 id="triaje-ruta" className={estilos.tituloBloque}>
+          3. Caracterización y asignación de ruta
+        </h3>
+        <p className={estilos.mensaje} aria-live="polite">
+          {resultado.total === null || !resultado.nivel ? (
+            'Puntúa los tres criterios para ver la ruta.'
+          ) : (
+            <>
+              Puntaje total: <span className="numero">{resultado.total}</span> de 9.{' '}
+              <Semaforo estado={resultado.nivel} texto={RUTAS_TRIAJE[resultado.nivel].clasificacion} />
+            </>
+          )}
+        </p>
+        <div className={estilos.desplazable}>
+          <table className={estilos.tabla}>
+            <thead>
+              <tr>
+                <th scope="col">Semáforo</th>
+                <th scope="col">Puntaje</th>
+                <th scope="col">Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {NIVELES_SEMAFORO.map((n) => (
+                <tr key={n} aria-current={resultado.nivel === n ? 'true' : undefined} data-actual={resultado.nivel === n}>
+                  <th scope="row">
+                    <Semaforo estado={n} texto={RUTAS_TRIAJE[n].clasificacion} />
+                  </th>
+                  <td className="numero">{RUTAS_TRIAJE[n].rango}</td>
+                  <td>{RUTAS_TRIAJE[n].descripcion}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {error && (
+        <p className={estilos.aviso} role="alert">
+          {error}
+        </p>
       )}
-    </div>
+      <PieFormulario estado={estado} />
+    </form>
   );
 }

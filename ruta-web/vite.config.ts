@@ -1,4 +1,4 @@
-import type { Connect } from 'vite';
+import { loadEnv, type Connect } from 'vite';
 import { defineConfig, type Plugin } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { crearApi } from './server/api.mjs';
@@ -9,6 +9,8 @@ import { abrirBase } from './server/db.mjs';
  * `npm run dev` y `npm run preview` levantan todo con un solo comando.
  */
 function apiRuta(): Plugin {
+  // Lee .env (solo las variables GEMINI_ y RUTA_) para que el servidor las vea; nunca llegan al navegador.
+  for (const [k, v] of Object.entries(loadEnv('', process.cwd(), ['GEMINI_', 'RUTA_']))) process.env[k] ??= v;
   const montar = async (servidor: { middlewares: Connect.Server }) => {
     const api = crearApi(await abrirBase());
     servidor.middlewares.use((req, res, next) => {

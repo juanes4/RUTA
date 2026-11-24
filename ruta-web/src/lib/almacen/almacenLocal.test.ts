@@ -32,7 +32,7 @@ describe('almacén en localStorage', () => {
 
   it('con datos dañados arranca vacío', async () => {
     const almacenamiento = almacenamientoFalso();
-    almacenamiento.contenido.set('ruta:v1', '{no es json');
+    almacenamiento.contenido.set('ruta:v2', '{no es json');
     expect(await new AlmacenLocal(almacenamiento).listar()).toEqual([]);
   });
 });
