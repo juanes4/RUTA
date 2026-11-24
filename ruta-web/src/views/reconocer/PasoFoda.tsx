@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { BotonIcono } from '../../components/ui/Boton';
 import { CampoSeleccion, CampoTexto } from '../../components/ui/Campo';
-import { CUADRANTES } from '../../config/formularios/reconocer';
+import { CUADRANTES, PREGUNTAS_FODA } from '../../config/formularios/reconocer';
 import { REGLAS } from '../../config/reglas';
 import { EXPLICACION_FODA as EX } from '../../contenido/reconocer';
 import { useProyecto } from '../../estado/ProyectoContexto';
@@ -28,7 +28,7 @@ function validar({ item, evidencia, puntaje, votos }: typeof VACIO): string[] {
   ].filter((e): e is string => typeof e === 'string');
 }
 
-/** R2: registra el resultado de la sesión FODA. */
+/** R3: registra el resultado de la sesión FODA. */
 export function PasoFoda() {
   const { datos, actualizarDatos } = useProyecto();
   const [nuevo, setNuevo] = useState(VACIO);
@@ -103,6 +103,19 @@ export function PasoFoda() {
           <BotonIcono accion="agregar" etiqueta="Agregar ítem" etiquetaVisible type="submit" />
         </div>
       </form>
+
+      <section className={estilos.bloque} aria-labelledby="preguntas-foda">
+        <h3 id="preguntas-foda" className={estilos.tituloBloque}>Preguntas orientadoras</h3>
+        <p className={estilos.nota}>Usa estas preguntas para identificar factores del cambio y registrar cada hallazgo con evidencia.</p>
+        {CUADRANTES.map((cuadrante) => (
+          <details key={cuadrante.valor}>
+            <summary>{cuadrante.nombre}</summary>
+            <ul className={estilos.backlog}>
+              {PREGUNTAS_FODA[cuadrante.valor].map((pregunta) => <li key={pregunta}>{pregunta}</li>)}
+            </ul>
+          </details>
+        ))}
+      </section>
 
       {filas.length > 0 && (
         <section className={estilos.bloque} aria-labelledby="titulo-foda">

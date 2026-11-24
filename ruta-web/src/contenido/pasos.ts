@@ -1,6 +1,6 @@
 /**
  * Texto de las fichas de paso. Fuente: tabla "Flujo de la etapa" del
- * documento maestro (R1–R5) y CONTEXTO §3 y §4. No se agrega texto propio.
+ * documento maestro (R1–R5 y U1–U4). No se agrega texto propio.
  */
 
 export interface FichaPaso {
@@ -21,73 +21,59 @@ export const FICHAS: Readonly<Record<string, FichaPaso>> = {
       'Una página en papelógrafo: urgencia (3 motivos con datos), afectados, visión en una frase, qué cambia y qué no, beneficios por grupo, criterios de éxito con números, riesgos e intentos previos fallidos. Define las metas de los indicadores.',
   },
   R2: {
+    queSeHace: 'Evaluar el impacto y la complejidad de la iniciativa para asignarle una ruta',
+    conQuien: 'Equipo de gestión del cambio',
+    formato: 'Matriz de triaje (escala de 1 a 3)',
+    detalle:
+      'Registra por qué cambiar ahora, a quién afecta y qué dimensiones técnicas toca. Puntúa el impacto en las personas, la complejidad organizacional y el riesgo operativo. El total caracteriza el cambio como ágil o estándar (3–4), moderado (5–7) o mayor (8–9).',
+  },
+  R3: {
     queSeHace: 'Analizar fortalezas, oportunidades, debilidades y amenazas del cambio',
     conQuien: 'Equipo de cambio y jefes',
     tiempo: '60 min',
     formato: 'FODA del cambio',
     detalle:
-      'Analiza solo el cambio. Cada ítem es un hecho observable con evidencia, puntaje 1–5 (en F y O: 5 = muy presente; en D y A: 5 = muy grave), votación con 3 puntos por persona; los 5 más votados pasan al backlog de la etapa 2. Se repite el día 90.',
-  },
-  R3: {
-    queSeHace: 'Mapear actores y resistencias',
-    conQuien: 'Equipo de cambio',
-    tiempo: '60 min',
-    formato: 'Mapa de actores',
-    detalle:
-      'Por actor o grupo: nº de personas, qué le cambia, influencia (baja/media/alta), postura (se opone/neutral/apoya), interés como historia de usuario, motivo de resistencia, estrategia (educar, hacer partícipe, apoyar, negociar), acción con responsable y fecha. Cuadrante influencia × postura.',
+      'Usa las preguntas orientadoras para identificar factores internos y externos. Registra cada ítem con evidencia, puntaje y votos para combinar el análisis cualitativo con el seguimiento cuantitativo.',
   },
   R4: {
-    queSeHace: 'Identificar quién comunica el cambio',
-    conQuien: 'Líderes de la organización',
-    tiempo: '1 semana',
-    formato: 'Encuesta de liderazgo',
+    queSeHace: 'Identificar actores, necesidades, poder, interés y brechas de compromiso',
+    conQuien: 'Alta dirección, jefes y equipo de cambio',
+    formato: 'Mapa de actores y mapa de compromiso',
     detalle:
-      'Encuesta de 8 preguntas (opciones a–d) a líderes y referentes. A: directivo y estructurado. B: participativo y colaborativo. C: transformacional e inspirador, vocero ideal. D: delegativo y autónomo, requiere acompañamiento y guion.',
+      'Registra qué representa y necesita cada grupo; clasifica su poder y su interés como altos o bajos. Compara su posición actual con la deseada en la escala desde “desconoce” hasta “lidera” para anticipar las acciones de acompañamiento.',
   },
   R5: {
-    queSeHace: 'Informar a los colaboradores',
-    conQuien: 'Dirección y jefes',
-    tiempo: '1 semana',
-    formato: 'Ficha del cambio y narrativa',
+    queSeHace: 'Escuchar a los colaboradores antes de anunciar o desplegar un cambio',
+    conQuien: 'Colaboradores de las áreas involucradas',
+    formato: 'Buzón de escucha inicial',
     detalle:
-      'Máximo 2 páginas, impresa y oral. Narrativa en 3 partes: de dónde venimos (por qué, por qué ahora, qué pasa si no) → hacia dónde vamos (visión, qué gano yo) → cómo será el camino (qué cambia, qué no, cronograma, a quién preguntar, cómo opinar).',
-  },
-  R6: {
-    queSeHace: 'Escuchar cómo tomaron el cambio',
-    formato: 'Buzón 1 y mapa de empatía',
-    detalle:
-      'Encuesta anónima. El punto de bloqueo de un grupo es la primera dimensión ADKAR con puntaje menor a 3,0: ahí se interviene primero. El mapa de empatía organiza las respuestas abiertas en: oye, ve, piensa y siente, dice y hace, dolores, necesidades.',
-  },
-  R7: {
-    queSeHace: 'Decidir si se lanza, se ajusta o se pospone',
-    formato: 'Registro de decisión',
-    detalle:
-      'Combina los puntos de bloqueo del buzón 1 con el chequeo Kotter parte A. La decisión se registra con fecha, responsable y los tres riesgos principales.',
+      'Una consulta breve y anónima para reconocer qué falla hoy, qué inquietudes existen frente a posibles cambios y qué mejoras proponen las personas. No presupone que ya haya un cambio anunciado.',
   },
   U1: {
-    queSeHace: 'Comunicar según el punto de bloqueo de cada grupo',
+    queSeHace: 'Identificar quién comunica el cambio',
+    conQuien: 'Líderes y referentes de los equipos',
+    formato: 'Encuesta de liderazgo',
     detalle:
-      'Lo personal lo dice el jefe directo; dudas respondidas en 2 días hábiles o menos (muro de dudas); preguntas frecuentes semanales.',
+      'Aplica las 8 preguntas a líderes o referentes, en autoevaluación y desde la mirada de su equipo. Cuenta las respuestas A, B, C y D para identificar el estilo, su viabilidad como vocero y el acompañamiento que requiere.',
   },
   U2: {
-    queSeHace: 'Formar la red de agentes de cambio',
-    detalle: '1 agente por cada 15 a 20 personas; 1 a 2 horas por semana; resuelven dudas, observan y reportan barreras.',
+    queSeHace: 'Definir la forma y la estrategia para comunicar el cambio',
+    formato: 'Ficha del cambio y narrativa',
+    detalle:
+      'Organiza el mensaje en tres partes: de dónde venimos y por qué ya no basta; hacia dónde vamos y qué beneficios trae; cómo será el camino, qué cambia, qué se mantiene y cómo se acompañará a las personas.',
   },
   U3: {
-    queSeHace: 'Capacitar a los grupos que ya superaron Conciencia y Deseo',
+    queSeHace: 'Preparar a los jefes para guiar y resolver dudas de sus equipos',
+    conQuien: 'Mandos medios y jefes de área',
+    formato: 'Soporte para líderes',
     detalle:
-      'Al menos 70 % práctica, dentro de la jornada; evidencia de competencia (prueba práctica); apoyo escalonado (segunda práctica → tutor → ajustar herramientas); seguimiento a 15 días. Regla de protección: no hay decisiones laborales sin agotar el apoyo escalonado.',
+      'Entrega una guía práctica con mensajes clave, respuestas a preguntas frecuentes y pautas de conversación para gestionar inquietudes y traducir el cambio al día a día de cada equipo.',
   },
   U4: {
-    queSeHace: 'Tomar el pulso de la adaptación',
-    formato: 'Buzón 2',
-    detalle: 'Pulso corto cada ciclo; pulso completo los días 30, 60 y 90.',
-  },
-  U5: {
-    queSeHace: 'Medir si el cambio está funcionando',
-    formato: 'Indicadores y tablero',
+    queSeHace: 'Comprender las emociones, miedos y expectativas después de comunicar el cambio',
+    formato: 'Mapa de empatía',
     detalle:
-      'Cada indicador muestra valor, meta y semáforo. Regla de lectura cruzada: si el uso sube pero la preparación no, hay cumplimiento sin convicción y riesgo de abandono; si la preparación sube pero el uso no, el problema está en Habilidad o Refuerzo.',
+      'Registra por grupo qué oye, qué ve, qué piensa y siente, qué dice y hace, sus dolores y frustraciones, y sus necesidades y ganancias. Usa el diagnóstico para definir el acompañamiento.',
   },
 };
 
@@ -98,18 +84,11 @@ export const FICHAS: Readonly<Record<string, FichaPaso>> = {
 export const DESCRIPCION_ETAPA: Readonly<Record<string, string>> = {
   'etapa-0': 'Registro de los datos de la empresa: el cambio, los grupos, los afectados y las metas.',
   'etapa-r':
-    'Dejar claro por qué se cambia, saber quién apoya y quién se resiste, medir desde dónde parte cada grupo y decidir con datos si se lanza, se ajusta o se pospone. De 2 a 3 semanas antes del lanzamiento.',
+    'Reconocer qué iniciativa necesita la organización, a quién afecta y qué ruta requiere. Incluye el diagnóstico del cambio, el análisis FODA, el mapa de actores y la escucha inicial antes de cualquier despliegue.',
   'etapa-u':
-    'Desde el lanzamiento hasta el día 90, en ciclos de 2 semanas. Salida: el cambio en uso, medido y ajustado cada ciclo.',
-};
-
-/** Acciones de U1 según el punto de bloqueo (CONTEXTO §4). */
-export const ACCIONES_POR_BLOQUEO: Readonly<Record<'C' | 'D' | 'K' | 'H' | 'R', string>> = {
-  C: 'Patrocinador explica el porqué con datos; guion para jefes; corregir rumores.',
-  D: 'Escuchar antes de convencer; responder la preocupación principal; qué gana cada puesto; involucrar en el piloto.',
-  K: 'Capacitación en el formato preferido; guías de 1 página; videos; punto de contacto.',
-  H: 'Tiempo protegido para practicar; acompañamiento en el puesto; resolver equipos y accesos.',
-  R: 'Reconocimiento; ajustar metas; retirar la forma antigua; seguimiento mensual.',
+    'Alinear la comunicación del cambio: elegir quién lo comunica, preparar la narrativa, apoyar a los líderes y comprender cómo reciben el mensaje los colaboradores.',
+  'etapa-t':
+    'Acompañamiento de equipos con los cuatro niveles de Kirkpatrick: cómo reaccionan, qué aprenden, qué hacen distinto y qué resultados se logran.',
 };
 
 export interface PasoRecorrido {
@@ -120,16 +99,16 @@ export interface PasoRecorrido {
   etapaId: string | null;
 }
 
-/** Recorrido en 10 pasos (CONTEXTO §2). */
+/** Recorrido visible en Inicio, actualizado con el flujo vigente de las etapas. */
 export const RECORRIDO: readonly PasoRecorrido[] = [
   { verbo: 'Entender', pregunta: '¿Qué cambiamos y por qué?', herramienta: 'Lienzo del cambio (R1)', etapaId: 'etapa-r' },
-  { verbo: 'Entender', pregunta: '¿Qué hay a favor y en contra?', herramienta: 'FODA del cambio (R2)', etapaId: 'etapa-r' },
-  { verbo: 'Entender', pregunta: '¿Quién apoya y quién se resiste?', herramienta: 'Mapa de actores (R3)', etapaId: 'etapa-r' },
-  { verbo: 'Comunicar', pregunta: '¿Quién da la noticia?', herramienta: 'Encuesta de liderazgo (R4)', etapaId: 'etapa-r' },
-  { verbo: 'Comunicar', pregunta: '¿Qué decimos y cómo?', herramienta: 'Ficha del cambio y narrativa (R5)', etapaId: 'etapa-r' },
-  { verbo: 'Escuchar', pregunta: '¿Cómo lo tomaron?', herramienta: 'Buzón 1 y mapa de empatía (R6)', etapaId: 'etapa-r' },
-  { verbo: 'Decidir', pregunta: '¿Lanzamos ya?', herramienta: 'Registro de decisión (R7)', etapaId: 'etapa-r' },
-  { verbo: 'Acompañar', pregunta: '¿Cómo los apoyamos?', herramienta: 'Ciclos de 2 semanas (U1 a U4)', etapaId: 'etapa-u' },
-  { verbo: 'Acompañar', pregunta: '¿Está funcionando?', herramienta: 'Indicadores y tablero (U5)', etapaId: 'etapa-u' },
+  { verbo: 'Entender', pregunta: '¿Qué ruta necesita la iniciativa?', herramienta: 'Triaje del cambio (R2)', etapaId: 'etapa-r' },
+  { verbo: 'Entender', pregunta: '¿Qué factores pueden favorecer o dificultar el cambio?', herramienta: 'FODA del cambio (R3)', etapaId: 'etapa-r' },
+  { verbo: 'Entender', pregunta: '¿A quién afecta y qué necesita cada grupo?', herramienta: 'Mapa de actores (R4)', etapaId: 'etapa-r' },
+  { verbo: 'Escuchar', pregunta: '¿Qué falla hoy y qué proponen las personas?', herramienta: 'Escucha inicial (R5)', etapaId: 'etapa-r' },
+  { verbo: 'Comunicar', pregunta: '¿Quién comunica el cambio?', herramienta: 'Encuesta de liderazgo (U1)', etapaId: 'etapa-u' },
+  { verbo: 'Comunicar', pregunta: '¿Qué decimos y cómo?', herramienta: 'Ficha y narrativa (U2)', etapaId: 'etapa-u' },
+  { verbo: 'Acompañar', pregunta: '¿Cómo guían los líderes a sus equipos?', herramienta: 'Soporte para líderes (U3)', etapaId: 'etapa-u' },
+  { verbo: 'Comprender', pregunta: '¿Cómo recibieron el mensaje?', herramienta: 'Mapa de empatía (U4)', etapaId: 'etapa-u' },
   { verbo: 'Comprobar', pregunta: '¿Ya se adoptó?', herramienta: 'Medición a 30, 60 y 90 días (por definir)', etapaId: null },
 ];

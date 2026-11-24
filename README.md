@@ -1,6 +1,9 @@
 # RUTA · app web
 
+Metodología de gestión del cambio (reto CUEE con la ANDI). La aplicación está en `ruta-web/`.
+
 ```
+cd ruta-web
 npm install
 npm run dev      # app + API + base SQLite, todo con un comando (Node 22.13 o superior)
 npm test
@@ -8,7 +11,7 @@ npm test
 
 ## Sesión y usuarios
 
-La base de datos es `server/data/ruta.db` (SQLite, se crea sola al iniciar y no se sube al repositorio).
+La base de datos es `ruta-web/server/data/ruta.db` (SQLite, se crea sola al iniciar y no se sube al repositorio).
 Con la base vacía se crean estas cuentas de demostración, todas con la clave `ruta2026` (cámbialas):
 
 | Usuario | Rol |
@@ -16,15 +19,15 @@ Con la base vacía se crean estas cuentas de demostración, todas con la clave `
 | `lider` | Líder: ve los videos de líderes y los de empleados, y quién vio cada uno |
 | `empleado1`, `empleado2`, `empleado3` | Empleado: solo ve videos de empleados y sus propias vistas |
 
-Agregar un usuario: `npm run usuario -- maria "María Pérez" empleado UnaClaveLarga123`
+Agregar un usuario (desde `ruta-web/`): `npm run usuario -- maria "María Pérez" empleado UnaClaveLarga123`
 
-Los videos (YouTube) están en `server/videos.mjs`. Para cambiarlos: edita ese archivo, borra
-`server/data/ruta.db` y vuelve a iniciar (esto también borra usuarios e historial).
+Los videos (YouTube) están en `ruta-web/server/videos.mjs`. Para cambiarlos: edita ese archivo, borra
+`ruta-web/server/data/ruta.db` y vuelve a iniciar (esto también borra usuarios e historial).
 
 ## Etapa T (Transformar)
 
 Sigue la sección «Etapa #3: Transformar» del documento de metodología (niveles de Kirkpatrick). El texto del documento está en
-`src/config/transformar.ts`; las reglas de cálculo en `server/reglasT.mjs` y `src/lib/transformar/victorias.ts`.
+`ruta-web/src/config/transformar.ts`; las reglas de cálculo en `ruta-web/server/reglasT.mjs` y `ruta-web/src/lib/transformar/victorias.ts`.
 
 | Paso | Qué hay | Quién |
 | --- | --- | --- |
@@ -36,7 +39,7 @@ Sigue la sección «Etapa #3: Transformar» del documento de metodología (nivel
 Reglas: un 4 o un 5 en la matriz MRMT exige evidencia; solo se publica con 24 puntos o más y con la autorización de los protagonistas;
 el termómetro es anónimo y solo se reporta con 5 respuestas o más por ciclo.
 
-Pendiente de revisar con el equipo: las 21 preguntas del simulador (`server/simulador.mjs`) son un borrador escrito a partir del tema de cada
+Pendiente de revisar con el equipo: las 21 preguntas del simulador (`ruta-web/server/simulador.mjs`) son un borrador escrito a partir del tema de cada
 video, y la aprobación (2 de 3 aciertos) no está definida en el documento.
 
 Las tablas nuevas (`simulacros` y `registros`) se crean solas; una base existente conserva usuarios, videos e historial.

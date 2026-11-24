@@ -22,7 +22,7 @@ export const EXPLICACION_CAMPO = {
   total_colaboradores:
     'Todas las personas que trabajan en la empresa, estén o no afectadas por el cambio. Es de referencia: la participación se calcula con los afectados del paso 0.2.',
   fecha_lanzamiento:
-    'Día previsto para lanzar el cambio. En R7 se decide si se lanza, se lanza con ajustes o se posterga.',
+    'Día previsto para lanzar el cambio. El triaje R2 ayuda a caracterizar el impacto y la ruta que requiere la iniciativa.',
   que_cambia: 'El cambio en una frase: qué se va a hacer distinto en el trabajo diario. Se detalla en el lienzo del cambio (R1).',
   area: 'Nombre del área o grupo de trabajo. Los resultados de los buzones se muestran por área y solo si el área tiene al menos 5 respuestas.',
   afectados:

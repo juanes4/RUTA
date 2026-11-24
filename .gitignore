@@ -1,3 +1,30 @@
-node_modules
-dist
+# Herramientas de IA y editor
+.claude/
+.agents/
+.vscode/
+skills-lock.json
+
+# Documentación
+*.md
+*.MD
+ruta-web/docs/
+!README.md
+
+# Dependencias y compilados
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Variables de entorno y archivos locales
+.env
+.env.*
 *.local
+
+# Registros y archivos del sistema
+*.log
+.DS_Store
+Thumbs.db
+
+# Base de datos local del servidor (se crea sola al iniciar)
+ruta-web/server/data/

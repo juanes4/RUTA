@@ -10,25 +10,23 @@ import { useProyecto } from '../../estado/ProyectoContexto';
 import { resumenPasoR } from '../../lib/reconocer/resumenPaso';
 import { useRuta } from '../../navegacion/RutaContexto';
 import { PasoActores } from './PasoActores';
-import { PasoBuzon1 } from './PasoBuzon1';
-import { PasoDecision } from './PasoDecision';
+import { PasoEscuchaInicial } from './PasoEscuchaInicial';
 import { PasoFoda } from './PasoFoda';
-import { PasoLiderazgo } from './PasoLiderazgo';
 import { PasoLienzo } from './PasoLienzo';
+import { PasoTriaje } from './PasoTriaje';
 
 interface Props {
   etapa: Etapa;
   pasoId: string | null;
 }
 
-/** Formulario de cada paso. R5 no tiene: la ficha y la narrativa no generan datos (CONTEXTO §12.5). */
+/** Formularios activos de la etapa Reconocer, en el orden de la metodología. */
 const CONTENIDO_PASO: Readonly<Record<string, ComponentType>> = {
   R1: PasoLienzo,
-  R2: PasoFoda,
-  R3: PasoActores,
-  R4: PasoLiderazgo,
-  R6: PasoBuzon1,
-  R7: PasoDecision,
+  R2: PasoTriaje,
+  R3: PasoFoda,
+  R4: PasoActores,
+  R5: PasoEscuchaInicial,
 };
 
 /** Etapa R: un índice de pasos y una página por paso, para no saturar. */

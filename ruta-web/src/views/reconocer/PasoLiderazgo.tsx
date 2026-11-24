@@ -12,13 +12,13 @@ import { useProyecto } from '../../estado/ProyectoContexto';
 import { contarLetras, resumirLiderazgo, type VistaLider } from '../../lib/calculo/liderazgo';
 import type { FilaLiderazgo, LetraLiderazgo, RespondenteLiderazgo } from '../../lib/modelo/tipos';
 import formulario from '../etapa0/formulario.module.css';
-import { BorrarRespuestas } from './ayudas';
+import { BorrarRespuestas, MENSAJE_SIN_ESPACIO } from './ayudas';
 import estilos from './reconocer.module.css';
 
 const TOTAL = PREGUNTAS_LIDERAZGO.length;
 const UN_DECIMAL = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 1 });
 
-/** R4: encuesta de liderazgo. */
+/** U1: encuesta para identificar líderes que pueden comunicar el cambio. */
 export function PasoLiderazgo() {
   return (
     <Pestanas
@@ -56,7 +56,11 @@ function FormLiderazgo() {
       conteo_C: conteos.C,
       conteo_D: conteos.D,
     };
-    await actualizarDatos((d) => ({ ...d, liderazgo: [...d.liderazgo, fila] }));
+    try {
+      await actualizarDatos((d) => ({ ...d, liderazgo: [...d.liderazgo, fila] }));
+    } catch {
+      return setError(MENSAJE_SIN_ESPACIO);
+    }
     setRespuestas({});
     setMensaje('Encuesta guardada.');
   };
