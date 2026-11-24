@@ -225,6 +225,25 @@ export interface RespuestaViajeA {
   comentarios: ComentarioViaje[];
 }
 
+export type AccionAsistenteA = 'diagnostico_a1' | 'cruce_a1_t' | 'curva_a2' | 'libre';
+
+export interface EstadoAsistenteA {
+  disponible: boolean;
+  modo: 'gemini' | 'local';
+  rol: Rol;
+  alertas: { rojas: number; amarillas: number };
+}
+
+export interface RespuestaAsistenteA {
+  titulo: string;
+  resumen: string;
+  secciones: { encabezado: string; items: string[] }[];
+  acciones15Dias: string[];
+  sugerencias: string[];
+  motor: 'gemini' | 'local';
+  esRecomendacion: true;
+}
+
 export class ErrorApi extends Error {
   constructor(
     readonly estado: number,
@@ -279,6 +298,14 @@ export const api = {
     ),
   guardarViajeA: (datos: { periodo: string; area: string; comentario: string; respuestas: number[] }) =>
     llamar<{ id: number; resumen: ResumenViaje }>('/api/etapa-a/viaje', datos),
+  estadoAsistenteA: () => llamar<EstadoAsistenteA>('/api/etapa-a/asistente/estado'),
+  consultarAsistenteA: (datos: {
+    accion: AccionAsistenteA;
+    mensaje?: string;
+    pasoActual?: 'A1' | 'A2' | null;
+    periodoViaje?: string;
+    historial?: { autor: 'usuario' | 'asistente'; texto: string }[];
+  }) => llamar<RespuestaAsistenteA>('/api/etapa-a/asistente', datos),
 };
 
 /** SQLite guarda la fecha en UTC como "2026-11-11 21:59:00". */

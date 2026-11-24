@@ -7,6 +7,7 @@ import { DESCRIPCION_ETAPA } from '../../contenido/pasos';
 import { useSesion } from '../../estado/SesionContexto';
 import { api, ErrorApi } from '../../lib/api';
 import { resumirSemaforosA } from '../../lib/analizar/calculos';
+import { AsistenteEtapaA } from './AsistenteEtapaA';
 import { AuditoriaAdopcion } from './AuditoriaAdopcion';
 import { FlujoEtapaA } from './FlujoEtapaA';
 import { MapaViaje } from './MapaViaje';
@@ -65,31 +66,34 @@ export function VistaAnalizar({ etapa, pasoId }: Props) {
     };
   }, [paso, esLider, expirar]);
 
-  if (!paso) {
-    const estadoPorPaso: Record<string, string> = {
-      A1: resumen.a1,
-      A2: resumen.a2,
-    };
-    return (
-      <SeccionEtapa etapa={etapa} descripcion={DESCRIPCION_ETAPA[etapa.id]}>
-        <IndicePasos
-          etapa={etapa}
-          queSeHace={(p) => DESCRIPCION_PASO_A[p.id] ?? ''}
-          estado={(p) => estadoPorPaso[p.id] ?? ''}
-        />
-        <FlujoEtapaA />
-      </SeccionEtapa>
-    );
-  }
+  const estadoPorPaso: Record<string, string> = {
+    A1: resumen.a1,
+    A2: resumen.a2,
+  };
+  const pasoActual = paso?.id === 'A1' ? 'A1' : paso?.id === 'A2' ? 'A2' : null;
 
   return (
-    <SeccionEtapa etapa={etapa}>
-      <VolverAlIndice etapa={etapa} paso={paso} />
-      <BloquePaso paso={paso} ancho="completo" tarjeta={tarjetaDePaso(etapa, indice)} descripcion={DESCRIPCION_PASO_A[paso.id]}>
-        {paso.id === 'A1' && <AuditoriaAdopcion esLider={esLider} />}
-        {paso.id === 'A2' && <MapaViaje esLider={esLider} />}
-      </BloquePaso>
-      <PasoAnteriorSiguiente etapa={etapa} paso={paso} />
-    </SeccionEtapa>
+    <>
+      {!paso ? (
+        <SeccionEtapa etapa={etapa} descripcion={DESCRIPCION_ETAPA[etapa.id]}>
+          <IndicePasos
+            etapa={etapa}
+            queSeHace={(p) => DESCRIPCION_PASO_A[p.id] ?? ''}
+            estado={(p) => estadoPorPaso[p.id] ?? ''}
+          />
+          <FlujoEtapaA />
+        </SeccionEtapa>
+      ) : (
+        <SeccionEtapa etapa={etapa}>
+          <VolverAlIndice etapa={etapa} paso={paso} />
+          <BloquePaso paso={paso} ancho="completo" tarjeta={tarjetaDePaso(etapa, indice)} descripcion={DESCRIPCION_PASO_A[paso.id]}>
+            {paso.id === 'A1' && <AuditoriaAdopcion esLider={esLider} />}
+            {paso.id === 'A2' && <MapaViaje esLider={esLider} />}
+          </BloquePaso>
+          <PasoAnteriorSiguiente etapa={etapa} paso={paso} />
+        </SeccionEtapa>
+      )}
+      <AsistenteEtapaA pasoActual={pasoActual} esLider={esLider} />
+    </>
   );
 }
