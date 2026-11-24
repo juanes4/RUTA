@@ -4,7 +4,7 @@ import { CampoArea, CampoSeleccion, CampoTexto } from '../../components/ui/Campo
 import { EstadoVacio } from '../../components/ui/EstadoVacio';
 import { Pestanas } from '../../components/ui/Pestanas';
 import { GRUPOS_BUZON1, PREGUNTAS_BUZON1, SIN_GRUPO, type CampoBuzon1 } from '../../config/formularios/buzon1';
-import { BuzonEnLinea } from './BuzonEnLinea';
+import { GestionBuzon } from './GestionBuzon';
 import { EXPLICACION_BUZON1 as EX } from '../../contenido/reconocer';
 import { useProyecto } from '../../estado/ProyectoContexto';
 import { COLUMNAS_PLANTILLA, fusionarBuzon1, importarBuzon1 } from '../../lib/captura/buzon1Csv';
@@ -18,7 +18,7 @@ import estilos from './reconocer.module.css';
 const VACIA: Record<CampoBuzon1, string> & { area: string; grupo: string } = { area: '', grupo: '', falla: '', preocupa: '', harias: '' };
 const MAX_ERRORES_VISIBLES = 8;
 
-/** R5: buzón 1, escucha inicial. El papel se digita; Google Forms entra por CSV. */
+/** R5: buzón 1, escucha inicial. Los colaboradores responden en la app; el papel se digita y un CSV se carga. */
 export function PasoBuzon1() {
   const { activo } = useProyecto();
   if (!activo) return null;
@@ -34,9 +34,9 @@ export function PasoBuzon1() {
       <Pestanas
         etiqueta="Buzón 1"
         pestanas={[
+          { id: 'app', etiqueta: 'En la app (colaboradores)', contenido: <GestionBuzon /> },
           { id: 'digitar', etiqueta: 'Digitar papel', contenido: <FormBuzon1 /> },
           { id: 'csv', etiqueta: 'Cargar CSV', contenido: <CargaCsv /> },
-          { id: 'forms', etiqueta: 'Google Forms en línea', contenido: <BuzonEnLinea /> },
           { id: 'resultados', etiqueta: 'Resultados', contenido: <ResultadosBuzon1 /> },
         ]}
       />
@@ -165,8 +165,8 @@ function CargaCsv() {
   return (
     <div className={estilos.bloque}>
       <p className={estilos.nota}>
-        Sube el CSV de Google Forms tal como sale. La pregunta de área debe titularse "Área", la de grupo (opcional) "Grupo" y cada pregunta debe empezar con su
-        código. Las áreas se escriben igual que en la Etapa 0. Si alguna línea tiene un error, no se carga nada; volver a cargar el mismo archivo no duplica respuestas.
+        Sube un CSV exportado de una hoja de cálculo. La columna de área debe titularse "Área", la de grupo (opcional) "Grupo" y cada pregunta debe empezar con
+        su código. Las áreas se escriben igual que en la Etapa 0. Si alguna línea tiene un error, no se carga nada; volver a cargar el mismo archivo no duplica respuestas.
         Para la demo hay un <a href="/buzon_prueba.csv" download>buzón de prueba</a> con respuestas inventadas (sus áreas: Producción, Bodega, Despacho y Administración).
       </p>
       <CampoTexto etiqueta="Archivo CSV" explicacion={EX.archivo} type="file" accept=".csv,text/csv" onChange={(e) => void cargar(e)} />
@@ -187,7 +187,7 @@ function CargaCsv() {
         </ul>
       )}
       <table className={estilos.tabla}>
-        <caption className={estilos.tituloBloque}>Títulos para las preguntas en Google Forms</caption>
+        <caption className={estilos.tituloBloque}>Títulos de las columnas del CSV</caption>
         <tbody>
           {COLUMNAS_PLANTILLA.map((c) => (
             <tr key={c}>

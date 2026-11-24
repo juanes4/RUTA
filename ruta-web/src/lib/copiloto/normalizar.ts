@@ -195,7 +195,6 @@ export function normalizarCopiloto(v: unknown): DatosCopiloto {
   const partes = normalizarPartesDossier(dos.partes);
   return {
     ...COPILOTO_VACIO,
-    buzonFormsId: txt(o.buzonFormsId),
     informe: resultado ? { resultado, fecha: fecha(inf.fecha), decididos: textos(inf.decididos) } : null,
     mensajesLienzo: lista(o.mensajesLienzo, (x): MensajeCopiloto | null => {
       const m = obj(x);

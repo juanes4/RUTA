@@ -29,6 +29,8 @@ describe('rutas', () => {
     expect(parsear('#/etapa/t/t2')).toEqual({ pagina: 'etapa', etapaId: 'etapa-t', pasoId: 'T2' });
     expect(parsear('#/ingresar')).toEqual({ pagina: 'ingresar' });
     expect(hashDe({ pagina: 'ingresar' }, ETAPAS)).toBe('#/ingresar');
+    expect(parsear('#/buzon')).toEqual({ pagina: 'buzon' });
+    expect(hashDe({ pagina: 'buzon' }, ETAPAS)).toBe('#/buzon');
   });
 
   it('la página del copiloto vive dentro de R y no en otras etapas', () => {

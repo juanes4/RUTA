@@ -1,5 +1,6 @@
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { crearTablasBuzon } from './buzon.mjs';
 import { hashClave } from './clave.mjs';
 import { USUARIOS_DEMO, VIDEOS_INICIALES } from './videos.mjs';
 
@@ -65,25 +66,9 @@ export async function abrirBase(ruta = process.env.RUTA_DB ?? resolve(process.cw
       creado_en  TEXT NOT NULL DEFAULT (datetime('now'))
     );
     CREATE INDEX IF NOT EXISTS registros_tipo ON registros (tipo, creado_en);
-    -- R5: buzón 1 recibido desde Google Forms (Apps Script). Solo la fecha, sin hora, IP ni datos del navegador.
-    CREATE TABLE IF NOT EXISTS buzones (
-      buzon_id   TEXT PRIMARY KEY,
-      estado     TEXT NOT NULL CHECK (estado IN ('abierto', 'cerrado')),
-      creado_en  TEXT NOT NULL DEFAULT (datetime('now')),
-      cerrado_en TEXT
-    );
-    CREATE TABLE IF NOT EXISTS buzon_respuestas (
-      buzon_id TEXT NOT NULL,
-      id       TEXT NOT NULL,
-      fecha    TEXT NOT NULL,
-      area     TEXT NOT NULL,
-      grupo    TEXT NOT NULL,
-      p1       TEXT NOT NULL,
-      p2       TEXT NOT NULL,
-      p3       TEXT NOT NULL,
-      PRIMARY KEY (buzon_id, id)
-    );
   `);
+  // R5: buzón 1 respondido en la app por los colaboradores (anónimo, una vez por persona).
+  crearTablasBuzon(db);
 
   if (db.prepare('SELECT COUNT(*) AS n FROM videos').get().n === 0) {
     const insertar = db.prepare('INSERT INTO videos (id, titulo, youtube_id, audiencia, orden) VALUES (?, ?, ?, ?, ?)');

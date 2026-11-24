@@ -5,6 +5,7 @@ import { ETAPAS, type Etapa } from './config/etapas';
 import { useSesion } from './estado/SesionContexto';
 import { useRuta } from './navegacion/RutaContexto';
 import { VistaAnalizar } from './views/analizar/VistaAnalizar';
+import { VistaBuzon } from './views/buzon/VistaBuzon';
 import { VistaEtapa0 } from './views/etapa0/VistaEtapa0';
 import { VistaInicio } from './views/inicio/VistaInicio';
 import { VistaLogin } from './views/login/VistaLogin';
@@ -36,7 +37,7 @@ export function App() {
   if (cargando) return null;
 
   // Sin sesión solo existe el inicio. Cualquier otra página pide el ingreso y, al entrar, se abre la que se pidió.
-  const requiereSesion = ruta.pagina === 'tablero' || ruta.pagina === 'etapa';
+  const requiereSesion = ruta.pagina === 'tablero' || ruta.pagina === 'etapa' || ruta.pagina === 'buzon';
   const pideIngreso = !usuario && (requiereSesion || ruta.pagina === 'ingresar');
   const conBarra = Boolean(usuario && etapa && Vista);
 
@@ -45,6 +46,7 @@ export function App() {
       {pideIngreso && <VistaLogin />}
       {!pideIngreso && (ruta.pagina === 'inicio' || ruta.pagina === 'ingresar') && <VistaInicio etapas={ETAPAS} />}
       {!pideIngreso && ruta.pagina === 'tablero' && <VistaTablero />}
+      {!pideIngreso && ruta.pagina === 'buzon' && <VistaBuzon />}
       {!pideIngreso && ruta.pagina === 'etapa' && etapa && Vista && (
         <PaginaEtapa key={etapa.id} etapas={ETAPAS} etapa={etapa} pasoId={ruta.pasoId} Vista={Vista} />
       )}

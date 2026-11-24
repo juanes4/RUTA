@@ -10,7 +10,6 @@ export const VARIABLES = [
   { nombre: 'GEMINI_MODEL', sinElla: 'el copiloto solo funciona en modo simulado' },
   { nombre: 'GEMINI_API_KEY_RESPALDO', opcional: true, sinElla: 'si la clave principal falla no hay otra que probar' },
   { nombre: 'GEMINI_MODELOS_RESPALDO', opcional: true, sinElla: 'si GEMINI_MODEL falla no hay otros modelos que probar' },
-  { nombre: 'RUTA_BUZON_API_KEY', sinElla: 'el endpoint de Google Forms (/api/buzon/recibir) responde 503' },
   { nombre: 'RUTA_IA_DATOS_REALES', sinElla: 'solo se envía a Gemini el buzón de prueba (datos reales bloqueados)' },
 ];
 

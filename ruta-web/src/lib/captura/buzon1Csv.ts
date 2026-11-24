@@ -3,7 +3,7 @@ import { leerCsv } from '../csv/leerCsv';
 import type { RespuestaBuzon1 } from '../modelo/tipos';
 
 /**
- * R5. Carga del buzón 1 desde un CSV de Google Forms. La columna de área
+ * R5. Carga del buzón 1 desde un CSV (hoja de cálculo). La columna de área
  * empieza con "Área", la de grupo (opcional) con "Grupo" y cada pregunta con
  * su código (P1, P2, P3). También acepta la tabla del copiloto
  * (id, fecha, area, grupo, p1, p2, p3). Si alguna línea tiene un error no se carga nada.
@@ -61,7 +61,7 @@ export function importarBuzon1(texto: string, areas: readonly string[], fecha: s
   const personales = columnasPersonales(columnas);
   const avisos =
     personales.length > 0
-      ? [`El formulario está recolectando ${personales.map((c) => `"${c}"`).join(', ')}. Esas columnas no se cargan; desactívalas en Google Forms para proteger el anonimato.`]
+      ? [`El archivo trae las columnas ${personales.map((c) => `"${c}"`).join(', ')}. Esas columnas no se cargan; quítalas del archivo para proteger el anonimato.`]
       : [];
   const columnaDe = Object.fromEntries(PREGUNTAS_BUZON1.map((p) => [p.campo, columnas.find((c) => empiezaCon(c, p.codigo))])) as Record<
     CampoBuzon1,

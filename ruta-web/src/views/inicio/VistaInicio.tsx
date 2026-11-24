@@ -15,6 +15,8 @@ import { useProyecto } from '../../estado/ProyectoContexto';
 import { useSesion } from '../../estado/SesionContexto';
 import { fasesDelRecorrido } from '../../lib/recorrido';
 import { useRuta } from '../../navegacion/RutaContexto';
+import { IconoBuzon } from '../../components/marco/Iconos';
+import { useBuzonPropio } from '../buzon/VistaBuzon';
 import { RecorridoCinta } from './RecorridoCinta';
 import estilos from './VistaInicio.module.css';
 
@@ -90,6 +92,8 @@ export function VistaInicio({ etapas }: Props) {
         <FasesPortada etapas={etapas} />
       </header>
 
+      {usuario?.rol === 'empleado' && <BuzonPendiente />}
+
       <section aria-labelledby="titulo-accesos">
         <h2 id="titulo-accesos" className={estilos.tituloSeccion}>
           Etapas y tablero
@@ -142,5 +146,24 @@ export function VistaInicio({ etapas }: Props) {
         <RecorridoCinta />
       </section>
     </div>
+  );
+}
+
+/** Para el colaborador: si tiene un buzón por responder, se lo recuerda arriba del todo. */
+function BuzonPendiente() {
+  const { enlace } = useRuta();
+  const { buzon } = useBuzonPropio(true);
+  if (buzon?.estado !== 'pendiente') return null;
+  return (
+    <a className={estilos.buzonPendiente} href={enlace({ pagina: 'buzon' })}>
+      <span className={estilos.buzonIcono} aria-hidden="true">
+        <IconoBuzon tamano={22} />
+      </span>
+      <span className={estilos.buzonTexto}>
+        <strong>Tienes un buzón de escucha pendiente</strong>
+        <span>Tres preguntas cortas, anónimas. Solo puedes responderlo una vez.</span>
+      </span>
+      <span className={estilos.buzonAccion}>Responder</span>
+    </a>
   );
 }

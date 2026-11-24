@@ -331,33 +331,3 @@ describe('API del copiloto con Gemini (simulado en la prueba) y bloqueo de datos
     expect(llamadas.at(-1).sistema).not.toMatch(/María|3001234567/);
   });
 });
-
-describe('buzón desde Google Forms (Apps Script)', () => {
-  const s = servidorCon({ RUTA_BUZON_API_KEY: 'clave-del-script' });
-  const enviarRespuesta = (cuerpo, clave = 'clave-del-script') =>
-    s.pedir('/api/buzon/recibir', { metodo: 'POST', cuerpo, cabeceras: clave ? { 'X-Api-Key': clave } : {} });
-  const respuesta = { buzon_id: 'LACTEOS_WMS_1', id: 'u1', fecha: '2026-11-20', area: 'Bodega', grupo: 'Operativo', p1: 'falla', p2: '', p3: '' };
-
-  it('rechaza peticiones sin la clave correcta', async () => {
-    expect((await enviarRespuesta(respuesta, '')).estado).toBe(401);
-    expect((await enviarRespuesta(respuesta, 'otra')).estado).toBe(401);
-  });
-
-  it('mientras está abierto solo muestra el conteo; al cerrar entrega la tabla', async () => {
-    expect((await enviarRespuesta(respuesta)).estado).toBe(200);
-    expect((await enviarRespuesta(respuesta)).estado).toBe(200); // reenvío: no duplica
-    expect((await enviarRespuesta({ ...respuesta, id: 'u2', fecha: '2026-11-20T10:31:00' })).estado).toBe(200);
-    const cookie = await s.entrar('lider');
-    expect((await s.pedir('/api/buzon/estado?buzon=LACTEOS_WMS_1', { cookie })).json).toMatchObject({ estado: 'abierto', respuestas: 2 });
-    expect((await s.pedir('/api/buzon/respuestas?buzon=LACTEOS_WMS_1', { cookie })).estado).toBe(409);
-    expect((await s.pedir('/api/buzon/estado?buzon=LACTEOS_WMS_1', { cookie: await s.entrar('empleado1') })).estado).toBe(403);
-
-    await s.pedir('/api/buzon/cerrar', { metodo: 'POST', cookie, cuerpo: { buzon: 'LACTEOS_WMS_1' } });
-    const { json } = await s.pedir('/api/buzon/respuestas?buzon=LACTEOS_WMS_1', { cookie });
-    expect(json.filas).toHaveLength(2);
-    expect(Object.keys(json.filas[0])).toEqual(['id', 'fecha', 'area', 'grupo', 'p1', 'p2', 'p3']);
-    // Una fecha con hora se guarda solo como fecha.
-    expect(json.filas.every((f) => /^\d{4}-\d{2}-\d{2}$/.test(f.fecha))).toBe(true);
-    expect((await enviarRespuesta({ ...respuesta, id: 'u3' })).estado).toBe(409);
-  });
-});

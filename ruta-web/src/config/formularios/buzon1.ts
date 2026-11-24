@@ -9,7 +9,7 @@ export type CampoBuzon1 = keyof Pick<RespuestaBuzon1, 'falla' | 'preocupa' | 'ha
 
 export interface PreguntaBuzon1 {
   campo: CampoBuzon1;
-  /** Código con el que empieza el título de la pregunta en Google Forms. */
+  /** Código de la pregunta (P1, P2, P3): encabezado de su columna en el CSV. */
   codigo: string;
   texto: string;
 }

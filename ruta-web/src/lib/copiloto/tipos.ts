@@ -151,8 +151,6 @@ export interface MensajeCopiloto {
 
 /** Lo que el copiloto guarda en el proyecto (en este navegador). */
 export interface DatosCopiloto {
-  /** Identificador del formulario de Google Forms en el Apps Script (BUZON_ID). */
-  buzonFormsId: string;
   /** decididos: claves de los ajustes ya aceptados o descartados (ver claveAjuste). */
   informe: { resultado: ResultadoBuzon; fecha: string; decididos: string[] } | null;
   mensajesLienzo: MensajeCopiloto[];
@@ -164,7 +162,6 @@ export interface DatosCopiloto {
 }
 
 export const COPILOTO_VACIO: DatosCopiloto = {
-  buzonFormsId: '',
   informe: null,
   mensajesLienzo: [],
   modoLienzo: null,

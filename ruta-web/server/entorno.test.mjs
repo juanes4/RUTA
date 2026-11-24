@@ -11,7 +11,6 @@ describe('revisión de variables al iniciar', () => {
     avisarEntorno({ GEMINI_API_KEY: SECRETO, RUTA_IA_DATOS_REALES: 'si' }, salida);
     const texto = lineas.join('\n');
     expect(texto).toContain('Falta GEMINI_MODEL');
-    expect(texto).toContain('Falta RUTA_BUZON_API_KEY');
     expect(texto).not.toContain('Falta GEMINI_API_KEY');
     expect(texto).toContain('distinto de "permitido"');
     expect(texto).not.toContain(SECRETO);

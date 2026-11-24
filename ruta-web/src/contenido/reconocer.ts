@@ -10,7 +10,7 @@ export const DESCRIPCION_PASO_R: Readonly<Record<string, string>> = {
   R2: 'Responde las preguntas orientadoras y puntúa los tres criterios. La herramienta suma el puntaje y asigna la ruta con el semáforo.',
   R3: 'Registra cada fortaleza, oportunidad, debilidad y amenaza con su puntaje. La herramienta suma cada cuadrante y ubica la estrategia.',
   R4: 'Registra los actores en tres pasos: quiénes son y qué necesitan, su poder e interés, y su compromiso de hoy frente al que se necesita.',
-  R5: 'Los colaboradores responden en papel o en Google Forms. El papel se digita aquí; lo de Google Forms se carga como CSV o llega en línea desde el Apps Script del formulario.',
+  R5: 'Los colaboradores que hacen parte del cambio responden desde su cuenta, de forma anónima y una sola vez. Si alguien respondió en papel, se digita aquí; también se puede cargar un CSV.',
 };
 
 export const EXPLICACION_LIENZO = {
@@ -53,6 +53,5 @@ export const EXPLICACION_ACTORES = {
 export const EXPLICACION_BUZON1 = {
   area: 'Área de quien respondió, de las registradas en la Etapa 0. Con el grupo, es todo lo que se guarda de quien responde: el buzón es anónimo.',
   grupo: 'Tipo de rol de quien respondió. Es opcional. Los resultados se separan por área o por grupo, nunca por los dos a la vez, para que nadie quede reconocible.',
-  archivo: 'El CSV que descargas de Google Forms o de Google Sheets, o uno con las columnas de la plantilla.',
-  buzonForms: 'El mismo texto que pusiste en BUZON_ID dentro del Apps Script del formulario. Letras, números, - y _.',
+  archivo: 'Un CSV exportado de una hoja de cálculo, con las columnas de la plantilla.',
 } as const;

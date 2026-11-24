@@ -11,7 +11,7 @@ import { avisarEntorno } from './server/entorno.mjs';
  * `npm run dev` y `npm run preview` levantan todo con un solo comando.
  *
  * Las variables del servidor (GEMINI_API_KEY, GEMINI_MODEL,
- * RUTA_IA_DATOS_REALES, RUTA_BUZON_API_KEY) se leen del entorno o de
+ * RUTA_IA_DATOS_REALES) se leen del entorno o de
  * ruta-web/.env (ver .env.example). Solo las usa la API: Vite pasa al
  * navegador únicamente las que empiezan con VITE_ (envPrefix), y aquí no hay
  * ninguna. Al arrancar se avisa qué falta, sin mostrar valores.
@@ -35,7 +35,7 @@ function apiRuta(env: Record<string, string>, publicas: Record<string, string>):
 export default defineConfig(({ mode }) => {
   // Solo las variables del servidor (GEMINI_*, RUTA_*), del entorno o de ruta-web/.env.
   const env = loadEnv(mode, process.cwd(), ['GEMINI_', 'RUTA_']);
-  /** Hosts extra (por ejemplo, el de un túnel para que Apps Script llegue al endpoint del buzón). */
+  /** Hosts extra (por ejemplo, el de un túnel para mostrar la app desde otro equipo). */
   const hosts = (env.RUTA_HOSTS ?? '')
     .split(',')
     .map((h) => h.trim())

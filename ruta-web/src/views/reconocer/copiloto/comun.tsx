@@ -50,10 +50,10 @@ export function useEsLider() {
   return usuario?.rol === 'lider';
 }
 
-/** Conserva el identificador del buzón de Google Forms; borra informe, conversación, triaje y dossier. */
+/** Borra informe, conversación, triaje y dossier del copiloto (R1 a R5 no se tocan). */
 export function useReiniciarCopiloto() {
   const { actualizarDatos } = useProyecto();
-  return () => actualizarDatos((d) => ({ ...d, copiloto: { ...COPILOTO_VACIO, buzonFormsId: d.copiloto.buzonFormsId } }));
+  return () => actualizarDatos((d) => ({ ...d, copiloto: { ...COPILOTO_VACIO } }));
 }
 
 /** Elegir entre Gemini y el modo simulado. */

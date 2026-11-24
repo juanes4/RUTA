@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { hashClave, verificarClave } from './clave.mjs';
-import { rutasBuzonForms } from './buzonForms.mjs';
+import { rutasBuzon } from './buzon.mjs';
 import { rutasCopiloto } from './copiloto/rutas.mjs';
 import { rutasEtapaA } from './etapaA.mjs';
 import { rutasEtapaT } from './etapaT.mjs';
@@ -207,7 +207,7 @@ export function crearApi(db, { seguro = false, env = process.env, generarImpl } 
     ...rutasEtapaT({ db, sesionDe, enviar, leerJson, audienciasDe }),
     ...rutasEtapaA({ db, sesionDe, enviar, leerJson }),
     ...rutasCopiloto({ sesionDe, enviar, leerJson, env, ...(generarImpl ? { generarImpl } : {}) }),
-    ...rutasBuzonForms({ db, sesionDe, enviar, leerJson, env }),
+    ...rutasBuzon({ db, sesionDe, enviar, leerJson }),
   };
 
   return async function manejar(req, res) {

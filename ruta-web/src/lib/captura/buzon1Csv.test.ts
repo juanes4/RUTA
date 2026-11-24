@@ -10,7 +10,7 @@ const csv = (...filas: string[]) =>
     ...filas,
   ].join('\n');
 
-describe('carga del buzón 1 desde Google Forms', () => {
+describe('carga del buzón 1 desde un CSV', () => {
   it('lee el área y las 3 preguntas por su código, sin importar tildes ni mayúsculas en el área', () => {
     const { filas, errores } = importarBuzon1(csv('"2026/11/20 8:00","produccion","Se pierden pedidos","Más trabajo","Capacitar antes"'), AREAS, FECHA);
     expect(errores).toEqual([]);

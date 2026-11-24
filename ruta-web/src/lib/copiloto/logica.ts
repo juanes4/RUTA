@@ -24,7 +24,7 @@ export function filasParaCopiloto(buzon: readonly RespuestaBuzon1[]): FilaBuzonC
 }
 
 /**
- * Tabla del copiloto (buzón de prueba o Google Forms) → respuestas de R5.
+ * Tabla del copiloto (buzón de prueba o buzón en la app) → respuestas de R5.
  * El área debe estar registrada en la Etapa 0; si alguna no lo está, no se carga nada.
  */
 export function filasDesdeCopiloto(filas: readonly FilaBuzonCopiloto[], areas: readonly AreaAfectada[]): { filas: RespuestaBuzon1[]; areasFaltantes: string[] } {

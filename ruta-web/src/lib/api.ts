@@ -226,7 +226,7 @@ export interface RespuestaViajeA {
   comentarios: ComentarioViaje[];
 }
 
-/* ---------- Etapa R · Copiloto y buzón en línea ---------- */
+/* ---------- Etapa R · Copiloto y buzón en la app ---------- */
 
 /** Una respuesta del buzón en la tabla del copiloto (id, fecha, area, grupo, p1, p2, p3). */
 export interface FilaBuzonCopiloto {
@@ -239,12 +239,33 @@ export interface FilaBuzonCopiloto {
   p3: string;
 }
 
-export interface EstadoBuzonForms {
+/** Lo que ve gestión del cambio del buzón en la app: estado y cantidades, nunca quién respondió. */
+export interface EstadoBuzonApp {
   buzon: string;
-  estado: 'abierto' | 'cerrado';
-  existe: boolean;
+  /** null: todavía no se ha abierto. */
+  estado: 'abierto' | 'cerrado' | null;
+  convocados: number;
   respuestas: number;
+  areas: string[];
+  abiertoEn: string | null;
   cerradoEn: string | null;
+  /** A quién se convocó (para marcarlo en la lista); no dice quién respondió. */
+  idsConvocados?: number[];
+}
+
+export interface Colaborador {
+  id: number;
+  nombre: string;
+  usuario: string;
+}
+
+/** El buzón que le toca a un colaborador. */
+export interface BuzonColaborador {
+  id: string;
+  empresa: string;
+  areas: string[];
+  grupos: string[];
+  estado: 'pendiente' | 'respondido' | 'cerrado';
 }
 
 export class ErrorApi extends Error {
@@ -321,10 +342,16 @@ export const api = {
     dossier: (modo: ModoCopiloto, contexto: unknown) => llamar<{ modo: ModoCopiloto; modelo?: string; dossier: PartesDossier }>('/api/copiloto/dossier', { modo, contexto }),
   },
 
-  buzonForms: {
-    estado: (buzon: string) => llamar<EstadoBuzonForms>(`/api/buzon/estado?buzon=${encodeURIComponent(buzon)}`),
-    cerrar: (buzon: string) => llamar<EstadoBuzonForms>('/api/buzon/cerrar', { buzon }),
+  buzon: {
+    /** Gestión del cambio. */
+    colaboradores: () => llamar<{ colaboradores: Colaborador[] }>('/api/buzon/colaboradores'),
+    estado: (buzon: string) => llamar<EstadoBuzonApp>(`/api/buzon/estado?buzon=${encodeURIComponent(buzon)}`),
+    abrir: (datos: { buzon: string; empresa: string; areas: string[]; convocados: number[] }) => llamar<EstadoBuzonApp>('/api/buzon/abrir', datos),
+    cerrar: (buzon: string) => llamar<EstadoBuzonApp>('/api/buzon/cerrar', { buzon }),
     respuestas: (buzon: string) => llamar<{ buzon: string; filas: FilaBuzonCopiloto[] }>(`/api/buzon/respuestas?buzon=${encodeURIComponent(buzon)}`),
+    /** Colaborador. */
+    mio: () => llamar<{ buzon: BuzonColaborador | null }>('/api/buzon/mio'),
+    responder: (datos: { buzon: string; area: string; grupo: string; p1: string; p2: string; p3: string }) => llamar<{ ok: true }>('/api/buzon/responder', datos),
   },
 };
 
