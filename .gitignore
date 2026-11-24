@@ -8,6 +8,7 @@ skills-lock.json
 *.md
 *.MD
 ruta-web/docs/
+!README.md
 
 # Dependencias y compilados
 node_modules/
@@ -24,3 +25,6 @@ coverage/
 *.log
 .DS_Store
 Thumbs.db
+
+# Base de datos local del servidor (se crea sola al iniciar)
+ruta-web/server/data/
