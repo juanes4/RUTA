@@ -74,7 +74,8 @@ export const DESCRIPCION_ETAPA: Readonly<Record<string, string>> = {
   'etapa-r': '¿Qué cambio es, a quién afecta y qué ruta necesita?',
   'etapa-u': '¿Quién lo lidera y por qué la gente lo va a apoyar?',
   'etapa-t':
-    'Acompañamiento de equipos con los cuatro niveles de Kirkpatrick: cómo reaccionan, qué aprenden, qué hacen distinto y qué resultados se logran.',
+    'Acompañamiento de equipos con los cuatro niveles de Kirkpatrick: cómo reaccionan, qué aprenden, qué hacen distinto y qué resultados se logran.',  'etapa-a':
+    'Sostenibilidad y evaluación continua: auditorías periódicas de adopción en el tablero del equipo y mapa de viaje del colaborador.',
 };
 
 export interface PasoRecorrido {
@@ -85,7 +86,7 @@ export interface PasoRecorrido {
   etapaId: string | null;
 }
 
-/** Recorrido en 10 pasos: los pasos de R y U, y la llegada a Transformar. */
+/** Recorrido en 11 pasos: los pasos de R y U, Transformar y Analizar. */
 export const RECORRIDO: readonly PasoRecorrido[] = [
   { verbo: 'Entender', pregunta: '¿Qué cambiamos y por qué?', herramienta: 'Lienzo del cambio (R1)', etapaId: 'etapa-r' },
   { verbo: 'Entender', pregunta: '¿Qué tan grande es el cambio?', herramienta: 'Triaje del cambio (R2)', etapaId: 'etapa-r' },
@@ -97,4 +98,5 @@ export const RECORRIDO: readonly PasoRecorrido[] = [
   { verbo: 'Acompañar', pregunta: '¿Cómo preparamos a los jefes?', herramienta: 'Soporte para líderes (U3)', etapaId: 'etapa-u' },
   { verbo: 'Acompañar', pregunta: '¿Cómo lo tomaron?', herramienta: 'Mapa de empatía (U4)', etapaId: 'etapa-u' },
   { verbo: 'Transformar', pregunta: '¿Cómo lo construimos con los equipos?', herramienta: 'Comunicación, capacitación, acompañamiento y victorias (T1 a T4)', etapaId: 'etapa-t' },
+  { verbo: 'Comprobar', pregunta: '¿Cómo hacemos que se quede?', herramienta: 'Tablero del equipo y mapa de viaje (A1 y A2)', etapaId: 'etapa-a' },
 ];

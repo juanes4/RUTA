@@ -1,3 +1,5 @@
+import type { EstadoCarita, IdFaseViaje, IdIndicadorA } from '../config/analizar';
+
 /** Cliente de la API del servidor (/api/*). La sesión viaja en una cookie HttpOnly. */
 
 export type Rol = 'lider' | 'empleado';
@@ -145,6 +147,84 @@ export interface Merito {
   publicacion?: Publicacion;
 }
 
+/* ---------- Etapa A · Analizar ---------- */
+
+export interface RegistroAuditoriaA {
+  id: number;
+  periodo: string;
+  fecha: string;
+  equipo: string;
+  observaciones: string;
+  valores: Record<IdIndicadorA, number | null>;
+  metas: Record<IdIndicadorA, number>;
+  registradoPor: string | null;
+  creadoEn: string;
+}
+
+export interface SugeridosEtapaT {
+  apropiacion: { valor: number; ciclo: number; respuestas: number } | null;
+  ultimoAcuerdo: { ciclo: number; momento: 'inicio' | 'cierre'; nivel: number; meta: number | null } | null;
+  sesionesPulso: number;
+}
+
+export interface RespuestaTableroA {
+  auditorias: RegistroAuditoriaA[];
+  metasActuales: Record<IdIndicadorA, number>;
+  sugeridosT: SugeridosEtapaT;
+  balancesT: BalanceCiclo[];
+}
+
+export interface PreguntaResumenViaje {
+  indice: number;
+  conteos: { a: number; b: number; c: number };
+  promedio: number | null;
+  porcentaje: number | null;
+  carita: EstadoCarita | null;
+}
+
+export interface FaseResumenViaje {
+  id: IdFaseViaje;
+  promedio: number | null;
+  porcentaje: number | null;
+  carita: EstadoCarita | null;
+  preguntas: PreguntaResumenViaje[];
+}
+
+export interface ResumenViaje {
+  totalRespuestas: number;
+  promedioGeneral: number | null;
+  porcentajeGeneral: number | null;
+  caritaGeneral: EstadoCarita | null;
+  fases: FaseResumenViaje[];
+  preguntas: PreguntaResumenViaje[];
+}
+
+export interface RespuestaViajePropia {
+  id: number;
+  periodo: string;
+  area: string;
+  comentario: string;
+  respuestas: number[];
+  creadoEn: string;
+  resumen: ResumenViaje;
+}
+
+export interface ComentarioViaje {
+  id: number;
+  periodo: string;
+  area: string;
+  comentario: string;
+  creadoEn: string;
+}
+
+export interface RespuestaViajeA {
+  periodo: string;
+  periodosDisponibles: string[];
+  resumenEquipo: ResumenViaje;
+  propias: RespuestaViajePropia[];
+  comentarios: ComentarioViaje[];
+}
+
 export class ErrorApi extends Error {
   constructor(
     readonly estado: number,
@@ -184,6 +264,21 @@ export const api = {
     llamar<ResultadoSimulador>('/api/simulador', { videoId, respuestas, seguridad }),
   guardarRegistro: (tipo: TipoRegistro, datos: unknown) => llamar<{ id: number; tipo: TipoRegistro }>('/api/registros', { tipo, datos }),
   registros: <T>(tipo: TipoRegistro) => llamar<T>(`/api/registros?tipo=${tipo}`),
+  tableroA: () => llamar<RespuestaTableroA>('/api/etapa-a/tablero'),
+  guardarAuditoriaA: (datos: {
+    periodo: string;
+    fecha: string;
+    equipo: string;
+    observaciones: string;
+    valores: Record<IdIndicadorA, number | null>;
+    metas: Record<IdIndicadorA, number>;
+  }) => llamar<{ id: number }>('/api/etapa-a/auditoria', datos),
+  viajeA: (periodo?: string) =>
+    llamar<RespuestaViajeA>(
+      periodo && periodo !== 'todos' ? `/api/etapa-a/viaje?periodo=${encodeURIComponent(periodo)}` : '/api/etapa-a/viaje',
+    ),
+  guardarViajeA: (datos: { periodo: string; area: string; comentario: string; respuestas: number[] }) =>
+    llamar<{ id: number; resumen: ResumenViaje }>('/api/etapa-a/viaje', datos),
 };
 
 /** SQLite guarda la fecha en UTC como "2026-11-11 21:59:00". */

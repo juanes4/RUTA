@@ -12,12 +12,13 @@ describe('recorrido del Inicio', () => {
       ['Comunicar', 2],
       ['Acompañar', 2],
       ['Transformar', 1],
+      ['Comprobar', 1],
     ]);
   });
 
   it('numera todo el recorrido y cuenta la posición dentro de cada etapa', () => {
     const pasos = fases.flatMap((f) => f.pasos);
-    expect(pasos.map((p) => p.numero)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-    expect(pasos.map((p) => p.posicionEnEtapa)).toEqual([0, 1, 2, 3, 4, 0, 1, 2, 3, 0]);
+    expect(pasos.map((p) => p.numero)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+    expect(pasos.map((p) => p.posicionEnEtapa)).toEqual([0, 1, 2, 3, 4, 0, 1, 2, 3, 0, 0]);
   });
 });

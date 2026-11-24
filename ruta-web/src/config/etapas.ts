@@ -102,7 +102,20 @@ export const ETAPAS: readonly Etapa[] = [
       { id: 'T4', titulo: 'Victorias tempranas' },
     ],
   },
-  { id: 'etapa-a', letra: 'A', nombre: 'Por definir', activa: false, pasos: [] },
+  {
+    id: 'etapa-a',
+    letra: 'A',
+    nombre: 'Analizar',
+    activa: true,
+    color: 'var(--pastel-cream)',
+    tonos: ['var(--pastel-cream)'],
+    tarjetas: { fondos: ['var(--pastel-cream)'], manchas: false },
+    paginasPorPaso: true,
+    pasos: [
+      { id: 'A1', titulo: 'Auditorías de adopción' },
+      { id: 'A2', titulo: 'Mapa de viaje del colaborador' },
+    ],
+  },
 ];
 
 /** Id del elemento HTML de un paso, usado por la navegación para saltar a él. */

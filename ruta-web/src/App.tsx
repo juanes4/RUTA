@@ -4,6 +4,7 @@ import { EstadoVacio } from './components/ui/EstadoVacio';
 import { ETAPAS, type Etapa } from './config/etapas';
 import { useSesion } from './estado/SesionContexto';
 import { useRuta } from './navegacion/RutaContexto';
+import { VistaAnalizar } from './views/analizar/VistaAnalizar';
 import { VistaEtapa0 } from './views/etapa0/VistaEtapa0';
 import { VistaInicio } from './views/inicio/VistaInicio';
 import { VistaLogin } from './views/login/VistaLogin';
@@ -22,6 +23,7 @@ const VISTAS: Readonly<Record<string, ComponentType<{ etapa: Etapa; pasoId: stri
   'etapa-r': VistaReconocer,
   'etapa-u': VistaUnir,
   'etapa-t': VistaTransformar,
+  'etapa-a': VistaAnalizar,
 };
 
 export function App() {

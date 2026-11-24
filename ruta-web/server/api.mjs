@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { hashClave, verificarClave } from './clave.mjs';
+import { rutasEtapaA } from './etapaA.mjs';
 import { rutasEtapaT } from './etapaT.mjs';
 import { APROBACION_MINIMA } from './simulador.mjs';
 
@@ -202,6 +203,7 @@ export function crearApi(db, { seguro = false } = {}) {
       });
     },
     ...rutasEtapaT({ db, sesionDe, enviar, leerJson, audienciasDe }),
+    ...rutasEtapaA({ db, sesionDe, enviar, leerJson }),
   };
 
   return async function manejar(req, res) {

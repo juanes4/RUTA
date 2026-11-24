@@ -17,8 +17,9 @@ describe('rutas', () => {
     expect(parsear('#/etapa/0/0.2')).toEqual({ pagina: 'etapa', etapaId: 'etapa-0', pasoId: '0.2' });
   });
 
-  it('las etapas vacías y los pasos que no existen no tienen página', () => {
-    expect(parsear('#/etapa/a')).toEqual({ pagina: 'no_encontrada' });
+  it('los pasos que no existen no tienen página; la etapa A sí', () => {
+    expect(parsear('#/etapa/a')).toEqual({ pagina: 'etapa', etapaId: 'etapa-a', pasoId: null });
+    expect(parsear('#/etapa/a/A3')).toEqual({ pagina: 'no_encontrada' });
     expect(parsear('#/etapa/r/U1')).toEqual({ pagina: 'no_encontrada' });
     expect(parsear('#/otra')).toEqual({ pagina: 'no_encontrada' });
   });

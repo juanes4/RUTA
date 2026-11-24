@@ -197,3 +197,77 @@ describe('Etapa T · registros (T1, T3, T4)', () => {
     expect(sin.estado).toBe(200);
   });
 });
+
+describe('Etapa A · Analizar (A1 auditorías y A2 mapa de viaje)', () => {
+  it('sin sesión rechaza las rutas de Etapa A', async () => {
+    expect((await pedir('/api/etapa-a/tablero')).estado).toBe(401);
+    expect((await pedir('/api/etapa-a/viaje')).estado).toBe(401);
+  });
+
+  it('A1: solo el líder registra auditorías; valida datos y expone insumos de Etapa T', async () => {
+    const emp = await entrar('empleado1');
+    const lid = await entrar('lider');
+
+    const payload = {
+      periodo: 'Día 30',
+      fecha: '2026-11-23',
+      equipo: 'Planta Norte',
+      observaciones: 'Se requiere acompañamiento en traspaso.',
+      valores: { autonomia: 85, uso_sostenido: 92, regreso_anterior: 3, apropiacion: 4.1 },
+      metas: { autonomia: 85 },
+    };
+
+    expect((await post('/api/etapa-a/auditoria', payload, emp)).estado).toBe(403);
+    expect((await post('/api/etapa-a/auditoria', { periodo: 'Día 30', fecha: '2026-11-23', valores: {} }, lid)).estado).toBe(400);
+    expect((await post('/api/etapa-a/auditoria', payload, lid)).estado).toBe(200);
+
+    // Registrar un balance en T4 para comprobar que se muestra como insumo solo al líder.
+    await post(
+      '/api/registros',
+      { tipo: 'balance', datos: { ciclo: 1, meritos: 'Turno 1 autónomo', factores: 'Parejas de práctica', dificultades: 'Rotación' } },
+      lid,
+    );
+
+    const vistaLider = (await pedir('/api/etapa-a/tablero', { cookie: lid })).json;
+    expect(vistaLider.auditorias).toHaveLength(1);
+    expect(vistaLider.auditorias[0]).toMatchObject({ periodo: 'Día 30', equipo: 'Planta Norte' });
+    expect(vistaLider.metasActuales.autonomia).toBe(85);
+    expect(vistaLider.sugeridosT.apropiacion).toMatchObject({ valor: 4, ciclo: 1, respuestas: 5 });
+    expect(vistaLider.balancesT).toHaveLength(1);
+
+    const vistaEmp = (await pedir('/api/etapa-a/tablero', { cookie: emp })).json;
+    expect(vistaEmp.auditorias).toHaveLength(1);
+    expect(vistaEmp.balancesT).toEqual([]);
+  });
+
+  it('A2: todos responden el mapa de viaje, actualiza por periodo y calcula caritas por fase', async () => {
+    const e1 = await entrar('empleado1');
+    const e3 = await entrar('empleado3');
+    const lid = await entrar('lider');
+
+    // Rechaza si no vienen las 12 respuestas válidas (1 a 3)
+    expect((await post('/api/etapa-a/viaje', { periodo: 'Últimos 3 meses', respuestas: [3, 3, 3] }, e1)).estado).toBe(400);
+
+    // empleado1 responde todo 3, luego corrige fase 2 ("durante") a 1 para probar reemplazo por periodo
+    await post('/api/etapa-a/viaje', { periodo: 'Últimos 3 meses', area: 'Planta', comentario: 'Buen inicio', respuestas: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3] }, e1);
+    await post('/api/etapa-a/viaje', { periodo: 'Últimos 3 meses', area: 'Planta', comentario: 'Fricción en transición', respuestas: [3, 3, 3, 1, 1, 1, 3, 3, 3, 2, 2, 2] }, e1);
+    // empleado3 responde en el mismo periodo
+    await post('/api/etapa-a/viaje', { periodo: 'Últimos 3 meses', area: 'Bodega', comentario: 'Más práctica', respuestas: [3, 2, 3, 2, 2, 2, 2, 3, 2, 3, 2, 3] }, e3);
+
+    const resLider = (await pedir('/api/etapa-a/viaje?periodo=%C3%9Altimos%203%20meses', { cookie: lid })).json;
+    // Deben ser 2 respuestas (la segunda de empleado1 reemplazó la primera)
+    expect(resLider.resumenEquipo.totalRespuestas).toBe(2);
+    // Fase 1 (antes): (3+3+3 + 3+2+3)/6 = 2.83 -> feliz
+    expect(resLider.resumenEquipo.fases[0]).toMatchObject({ id: 'antes', promedio: 2.83, carita: 'feliz' });
+    // Fase 2 (durante): (1+1+1 + 2+2+2)/6 = 1.5 -> preocupada
+    expect(resLider.resumenEquipo.fases[1]).toMatchObject({ id: 'durante', promedio: 1.5, carita: 'preocupada' });
+    // Fase 4 (mejorar): (2+2+2 + 3+2+3)/6 = 2.33 -> neutra
+    expect(resLider.resumenEquipo.fases[3]).toMatchObject({ id: 'mejorar', promedio: 2.33, carita: 'neutra' });
+    // El líder ve ambos comentarios anónimos; el empleado solo ve el suyo.
+    expect(resLider.comentarios).toHaveLength(2);
+    const resEmp = (await pedir('/api/etapa-a/viaje', { cookie: e1 })).json;
+    expect(resEmp.comentarios).toHaveLength(1);
+    expect(resEmp.comentarios[0].comentario).toBe('Fricción en transición');
+    expect(resEmp.propias).toHaveLength(1);
+  });
+});
