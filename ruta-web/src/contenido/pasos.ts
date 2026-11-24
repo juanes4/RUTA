@@ -73,7 +73,8 @@ export const DESCRIPCION_ETAPA: Readonly<Record<string, string>> = {
   'etapa-0': 'Registro de los datos de la empresa: el cambio, las áreas y las personas afectadas.',
   'etapa-r': '¿Qué cambio es, a quién afecta y qué ruta necesita?',
   'etapa-u': '¿Quién lo lidera y por qué la gente lo va a apoyar?',
-  'etapa-t': 'Acompañamiento de equipos: ¿cómo lo construimos con quienes lo van a vivir?',
+  'etapa-t':
+    'Acompañamiento de equipos con los cuatro niveles de Kirkpatrick: cómo reaccionan, qué aprenden, qué hacen distinto y qué resultados se logran.',
 };
 
 export interface PasoRecorrido {
@@ -95,5 +96,5 @@ export const RECORRIDO: readonly PasoRecorrido[] = [
   { verbo: 'Comunicar', pregunta: '¿Qué decimos y cómo?', herramienta: 'Ficha del cambio y narrativa (U2)', etapaId: 'etapa-u' },
   { verbo: 'Acompañar', pregunta: '¿Cómo preparamos a los jefes?', herramienta: 'Soporte para líderes (U3)', etapaId: 'etapa-u' },
   { verbo: 'Acompañar', pregunta: '¿Cómo lo tomaron?', herramienta: 'Mapa de empatía (U4)', etapaId: 'etapa-u' },
-  { verbo: 'Transformar', pregunta: '¿Cómo los capacitamos?', herramienta: 'Capacitaciones (T1)', etapaId: 'etapa-t' },
+  { verbo: 'Transformar', pregunta: '¿Cómo lo construimos con los equipos?', herramienta: 'Comunicación, capacitación, acompañamiento y victorias (T1 a T4)', etapaId: 'etapa-t' },
 ];

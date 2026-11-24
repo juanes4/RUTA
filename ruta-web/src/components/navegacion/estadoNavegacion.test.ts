@@ -3,13 +3,13 @@ import { anclaPaso, ETAPAS } from '../../config/etapas';
 import { calcularEstadoNavegacion } from './estadoNavegacion';
 
 describe('estado de la navegación', () => {
-  it('muestra las 5 etapas con contadores 0/2, R 0/5, U 0/4 y T 0/2', () => {
+  it('muestra las 5 etapas con contadores 0/2, R 0/5, U 0/4 y T 0/4', () => {
     const { nodos } = calcularEstadoNavegacion(ETAPAS, null, new Set());
     expect(nodos.map((n) => `${n.etapa.letra} ${n.pasosVistos}/${n.totalPasos}`)).toEqual([
       '0 0/2',
       'R 0/5',
       'U 0/4',
-      'T 0/2',
+      'T 0/4',
       'A 0/0',
     ]);
   });

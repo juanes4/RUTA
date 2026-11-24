@@ -1,5 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { hashClave, verificarClave } from './clave.mjs';
+import { rutasEtapaT } from './etapaT.mjs';
+import { APROBACION_MINIMA } from './simulador.mjs';
 
 const COOKIE = 'ruta_sesion';
 const DURACION_SESION_MS = 8 * 60 * 60 * 1000;
@@ -28,7 +30,7 @@ function leerJson(req) {
     let texto = '';
     req.on('data', (trozo) => {
       texto += trozo;
-      if (texto.length > 10_000) {
+      if (texto.length > 30_000) {
         rechazar(new Error('Cuerpo demasiado grande'));
         req.destroy();
       }
@@ -121,8 +123,10 @@ export function crearApi(db, { seguro = false } = {}) {
       const aud = audienciasDe(u.rol);
       const filas = db
         .prepare(
-          `SELECT v.id, v.titulo, v.youtube_id, v.audiencia, v.orden, s.visto_en
+          `SELECT v.id, v.titulo, v.youtube_id, v.audiencia, v.orden, s.visto_en,
+                  m.aciertos, m.total AS total_preguntas, m.seguridad
            FROM videos v LEFT JOIN vistas s ON s.video_id = v.id AND s.usuario_id = ?
+           LEFT JOIN simulacros m ON m.video_id = v.id AND m.usuario_id = s.usuario_id
            WHERE v.audiencia IN (${aud.map(() => '?').join(',')})
            ORDER BY v.audiencia = 'lider' DESC, v.orden`,
         )
@@ -135,6 +139,7 @@ export function crearApi(db, { seguro = false } = {}) {
           audiencia: f.audiencia,
           visto: Boolean(f.visto_en),
           vistoEn: f.visto_en,
+          simulador: f.aciertos === null ? null : { aciertos: f.aciertos, total: f.total_preguntas, aprobado: f.aciertos >= APROBACION_MINIMA, seguridad: f.seguridad },
         })),
       });
     },
@@ -165,8 +170,11 @@ export function crearApi(db, { seguro = false } = {}) {
       // Un líder ve quién vio cada video; un empleado solo ve sus propias vistas.
       const vistas = db
         .prepare(
-          `SELECT s.video_id, s.visto_en, u.id AS usuario_id, u.nombre, u.rol FROM vistas s
+          `SELECT s.video_id, s.visto_en, u.id AS usuario_id, u.nombre, u.rol,
+                  m.aciertos, m.total AS total_preguntas, m.seguridad
+           FROM vistas s
            JOIN usuarios u ON u.id = s.usuario_id
+           LEFT JOIN simulacros m ON m.video_id = s.video_id AND m.usuario_id = s.usuario_id
            ${esLider ? '' : 'WHERE u.id = ?'} ORDER BY s.visto_en DESC`,
         )
         .all(...(esLider ? [] : [u.id]));
@@ -183,10 +191,17 @@ export function crearApi(db, { seguro = false } = {}) {
           elegibles: v.audiencia === 'lider' ? totalLideres : totalUsuarios,
           vistas: vistas
             .filter((s) => s.video_id === v.id)
-            .map((s) => ({ usuarioId: s.usuario_id, nombre: s.nombre, rol: s.rol, vistoEn: s.visto_en })),
+            .map((s) => ({
+              usuarioId: s.usuario_id,
+              nombre: s.nombre,
+              rol: s.rol,
+              vistoEn: s.visto_en,
+              simulador: s.aciertos === null ? null : { aciertos: s.aciertos, total: s.total_preguntas, aprobado: s.aciertos >= APROBACION_MINIMA, seguridad: s.seguridad },
+            })),
         })),
       });
     },
+    ...rutasEtapaT({ db, sesionDe, enviar, leerJson, audienciasDe }),
   };
 
   return async function manejar(req, res) {

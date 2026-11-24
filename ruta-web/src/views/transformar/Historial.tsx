@@ -11,7 +11,7 @@ type Estado = { fase: 'cargando' } | { fase: 'error'; mensaje: string } | { fase
  * T2. Lista de videos; cada uno se despliega y muestra quién lo vio.
  * Un líder ve a todas las personas; un empleado solo ve sus propias vistas.
  */
-export function Historial() {
+export function Historial({ clave = '' }: { clave?: string }) {
   const { expirar } = useSesion();
   const [estado, setEstado] = useState<Estado>({ fase: 'cargando' });
 
@@ -27,7 +27,8 @@ export function Historial() {
     return () => {
       vigente = false;
     };
-  }, [expirar]);
+    // `clave` cambia cuando la persona ve un video o responde un simulador: se vuelve a leer.
+  }, [expirar, clave]);
 
   if (estado.fase === 'cargando') return <p role="status">Cargando historial…</p>;
   if (estado.fase === 'error') return <EstadoVacio titulo="No se pudo cargar el historial">{estado.mensaje}</EstadoVacio>;
@@ -47,8 +48,9 @@ export function Historial() {
 }
 
 function FilaHistorial({ video, verTodos }: { video: VideoHistorial; verTodos: boolean }) {
+  const aprobaron = video.vistas.filter((s) => s.simulador?.aprobado).length;
   const resumen = verTodos
-    ? `${video.vistas.length} de ${video.elegibles} ${video.elegibles === 1 ? 'persona' : 'personas'}`
+    ? `${video.vistas.length} de ${video.elegibles} ${video.elegibles === 1 ? 'persona' : 'personas'} · simulador aprobado: ${aprobaron}`
     : video.vistas.length > 0
       ? 'Visto'
       : 'Pendiente';
@@ -74,6 +76,8 @@ function FilaHistorial({ video, verTodos }: { video: VideoHistorial; verTodos: b
                 <th scope="col">Persona</th>
                 <th scope="col">Rol</th>
                 <th scope="col">Visto el</th>
+                <th scope="col">Simulador</th>
+                <th scope="col">Seguridad (1 a 5)</th>
               </tr>
             </thead>
             <tbody>
@@ -82,6 +86,10 @@ function FilaHistorial({ video, verTodos }: { video: VideoHistorial; verTodos: b
                   <th scope="row">{s.nombre}</th>
                   <td>{ETIQUETA_ROL[s.rol]}</td>
                   <td className="numero">{formatearFechaVista(s.vistoEn)}</td>
+                  <td className="numero">
+                    {s.simulador ? `${s.simulador.aciertos}/${s.simulador.total} · ${s.simulador.aprobado ? 'aprobado' : 'no aprobado'}` : 'Pendiente'}
+                  </td>
+                  <td className="numero">{s.simulador ? s.simulador.seguridad : '—'}</td>
                 </tr>
               ))}
             </tbody>

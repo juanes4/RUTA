@@ -1,0 +1,451 @@
+/* Etapa T: comunicación, simulador, acompañamiento y victorias tempranas. Solo usa tokens de DESIGN.md. */
+.bloques {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.texto {
+  font-size: var(--fs-label);
+  line-height: 1.55;
+}
+
+.subtitulo {
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.apoyo {
+  display: block;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.destacado {
+  padding: 16px 20px;
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.etiqueta {
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-card);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.guion {
+  margin-top: 8px;
+  padding-left: 12px;
+  border-left: 3px solid var(--text);
+  font-size: var(--fs-label);
+  font-style: italic;
+}
+
+.pasos {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--fs-label);
+  line-height: 1.5;
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-label);
+}
+
+.lista li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+}
+
+.pie {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mensajeOk,
+.mensajeError {
+  margin: 0;
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+.mensajeOk {
+  color: var(--positive);
+}
+
+.mensajeError {
+  color: var(--negative);
+}
+
+/* Resultado destacado (aprobado o meta alcanzada vs. por debajo). */
+.resultado {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  border: 1px solid var(--negative);
+  font-size: var(--fs-label);
+  font-weight: 600;
+}
+
+.resultado[data-aprobado='true'] {
+  border-color: var(--positive);
+  background: var(--badge-bg);
+}
+
+.simulador {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+}
+
+/* Tablas con desplazamiento propio en pantallas angostas. */
+.envolturaTabla {
+  overflow-x: auto;
+  border-radius: var(--radius-card);
+}
+
+.tabla,
+.tablaFlujo {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-label);
+  background: var(--bg-card);
+}
+
+.tabla th,
+.tabla td,
+.tablaFlujo th,
+.tablaFlujo td {
+  text-align: left;
+  vertical-align: top;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabla thead th,
+.tablaFlujo thead th {
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.tabla tbody th,
+.tablaFlujo tbody th {
+  font-weight: 600;
+}
+
+.tablaFlujo {
+  min-width: 760px;
+}
+
+.tablaFlujo tbody th {
+  min-width: 180px;
+}
+
+.nivel,
+.momento,
+.plan {
+  display: block;
+}
+
+.momento {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.plan {
+  margin-top: 6px;
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+
+/* Flujo de la etapa (índice). */
+.flujo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tituloFlujo {
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+}
+
+.introFlujo {
+  max-width: 78ch;
+  font-size: var(--fs-label);
+  line-height: 1.55;
+}
+
+/* Escalera de autonomía: cada escalón sube más que el anterior. */
+.escalera {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: end;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.escalon {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  font-size: var(--fs-label);
+  line-height: 1.4;
+}
+
+.escalon[data-nivel='1'] {
+  min-height: 150px;
+}
+.escalon[data-nivel='2'] {
+  min-height: 190px;
+}
+.escalon[data-nivel='3'] {
+  min-height: 230px;
+}
+.escalon[data-nivel='4'] {
+  min-height: 270px;
+  background: var(--pastel-mint);
+}
+
+.numeroEscalon {
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+}
+
+/* Dinámicas de equipo. */
+.dinamica {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+}
+
+.dinamica[open] {
+  border-color: var(--text);
+}
+
+.resumenDinamica {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 18px;
+  cursor: pointer;
+}
+
+.nombreDinamica {
+  flex: 1;
+  min-width: 160px;
+  font-weight: 600;
+}
+
+.cuerpoDinamica {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px 18px 18px;
+}
+
+.datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 0;
+  font-size: var(--fs-label);
+}
+
+.datos dt {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.datos dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+.tareas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+  font-size: var(--fs-label);
+}
+
+.tareas legend {
+  padding: 0;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.filaTarea {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.filaTarea > input[type='text'],
+.filaTarea > input:not([type]) {
+  flex: 1;
+  min-width: 200px;
+}
+
+.casilla {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-label);
+  cursor: pointer;
+}
+
+/* Tarjetas por ciclo (termómetro). */
+.tarjetasCiclo {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tarjetaCiclo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+}
+
+.tarjetaCiclo .lista li {
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: none;
+}
+
+/* Formulario de mérito. */
+.seccionForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--bg-soft);
+}
+
+.criterio {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dimension {
+  margin: 0;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.total {
+  margin: 0;
+  font-size: var(--fs-label);
+}
+
+/* Pieza de publicación: ¡UN MÉRITO QUE NOS IMPULSA! */
+.piezas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.pieza {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 22px;
+  border-radius: var(--radius-card);
+  background: var(--pastel-mint);
+  font-size: var(--fs-label);
+  line-height: 1.5;
+}
+
+.pieza p,
+.pieza h4 {
+  margin: 0;
+}
+
+.piezaTitulo {
+  font-family: var(--font-display);
+  font-size: var(--fs-card-title);
+  font-weight: 700;
+}
+
+.piezaMarca {
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+
+.piezaCierre {
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .escalera {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .escalon {
+    min-height: 0 !important;
+  }
+}

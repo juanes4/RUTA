@@ -151,6 +151,10 @@
   line-height: 1.35;
 }
 
+.visto[data-aprobado='false'] {
+  background: var(--pastel-cream);
+}
+
 .visto {
   padding: 2px 10px;
   border-radius: var(--radius-pill);

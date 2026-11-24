@@ -87,3 +87,113 @@ describe('API de sesión y videos', () => {
     expect(ultimo.estado).toBe(429);
   });
 });
+
+const post = (ruta, cuerpo, cookie) => pedir(ruta, { metodo: 'POST', cuerpo, cookie });
+
+describe('Etapa T · simulador (T2)', () => {
+  it('no entrega las respuestas correctas y exige haber visto el video', async () => {
+    const c = await entrar('empleado1');
+    const p = await pedir('/api/preguntas?videoId=emp-2', { cookie: c });
+    expect(p.json.preguntas).toHaveLength(3);
+    expect(JSON.stringify(p.json)).not.toContain('correcta');
+    expect((await post('/api/simulador', { videoId: 'emp-2', respuestas: [0, 1, 0], seguridad: 4 }, c)).estado).toBe(409);
+  });
+
+  it('califica, guarda y se ve en videos y en el historial del líder', async () => {
+    const c = await entrar('empleado3'); // empleado2 queda bloqueado por la prueba de intentos fallidos
+    await post('/api/vistas', { videoId: 'emp-2' }, c);
+    const r = await post('/api/simulador', { videoId: 'emp-2', respuestas: [0, 1, 1], seguridad: 3 }, c);
+    expect(r.json).toMatchObject({ aciertos: 2, total: 3, aprobado: true, seguridad: 3 });
+    const mis = await pedir('/api/videos', { cookie: c });
+    expect(mis.json.videos.find((v) => v.id === 'emp-2').simulador).toMatchObject({ aciertos: 2, aprobado: true });
+    const h = (await pedir('/api/historial', { cookie: await entrar('lider') })).json;
+    expect(h.videos.find((v) => v.id === 'emp-2').vistas.find((s) => s.nombre === 'Daniela Ríos').simulador.seguridad).toBe(3);
+  });
+
+  it('un empleado no accede a preguntas de videos de líder', async () => {
+    expect((await pedir('/api/preguntas?videoId=lid-1', { cookie: await entrar('empleado1') })).estado).toBe(404);
+  });
+});
+
+describe('Etapa T · registros (T1, T3, T4)', () => {
+  it('pulso: el empleado guarda y ve lo suyo; el líder ve todo', async () => {
+    const e = await entrar('empleado1');
+    expect((await post('/api/registros', { tipo: 'pulso', datos: { sesion: 'Reunión 1', claridad: 5, utilidad: 4, confianza: 3 } }, e)).estado).toBe(200);
+    expect((await post('/api/registros', { tipo: 'pulso', datos: { sesion: 'Reunión 1', claridad: 9, utilidad: 4, confianza: 3 } }, e)).estado).toBe(400);
+    expect((await pedir('/api/registros?tipo=pulso', { cookie: e })).json.registros.every((r) => r.nombre === 'Laura Gómez')).toBe(true);
+    expect((await pedir('/api/registros?tipo=pulso', { cookie: await entrar('lider') })).json.registros.length).toBeGreaterThan(0);
+  });
+
+  it('votos de escalera: uno por ciclo y momento; el líder solo ve conteos', async () => {
+    const e = await entrar('empleado1');
+    await post('/api/registros', { tipo: 'voto', datos: { ciclo: 1, momento: 'inicio', nivel: 1 } }, e);
+    await post('/api/registros', { tipo: 'voto', datos: { ciclo: 1, momento: 'inicio', nivel: 2 } }, e);
+    await post('/api/registros', { tipo: 'voto', datos: { ciclo: 1, momento: 'inicio', nivel: 2 } }, await entrar('empleado3'));
+    const lider = (await pedir('/api/registros?tipo=voto', { cookie: await entrar('lider') })).json;
+    expect(lider.conteos).toEqual([{ ciclo: 1, momento: 'inicio', niveles: [0, 2, 0, 0] }]);
+    expect((await pedir('/api/registros?tipo=voto', { cookie: e })).json.conteos).toBeNull();
+  });
+
+  it('solo el líder acuerda el escalón, guarda dinámicas, méritos y balances', async () => {
+    const e = await entrar('empleado1');
+    for (const tipo of ['acuerdo', 'dinamica', 'balance', 'merito']) {
+      expect((await post('/api/registros', { tipo, datos: {} }, e)).estado).toBe(403);
+    }
+    expect((await pedir('/api/registros?tipo=dinamica', { cookie: e })).estado).toBe(403);
+    expect((await pedir('/api/registros?tipo=termometro', { cookie: e })).estado).toBe(403);
+  });
+
+  it('dinámicas: máximo dos por ciclo', async () => {
+    const l = await entrar('lider');
+    const hoja = { escenario: 'Cliente molesto' };
+    expect((await post('/api/registros', { tipo: 'dinamica', datos: { dinamica: 'simulacro', ciclo: 2, hoja } }, l)).estado).toBe(200);
+    expect((await post('/api/registros', { tipo: 'dinamica', datos: { dinamica: 'circulo', ciclo: 2, hoja } }, l)).estado).toBe(200);
+    expect((await post('/api/registros', { tipo: 'dinamica', datos: { dinamica: 'parejas', ciclo: 2, hoja } }, l)).estado).toBe(409);
+  });
+
+  it('termómetro: anónimo y solo se reporta con 5 respuestas o más', async () => {
+    const l = await entrar('lider');
+    const enviar = (cookie) => post('/api/registros', { tipo: 'termometro', datos: { ciclo: 1, respuestas: [4, 4, 4, 4, 4] } }, cookie);
+    for (const u of ['empleado1', 'empleado3', 'lider', 'empleado1']) await enviar(await entrar(u));
+    let r = (await pedir('/api/registros?tipo=termometro', { cookie: l })).json;
+    expect(r.ciclos[0]).toMatchObject({ respuestas: 4, promedio: null, porAfirmacion: null });
+    await enviar(await entrar('empleado1'));
+    r = (await pedir('/api/registros?tipo=termometro', { cookie: l })).json;
+    expect(r.ciclos[0]).toMatchObject({ respuestas: 5, promedio: 4 });
+  });
+
+  const merito = (puntajes, extra = {}) => ({
+    area: 'Planta', fecha: '2026-11-20', cambio: 'Nuevo sistema', avance: 'Registran sin ayuda', participantes: 'Turno 1', comoAyuda: 'Menos errores',
+    pasaAValoracion: true,
+    criterios: Object.fromEntries(['cumplimiento', 'impacto', 'sostenibilidad', 'adaptacion', 'participacion', 'compromiso', 'equipo', 'iniciativa'].map((c, i) => [c, { puntaje: puntajes[i], evidencia: 'Registro semanal' }])),
+    ...extra,
+  });
+  const publicacion = { titulo: 'Turno 1 sin papel', logramos: 'Todo el turno registra en el sistema.', protagonistas: 'Turno 1', importancia: 'Ahorra tiempo.', mensaje: 'Gracias.', autorizacion: true };
+
+  it('méritos: suma, clasifica y solo publica con 24 puntos o más y autorización', async () => {
+    const l = await entrar('lider');
+    const alto = await post('/api/registros', { tipo: 'merito', datos: merito([4, 4, 4, 4, 4, 4, 4, 4], { publicar: true, publicacion }) }, l);
+    expect(alto.estado).toBe(200);
+    const bajo = await post('/api/registros', { tipo: 'merito', datos: merito([3, 3, 3, 3, 3, 3, 3, 2], { publicar: true, publicacion }) }, l);
+    expect(bajo.estado).toBe(400);
+    const sinAut = await post('/api/registros', { tipo: 'merito', datos: merito([4, 4, 4, 4, 4, 4, 4, 4], { publicar: true, publicacion: { ...publicacion, autorizacion: false } }) }, l);
+    expect(sinAut.estado).toBe(400);
+
+    const lista = (await pedir('/api/registros?tipo=merito', { cookie: l })).json.registros;
+    expect(lista[0]).toMatchObject({ total: 32, clasificacion: 'destacado', publicar: true });
+    // Los demás solo ven lo publicado, sin puntajes ni evidencia.
+    const emp = (await pedir('/api/registros?tipo=merito', { cookie: await entrar('empleado3') })).json.registros;
+    expect(emp).toHaveLength(1);
+    expect(emp[0].criterios).toBeUndefined();
+    expect(emp[0].publicacion.titulo).toBe('Turno 1 sin papel');
+  });
+
+  it('méritos: un 4 o un 5 exigen evidencia; sin evidencia no pasa a valoración', async () => {
+    const l = await entrar('lider');
+    const d = merito([5, 3, 3, 3, 3, 3, 3, 3]);
+    d.criterios.cumplimiento.evidencia = '';
+    expect((await post('/api/registros', { tipo: 'merito', datos: d }, l)).estado).toBe(400);
+    const sin = await post('/api/registros', { tipo: 'merito', datos: { area: 'Bodega', fecha: '2026-11-21', cambio: 'X', avance: 'Y', participantes: 'Z', comoAyuda: 'W', pasaAValoracion: false } }, l);
+    expect(sin.estado).toBe(200);
+  });
+});

@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { EstadoVacio } from '../../components/ui/EstadoVacio';
 import { useCapacitaciones } from '../../hooks/useCapacitaciones';
-import { formatearFechaVista, type Rol, type VideoCapacitacion } from '../../lib/api';
+import { formatearFechaVista, type ResultadoSimulador, type Rol, type VideoCapacitacion } from '../../lib/api';
 import { ReproductorYouTube } from './ReproductorYouTube';
+import { Simulador } from './Simulador';
 import estilos from './transformar.module.css';
 
 type Estado = ReturnType<typeof useCapacitaciones>['estado'];
@@ -10,6 +11,7 @@ type Estado = ReturnType<typeof useCapacitaciones>['estado'];
 interface Props {
   estado: Estado;
   alVer(videoId: string): void;
+  alResponder(videoId: string, resultado: ResultadoSimulador): void;
   esLider: boolean;
 }
 
@@ -27,7 +29,7 @@ export function InsigniaAudiencia({ audiencia }: { audiencia: Rol }) {
  * T1. Reproductor y lista de videos. El servidor solo entrega los videos del
  * rol de la persona: los de líder no llegan nunca al navegador de un empleado.
  */
-export function Capacitaciones({ estado, alVer, esLider }: Props) {
+export function Capacitaciones({ estado, alVer, alResponder, esLider }: Props) {
   const [elegido, setElegido] = useState<string | null>(null);
 
   if (estado.fase === 'cargando') return <p role="status">Cargando videos…</p>;
@@ -58,6 +60,8 @@ export function Capacitaciones({ estado, alVer, esLider }: Props) {
         </div>
       )}
 
+      {actual && <Simulador key={actual.id} video={actual} alResponder={(r) => alResponder(actual.id, r)} />}
+
       <p className={`${estilos.progreso} numero`}>
         Has visto {vistos} de {videos.length} videos
       </p>
@@ -86,6 +90,11 @@ export function Capacitaciones({ estado, alVer, esLider }: Props) {
                   <span className={estilos.textoVideo}>
                     <span className={estilos.nombreVideo}>{v.titulo}</span>
                     {v.visto && <span className={estilos.visto}>✓ Visto</span>}
+                    {v.simulador && (
+                      <span className={estilos.visto} data-aprobado={v.simulador.aprobado}>
+                        Simulador {v.simulador.aciertos}/{v.simulador.total}
+                      </span>
+                    )}
                   </span>
                 </button>
               </li>
