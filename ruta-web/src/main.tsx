@@ -7,6 +7,7 @@ import { AlmacenMemoria } from './lib/almacen/almacenMemoria';
 import { ETAPAS } from './config/etapas';
 import { ProveedorPasosVistos } from './estado/PasosVistosContexto';
 import { ProveedorProyecto } from './estado/ProyectoContexto';
+import { ProveedorSesion } from './estado/SesionContexto';
 import { ProveedorRuta } from './navegacion/RutaContexto';
 import './styles/tokens.css';
 import './styles/base.css';
@@ -26,11 +27,13 @@ if (!raiz) throw new Error('Falta el elemento #root en index.html');
 createRoot(raiz).render(
   <StrictMode>
     <ProveedorProyecto almacen={crearAlmacen()}>
-      <ProveedorRuta etapas={ETAPAS}>
-        <ProveedorPasosVistos>
-          <App />
-        </ProveedorPasosVistos>
-      </ProveedorRuta>
+      <ProveedorSesion>
+        <ProveedorRuta etapas={ETAPAS}>
+          <ProveedorPasosVistos>
+            <App />
+          </ProveedorPasosVistos>
+        </ProveedorRuta>
+      </ProveedorSesion>
     </ProveedorProyecto>
   </StrictMode>,
 );

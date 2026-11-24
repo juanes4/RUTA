@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 import type { Etapa } from '../../config/etapas';
+import { ETIQUETA_ROL, useSesion } from '../../estado/SesionContexto';
 import { useRuta } from '../../navegacion/RutaContexto';
 import type { Ruta } from '../../navegacion/rutas';
-import { IconoInicio, IconoTablero } from './Iconos';
+import { IconoIngresar, IconoInicio, IconoSalir, IconoTablero } from './Iconos';
 import estilos from './Marco.module.css';
 
 interface Props {
@@ -20,15 +21,31 @@ interface ElementoRiel {
   activo(ruta: Ruta): boolean;
 }
 
-function elementos(etapas: readonly Etapa[]): ElementoRiel[] {
+function elementos(etapas: readonly Etapa[], conSesion: boolean): ElementoRiel[] {
+  const inicio: ElementoRiel = {
+    clave: 'inicio',
+    etiqueta: 'Inicio',
+    ruta: { pagina: 'inicio' },
+    icono: <IconoInicio />,
+    // Con sesión abierta, #/ingresar muestra el inicio.
+    activo: (r) => r.pagina === 'inicio' || (conSesion && r.pagina === 'ingresar'),
+  };
+  // Sin sesión solo existe el inicio y el acceso al login; el resto aparece al entrar.
+  if (!conSesion) {
+    return [
+      inicio,
+      {
+        clave: 'ingresar',
+        etiqueta: 'Iniciar sesión',
+        ruta: { pagina: 'ingresar' },
+        icono: <IconoIngresar />,
+        // Sin sesión, cualquier otra página muestra el login.
+        activo: (r) => r.pagina !== 'inicio',
+      },
+    ];
+  }
   return [
-    {
-      clave: 'inicio',
-      etiqueta: 'Inicio',
-      ruta: { pagina: 'inicio' },
-      icono: <IconoInicio />,
-      activo: (r) => r.pagina === 'inicio',
-    },
+    inicio,
     ...etapas
       .filter((e) => e.activa)
       .map<ElementoRiel>((e) => ({
@@ -55,7 +72,13 @@ function elementos(etapas: readonly Etapa[]): ElementoRiel[] {
  * desplaza a su lado sin pasar por debajo.
  */
 export function Marco({ etapas, conBarraEtapas, children }: Props) {
-  const { ruta, enlace } = useRuta();
+  const { ruta, enlace, navegar } = useRuta();
+  const { usuario, cerrar } = useSesion();
+
+  const salir = async () => {
+    await cerrar();
+    navegar({ pagina: 'inicio' });
+  };
 
   return (
     <>
@@ -68,7 +91,7 @@ export function Marco({ etapas, conBarraEtapas, children }: Props) {
         <nav className={estilos.riel} aria-label="Navegación general">
           <span className={estilos.marca}>RUTA</span>
           <ul className={estilos.lista}>
-            {elementos(etapas).map((el) => {
+            {elementos(etapas, Boolean(usuario)).map((el) => {
               const activo = el.activo(ruta);
               return (
                 <li key={el.clave}>
@@ -88,6 +111,15 @@ export function Marco({ etapas, conBarraEtapas, children }: Props) {
               );
             })}
           </ul>
+          {usuario && (
+            <button type="button" className={`${estilos.enlace} ${estilos.salir}`} onClick={salir}>
+              <IconoSalir />
+              <span className="solo-lectores">Cerrar sesión</span>
+              <span className={estilos.ayuda} aria-hidden="true">
+                Cerrar sesión · {usuario.nombre} ({ETIQUETA_ROL[usuario.rol]})
+              </span>
+            </button>
+          )}
         </nav>
       </div>
       <main className={estilos.contenido} id="contenido" tabIndex={-1} data-con-barra={conBarraEtapas}>

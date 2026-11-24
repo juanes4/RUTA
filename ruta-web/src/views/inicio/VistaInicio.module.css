@@ -40,6 +40,19 @@
   font-weight: 500;
 }
 
+.ingreso {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.ingresoTexto {
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
 .idea {
   color: var(--text-muted);
 }

@@ -101,6 +101,19 @@
   text-decoration: none;
 }
 
+button.enlace {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Cerrar sesión: al fondo de la columna. */
+.salir {
+  margin-top: auto;
+}
+
 /* Elemento activo: píldora más clara (DESIGN.md, ref 04). */
 .enlace[data-activo='true'] {
   background: var(--bg-card);
@@ -191,6 +204,10 @@
 
   .ayuda {
     display: none;
+  }
+
+  .salir {
+    margin-top: 0;
   }
 
   .contenido {

@@ -1,0 +1,1057 @@
+/* Etapa A (Analizar): auditorías de adopción y mapa de viaje del colaborador. Solo usa tokens de DESIGN.md. */
+
+.bloques {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.texto {
+  margin: 0;
+  font-size: var(--fs-label);
+  line-height: 1.55;
+  max-width: 78ch;
+}
+
+.subtitulo {
+  margin: 0 0 8px;
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.apoyo {
+  display: block;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* ---------- Flujo de la etapa (índice) ---------- */
+
+.flujo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tituloFlujo {
+  margin: 0;
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+}
+
+.introFlujo {
+  margin: 0;
+  max-width: 78ch;
+  font-size: var(--fs-label);
+  line-height: 1.55;
+}
+
+/* ---------- Tablas ---------- */
+
+.envolturaTabla {
+  overflow-x: auto;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-label);
+  background: var(--bg-card);
+}
+
+.tabla th,
+.tabla td {
+  text-align: left;
+  vertical-align: middle;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabla tr:last-child th,
+.tabla tr:last-child td {
+  border-bottom: 0;
+}
+
+.tabla thead th {
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+  background: var(--bg-soft);
+}
+
+.tabla tbody th {
+  font-weight: 600;
+}
+
+.nombreIndicador {
+  display: block;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.formulaIndicador {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--fs-small);
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.valorCelda {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.metaCelda {
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+
+.barraPista {
+  margin-top: 6px;
+  width: 110px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-soft);
+  overflow: hidden;
+}
+
+.barraRelleno {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--text-muted);
+  transition: width 0.25s ease;
+}
+
+.barraRelleno[data-estado='en_meta'] {
+  background: var(--positive);
+}
+
+.barraRelleno[data-estado='atencion'] {
+  background: var(--text);
+}
+
+.barraRelleno[data-estado='intervenir'] {
+  background: var(--negative);
+}
+
+/* ---------- Tarjetas KPI resumen (A1) ---------- */
+
+.resumenKpi {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tarjetaKpi {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  font: inherit;
+  color: var(--text);
+  padding: 16px 18px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.tarjetaKpi:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(17, 17, 17, 0.08);
+}
+
+.tarjetaKpi[aria-pressed='true'] {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.tarjetaKpi[data-tono='oscuro'][aria-pressed='true'] {
+  outline-color: var(--accent-link);
+}
+
+.tarjetaKpi[data-tono='verde'] {
+  background: var(--pastel-mint);
+  border-color: transparent;
+}
+
+.tarjetaKpi[data-tono='amarillo'] {
+  background: var(--pastel-cream);
+  border-color: transparent;
+}
+
+.tarjetaKpi[data-tono='rojo'] {
+  background: var(--bg-card);
+  border-color: var(--negative);
+}
+
+.tarjetaKpi[data-tono='oscuro'] {
+  background: var(--bg-dark);
+  border-color: transparent;
+  color: var(--text-on-dark);
+}
+
+.kpiEtiqueta {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.tarjetaKpi[data-tono='oscuro'] .kpiEtiqueta,
+.tarjetaKpi[data-tono='oscuro'] .kpiDetalle {
+  color: var(--text-on-dark);
+  opacity: 0.8;
+}
+
+.kpiNumero {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.kpiDetalle {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+/* ---------- Cabecera de auditoría y metadatos ---------- */
+
+.encabezadoPanel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pildoras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.pildora {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text);
+}
+
+.pildora[data-tono='t'] {
+  background: var(--pastel-mint);
+  border-color: transparent;
+}
+
+.notaRegla {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ---------- Formulario de auditoría A1 ---------- */
+
+.gridIndicadores {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.cardIndicadorForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.cardIndicadorCabeza {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.filaInputs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.calculadora {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  font-size: var(--fs-small);
+}
+
+.calculadora summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--accent-link);
+}
+
+.calculadoraCampos {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  align-items: end;
+}
+
+.botonMini {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.botonMini:hover {
+  background: var(--pastel-mint);
+  border-color: transparent;
+}
+
+/* ---------- Historial y balances ---------- */
+
+.listaTarjetas {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tarjetaRegistro {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  font-size: var(--fs-label);
+  line-height: 1.5;
+}
+
+.tarjetaRegistro p {
+  margin: 0;
+}
+
+/* ---------- A2 · Mapa de viaje del colaborador ---------- */
+
+.panelMapa {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.cabeceraMapa {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.tituloMapa {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.leyendaMapa {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.itemLeyenda {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.puntoLeyenda {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.puntoLeyenda[data-carita='feliz'] {
+  background: var(--positive);
+}
+
+.puntoLeyenda[data-carita='neutra'] {
+  background: var(--text);
+}
+
+.puntoLeyenda[data-carita='preocupada'] {
+  background: var(--negative);
+}
+
+.figuraGrafico {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.svgEnv {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-card);
+  background: var(--bg-soft);
+  padding: 12px 8px 6px;
+}
+
+.svgGrafico {
+  display: block;
+  width: 100%;
+  min-width: 620px;
+  height: auto;
+}
+
+.nodoSvg {
+  cursor: pointer;
+  transition: opacity 0.16s ease;
+}
+
+.nodoSvg:hover {
+  opacity: 0.9;
+}
+
+.nodoSvg:focus-visible {
+  outline: none;
+}
+
+/* Tarjetas selectoras de las 4 fases bajo la curva */
+
+.gridFases {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.botonFase {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  padding: 14px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.botonFase:hover {
+  background: var(--bg-card);
+  border-color: var(--text-muted);
+}
+
+.botonFase[aria-pressed='true'] {
+  background: var(--bg-card);
+  border-color: var(--text);
+  box-shadow: 0 2px 10px rgba(17, 17, 17, 0.08);
+}
+
+.faseNumero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+
+.faseCabeza {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.faseTitulo {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.faseSubtitulo {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.chipCarita {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.chipCarita[data-carita='feliz'] {
+  background: var(--pastel-mint);
+}
+
+.chipCarita[data-carita='neutra'] {
+  background: var(--pastel-cream);
+}
+
+.chipCarita[data-carita='preocupada'] {
+  background: var(--bg-card);
+  border: 1px solid var(--negative);
+}
+
+/* Detalle de preguntas por fase */
+
+.detalleFase {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+}
+
+.listaPreguntasDetalle {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.itemPreguntaDetalle {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.barraOpcion {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  font-size: var(--fs-small);
+}
+
+.pistaOpcion {
+  grid-column: 1 / -1;
+  height: 7px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-soft);
+  overflow: hidden;
+}
+
+.rellenoOpcion {
+  height: 100%;
+  border-radius: var(--radius-pill);
+}
+
+.rellenoOpcion[data-letra='A'] {
+  background: var(--positive);
+}
+
+.rellenoOpcion[data-letra='B'] {
+  background: var(--text);
+}
+
+.rellenoOpcion[data-letra='C'] {
+  background: var(--negative);
+}
+
+/* Franja de hallazgos automáticos (A2) */
+
+.gridHallazgos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tarjetaHallazgo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  font-size: var(--fs-label);
+}
+
+.tarjetaHallazgo strong {
+  font-size: var(--fs-body);
+}
+
+/* Encuesta A2 */
+
+.bloqueFaseForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.progresoEncuesta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+.pistaProgreso {
+  flex: 1;
+  max-width: 240px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-soft);
+  overflow: hidden;
+}
+
+.rellenoProgreso {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--positive);
+  transition: width 0.2s ease;
+}
+
+.pieForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ---------- Visualizaciones ejecutivas A1 (Donut, Bullet chart y Evolución) ---------- */
+
+.gridGraficosA1 {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.92fr) minmax(0, 1.48fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.cardGrafico {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.cabeceraCardGrafico {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.tituloCardGrafico {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.cuerpoAnillo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  justify-content: center;
+}
+
+.svgAnillo {
+  width: 176px;
+  height: 176px;
+  flex-shrink: 0;
+}
+
+.arcoInteractivo {
+  cursor: pointer;
+  transition: opacity 0.2s ease, stroke-width 0.2s ease;
+}
+
+.leyendaAnillo {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.filaLeyendaBtn,
+.filaLeyendaFija {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radio-control);
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  font: inherit;
+  font-size: var(--fs-label);
+  color: var(--text);
+}
+
+.filaLeyendaBtn {
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.filaLeyendaBtn:hover {
+  background: var(--bg-card);
+  border-color: var(--text-muted);
+}
+
+.filaLeyendaBtn[aria-pressed='true'] {
+  background: var(--bg-card);
+  border-color: var(--text);
+}
+
+.muestraColor {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.nombreLeyenda {
+  flex: 1;
+  text-align: left;
+  font-weight: 500;
+}
+
+/* Bullet chart Valor vs. Meta */
+
+.leyendaMarcaMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.lineaMetaMini {
+  width: 3px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--text);
+}
+
+.listaBullet {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.filaBullet {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cabezaBullet {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: var(--fs-label);
+}
+
+.nombreBullet {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.cifrasBullet {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.metaBullet {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.pistaBullet {
+  position: relative;
+  height: 12px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-soft);
+}
+
+.zonaSeguraBullet {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: var(--radius-pill);
+  background: var(--pastel-mint);
+}
+
+.barraBullet {
+  position: relative;
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--text-muted);
+  transition: width 0.35s ease;
+}
+
+.barraBullet[data-estado='en_meta'] {
+  background: var(--positive);
+}
+
+.barraBullet[data-estado='atencion'] {
+  background: var(--text);
+}
+
+.barraBullet[data-estado='intervenir'] {
+  background: var(--negative);
+}
+
+.marcadorMetaBullet {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--bg-dark);
+  transform: translateX(-50%);
+  box-shadow: 0 0 0 2px var(--bg-card);
+}
+
+.pieBullet {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Curva de evolución histórica A1 */
+
+.selectorInline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.selectorInline select {
+  height: 34px;
+  padding: 0 10px;
+  border-radius: var(--radio-control);
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+
+.svgEvolucion {
+  display: block;
+  width: 100%;
+  min-width: 520px;
+  height: auto;
+}
+
+/* Delta frente a auditoría anterior + cabecera de tabla */
+
+.bloquesTabla {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.valorConDelta {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.deltaPildora {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--bg-soft);
+  color: var(--text-muted);
+}
+
+.deltaPildora[data-favorable='true'] {
+  background: var(--badge-bg);
+  color: var(--text);
+}
+
+.deltaPildora[data-favorable='false'] {
+  background: var(--bg-card);
+  border: 1px solid var(--negative);
+  color: var(--text);
+}
+
+/* Barra apilada global en Mapa del Colaborador (A2) */
+
+.bloqueMezcla {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: var(--radio-control);
+  background: var(--bg-soft);
+}
+
+.cabezaMezcla {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cifrasMezcla {
+  display: inline-flex;
+  gap: 14px;
+  font-size: var(--fs-small);
+  color: var(--text);
+}
+
+.barraApilada {
+  display: flex;
+  width: 100%;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  background: var(--bg-card);
+  gap: 2px;
+}
+
+.tramoApilado {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.tramoApilado[data-letra='A'] {
+  background: var(--positive);
+}
+
+.tramoApilado[data-letra='B'] {
+  background: var(--text);
+}
+
+.tramoApilado[data-letra='C'] {
+  background: var(--negative);
+}
+
+@media (max-width: 900px) {
+  .resumenKpi,
+  .gridFases {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gridIndicadores,
+  .gridHallazgos,
+  .gridGraficosA1 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tarjetaKpi,
+  .barraRelleno,
+  .barraBullet,
+  .tramoApilado,
+  .arcoInteractivo,
+  .botonFase {
+    transition: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .resumenKpi,
+  .gridFases,
+  .filaInputs,
+  .calculadoraCampos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

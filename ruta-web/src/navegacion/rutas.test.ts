@@ -17,10 +17,26 @@ describe('rutas', () => {
     expect(parsear('#/etapa/0/0.2')).toEqual({ pagina: 'etapa', etapaId: 'etapa-0', pasoId: '0.2' });
   });
 
-  it('las etapas vacías y los pasos que no existen no tienen página', () => {
-    expect(parsear('#/etapa/t')).toEqual({ pagina: 'no_encontrada' });
+  it('las rutas y los pasos que no existen no tienen página', () => {
+    expect(parsear('#/etapa/x')).toEqual({ pagina: 'no_encontrada' });
     expect(parsear('#/etapa/r/U1')).toEqual({ pagina: 'no_encontrada' });
     expect(parsear('#/otra')).toEqual({ pagina: 'no_encontrada' });
+  });
+
+  it('la etapa A y sus dos pasos', () => {
+    expect(parsear('#/etapa/a')).toEqual({ pagina: 'etapa', etapaId: 'etapa-a', pasoId: null });
+    expect(parsear('#/etapa/a/a1')).toEqual({ pagina: 'etapa', etapaId: 'etapa-a', pasoId: 'A1' });
+    expect(parsear('#/etapa/A/a2')).toEqual({ pagina: 'etapa', etapaId: 'etapa-a', pasoId: 'A2' });
+    expect(parsear('#/etapa/a/a3')).toEqual({ pagina: 'no_encontrada' });
+  });
+
+  it('la etapa T y sus cuatro pasos; el inicio de sesión', () => {
+    expect(parsear('#/etapa/t')).toEqual({ pagina: 'etapa', etapaId: 'etapa-t', pasoId: null });
+    expect(parsear('#/etapa/t/t2')).toEqual({ pagina: 'etapa', etapaId: 'etapa-t', pasoId: 'T2' });
+    expect(parsear('#/etapa/t/t4')).toEqual({ pagina: 'etapa', etapaId: 'etapa-t', pasoId: 'T4' });
+    expect(parsear('#/etapa/t/t5')).toEqual({ pagina: 'no_encontrada' });
+    expect(parsear('#/ingresar')).toEqual({ pagina: 'ingresar' });
+    expect(hashDe({ pagina: 'ingresar' }, ETAPAS)).toBe('#/ingresar');
   });
 
   it('ida y vuelta: el hash generado se vuelve a leer igual', () => {

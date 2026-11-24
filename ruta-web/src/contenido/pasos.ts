@@ -101,6 +101,10 @@ export const DESCRIPCION_ETAPA: Readonly<Record<string, string>> = {
     'Dejar claro por qué se cambia, saber quién apoya y quién se resiste, medir desde dónde parte cada grupo y decidir con datos si se lanza, se ajusta o se pospone. De 2 a 3 semanas antes del lanzamiento.',
   'etapa-u':
     'Desde el lanzamiento hasta el día 90, en ciclos de 2 semanas. Salida: el cambio en uso, medido y ajustado cada ciclo.',
+  'etapa-t':
+    'Acompañamiento de equipos con los cuatro niveles de Kirkpatrick: cómo reaccionan, qué aprenden, qué hacen distinto y qué resultados se logran.',
+  'etapa-a':
+    'Sostenibilidad y evaluación continua: auditorías periódicas de adopción en el tablero del equipo y mapa de viaje del colaborador.',
 };
 
 /** Acciones de U1 según el punto de bloqueo (CONTEXTO §4). */
@@ -131,5 +135,5 @@ export const RECORRIDO: readonly PasoRecorrido[] = [
   { verbo: 'Decidir', pregunta: '¿Lanzamos ya?', herramienta: 'Registro de decisión (R7)', etapaId: 'etapa-r' },
   { verbo: 'Acompañar', pregunta: '¿Cómo los apoyamos?', herramienta: 'Ciclos de 2 semanas (U1 a U4)', etapaId: 'etapa-u' },
   { verbo: 'Acompañar', pregunta: '¿Está funcionando?', herramienta: 'Indicadores y tablero (U5)', etapaId: 'etapa-u' },
-  { verbo: 'Comprobar', pregunta: '¿Ya se adoptó?', herramienta: 'Medición a 30, 60 y 90 días (por definir)', etapaId: null },
+  { verbo: 'Comprobar', pregunta: '¿Cómo hacemos que se quede?', herramienta: 'Tablero del equipo y mapa de viaje (A1 y A2)', etapaId: 'etapa-a' },
 ];
