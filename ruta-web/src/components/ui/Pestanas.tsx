@@ -10,15 +10,17 @@ export interface Pestana {
 interface Props {
   etiqueta: string;
   pestanas: readonly Pestana[];
+  /** Pestaña que se abre primero (por omisión, la primera). */
+  inicial?: string;
 }
 
 /**
  * Pestañas con subrayado bajo la activa (DESIGN.md). Los paneles siguen
  * montados al cambiar de pestaña, para no perder un formulario a medio llenar.
  */
-export function Pestanas({ etiqueta, pestanas }: Props) {
+export function Pestanas({ etiqueta, pestanas, inicial }: Props) {
   const base = useId();
-  const [activa, setActiva] = useState(pestanas[0]?.id ?? '');
+  const [activa, setActiva] = useState(pestanas.some((p) => p.id === inicial) ? (inicial as string) : (pestanas[0]?.id ?? ''));
 
   const moverCon = (evento: KeyboardEvent, indice: number) => {
     const paso = evento.key === 'ArrowRight' ? 1 : evento.key === 'ArrowLeft' ? -1 : 0;

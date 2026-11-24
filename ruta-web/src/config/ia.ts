@@ -1,11 +1,17 @@
 /**
- * Capa de agentes de IA (PLAN §8). Apagada: no entra el 13 de noviembre.
+ * Capa de agentes de IA (PLAN §8). Encendida solo para el Copiloto de
+ * Reconocimiento (etapa R), que usa la API de Gemini desde el servidor.
  * Mientras `habilitada` sea false no se muestra ningún botón ni texto de IA.
  */
 export const CONFIG_IA = {
-  habilitada: false,
-  /** Ningún dato de grupos más pequeños que esto llega a un agente. */
+  habilitada: true,
+  /** Ningún dato de grupos más pequeños que esto se muestra por separado. */
   minimoPersonasPorGrupo: 5,
-  /** Textos abiertos reales solo a modelos locales o con contrato de datos (Ley 1581). */
+  /**
+   * Textos abiertos reales solo con contrato de datos (Ley 1581). Quien decide
+   * es el servidor: sin RUTA_IA_DATOS_REALES=permitido solo envía a Gemini el
+   * buzón de prueba, y el enmascarado se aplica siempre. Este valor solo
+   * cambia los avisos de la interfaz.
+   */
   permitirTextosAbiertosEnIaPublica: false,
 } as const;

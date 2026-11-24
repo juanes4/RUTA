@@ -2,6 +2,7 @@ import { useState, type CSSProperties, type KeyboardEvent } from 'react';
 import type { Etapa } from '../../config/etapas';
 import { usePasosVistos } from '../../estado/PasosVistosContexto';
 import { useRuta } from '../../navegacion/RutaContexto';
+import { SimboloEtapa } from '../etapa/SimboloEtapa';
 import { calcularEstadoNavegacion, type EstadoNodo } from './estadoNavegacion';
 import estilos from './NavegacionEtapas.module.css';
 
@@ -71,7 +72,7 @@ function NodoActivo({ nodo, abierta, alAlternar, alElegir }: PropsNodoActivo) {
         aria-label={`${etapa.nombre}, ${pasosVistos} de ${totalPasos} pasos vistos`}
         onClick={alElegir}
       >
-        {etapa.letra}
+        <SimboloEtapa etapa={etapa} tamano={18} />
       </a>
       <div className={estilos.etiqueta}>
         <span className={estilos.nombre}>{etapa.nombre}</span>

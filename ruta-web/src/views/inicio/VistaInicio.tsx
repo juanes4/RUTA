@@ -1,30 +1,66 @@
-import type { CSSProperties } from 'react';
+import type { ComponentType, CSSProperties } from 'react';
 import type { Etapa } from '../../config/etapas';
 import { DESCRIPCION_ETAPA, RECORRIDO } from '../../contenido/pasos';
+import { SimboloEtapa } from '../../components/etapa/SimboloEtapa';
+import {
+  IconoAcompanar,
+  IconoComprobar,
+  IconoComunicar,
+  IconoEntender,
+  IconoEscuchar,
+  IconoTransformar,
+} from '../../components/marco/Iconos';
 import { Boton } from '../../components/ui/Boton';
 import { useProyecto } from '../../estado/ProyectoContexto';
 import { useSesion } from '../../estado/SesionContexto';
-import { fasesDelRecorrido, type PasoNumerado } from '../../lib/recorrido';
+import { fasesDelRecorrido } from '../../lib/recorrido';
 import { useRuta } from '../../navegacion/RutaContexto';
+import { RecorridoCinta } from './RecorridoCinta';
 import estilos from './VistaInicio.module.css';
 
 interface Props {
   etapas: readonly Etapa[];
 }
 
-/** Línea de tiempo: la última fase es la llegada, bajo la punta de la flecha. */
+/** Las fases del recorrido (pasos seguidos con el mismo verbo), para la línea de la portada. */
 const FASES = fasesDelRecorrido(RECORRIDO);
-const TRAMO = FASES.slice(0, -1);
-const LLEGADA = FASES.at(-1);
 
 const fondo = (color: string | undefined) => ({ '--fondo': color ?? 'var(--bg-soft)' }) as CSSProperties;
 
-function TextoPaso({ paso }: { paso: PasoNumerado }) {
+/** Icono de cada fase en la línea de la portada. */
+const ICONO_FASE: Readonly<Record<string, ComponentType<{ tamano?: number }>>> = {
+  Entender: IconoEntender,
+  Escuchar: IconoEscuchar,
+  Comunicar: IconoComunicar,
+  Acompañar: IconoAcompanar,
+  Transformar: IconoTransformar,
+  Comprobar: IconoComprobar,
+};
+
+/** Las 6 fases en una línea: punto e icono con el color de la etapa a la que pertenecen. */
+function FasesPortada({ etapas }: { etapas: readonly Etapa[] }) {
   return (
-    <>
-      <p className={estilos.pregunta}>{paso.pregunta}</p>
-      <p className={estilos.herramienta}>{paso.herramienta}</p>
-    </>
+    <ol className={estilos.fasesPortada} aria-label="Las fases del cambio">
+      {FASES.map((fase, i) => {
+        const Icono = ICONO_FASE[fase.verbo];
+        const color = etapas.find((e) => e.id === fase.pasos[0]?.etapaId)?.color ?? 'var(--bg-soft)';
+        return (
+          <li key={fase.verbo} className={estilos.fasePortada} data-halo={i % 2 === 0} style={{ '--color-fase': color } as CSSProperties}>
+            <span className={estilos.faseMarca} aria-hidden="true" />
+            <span className={estilos.faseIcono} aria-hidden="true">
+              {Icono && <Icono />}
+            </span>
+            <span className={estilos.faseNombre}>
+              {fase.verbo}
+              <span className="solo-lectores">
+                {' '}
+                ({fase.pasos.length} {fase.pasos.length === 1 ? 'paso' : 'pasos'})
+              </span>
+            </span>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
 
@@ -33,8 +69,6 @@ export function VistaInicio({ etapas }: Props) {
   const { activo } = useProyecto();
   const { usuario } = useSesion();
   const { enlace, navegar } = useRuta();
-  const tono = (paso: PasoNumerado) =>
-    ({ '--tono': etapas.find((e) => e.id === paso.etapaId)?.tonos?.[paso.posicionEnEtapa] ?? 'var(--bg-page)' }) as CSSProperties;
 
   return (
     <div className={estilos.inicio}>
@@ -42,18 +76,18 @@ export function VistaInicio({ etapas }: Props) {
         <p className={estilos.antetitulo}>Metodología de transformación organizacional</p>
         <h1>RUTA</h1>
         <p className={estilos.reto}>
-          RUTA es una aplicación que acompaña a las empresas en sus procesos de transformación organizacional mediante
-          etapas, herramientas y un tablero para orientar y dar seguimiento al cambio.
+          RUTA es una aplicación que acompaña a las empresas en sus procesos de transformación organizacional mediante <strong>etapas</strong>,{' '}
+          <strong>herramientas</strong> y un <strong>tablero</strong> para orientar y dar seguimiento al cambio.
         </p>
-        <p className={estilos.ruta}>Entender → escuchar → comunicar → acompañar → transformar → comprobar.</p>
         {!usuario && (
           <div className={estilos.ingreso}>
-            <Boton variante="secundario" onClick={() => navegar({ pagina: 'ingresar' })}>
+            <Boton onClick={() => navegar({ pagina: 'ingresar' })}>
               Iniciar sesión
             </Boton>
             <span className={estilos.ingresoTexto}>Ingresa para abrir las etapas y el tablero.</span>
           </div>
         )}
+        <FasesPortada etapas={etapas} />
       </header>
 
       <section aria-labelledby="titulo-accesos">
@@ -69,7 +103,9 @@ export function VistaInicio({ etapas }: Props) {
                   style={fondo(etapa.color)}
                   href={enlace({ pagina: 'etapa', etapaId: etapa.id, pasoId: null })}
                 >
-                  <span className={estilos.letra}>{etapa.letra}</span>
+                  <span className={estilos.letra}>
+                    <SimboloEtapa etapa={etapa} />
+                  </span>
                   <span className={estilos.nombreAcceso}>{etapa.nombre}</span>
                   <span className={estilos.descripcion}>{DESCRIPCION_ETAPA[etapa.id]}</span>
                   <span className={`${estilos.pasos} numero`}>{etapa.pasos.length} pasos</span>
@@ -103,46 +139,7 @@ export function VistaInicio({ etapas }: Props) {
         <h2 id="titulo-recorrido" className={estilos.tituloSeccion}>
           El recorrido en 11 pasos
         </h2>
-        <div className={estilos.recorrido}>
-          <div className={estilos.tramo}>
-            <ol className={estilos.fases}>
-              {TRAMO.map((fase) => (
-                <li key={fase.verbo} className={estilos.fase}>
-                  <p className={estilos.verbo}>{fase.verbo}</p>
-                  <ol className={estilos.pasosFase}>
-                    {fase.pasos.map((p) => (
-                      <li key={p.numero} className={estilos.paso} data-lado={p.numero % 2 === 1 ? 'derecha' : 'izquierda'} style={tono(p)}>
-                        <span className={estilos.nodo} aria-hidden="true" />
-                        <div className={estilos.contenido}>
-                          <div className={estilos.cabeza}>
-                            <span className={estilos.numeroGrande}>{String(p.numero).padStart(2, '0')}</span>
-                            <span className={estilos.punto} aria-hidden="true" />
-                            <span className={estilos.conector} aria-hidden="true" />
-                          </div>
-                          <TextoPaso paso={p} />
-                        </div>
-                      </li>
-                    ))}
-                  </ol>
-                </li>
-              ))}
-            </ol>
-            <svg className={estilos.punta} viewBox="0 0 20 16" aria-hidden="true">
-              <path d="M0 0h20L10 16z" />
-            </svg>
-          </div>
-          {LLEGADA && (
-            <div className={estilos.llegada}>
-              <p className={estilos.verbo}>{LLEGADA.verbo}</p>
-              {LLEGADA.pasos.map((p) => (
-                <div key={p.numero} className={estilos.pasoLlegada} style={tono(p)}>
-                  <span className={estilos.numeroGrande}>{String(p.numero).padStart(2, '0')}</span>
-                  <TextoPaso paso={p} />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <RecorridoCinta />
       </section>
     </div>
   );

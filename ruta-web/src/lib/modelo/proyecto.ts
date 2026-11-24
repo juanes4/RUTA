@@ -1,3 +1,4 @@
+import { COPILOTO_VACIO, type DatosCopiloto } from '../copiloto/tipos';
 import type {
   AlcanceDespliegue,
   ElementoOrganizacion,
@@ -166,6 +167,8 @@ export const EMPATIA_VACIA: MapaEmpatia = {
 
 /** Todo lo que se captura para un proyecto en las etapas R y U. */
 export interface DatosProyecto {
+  /** Copiloto de Reconocimiento (etapa R): informe del buzón, entrevista del lienzo, triaje y dossier. */
+  copiloto: DatosCopiloto;
   lienzo: Lienzo;
   triaje: Triaje;
   foda: FilaFoda[];
@@ -178,6 +181,7 @@ export interface DatosProyecto {
 }
 
 export const DATOS_VACIOS: DatosProyecto = {
+  copiloto: COPILOTO_VACIO,
   lienzo: LIENZO_VACIO,
   triaje: TRIAJE_VACIO,
   foda: [],

@@ -66,11 +66,10 @@
   font-weight: 500;
 }
 
-.volver a,
-.enlacePaso {
-  color: var(--text);
-  font-size: var(--fs-label);
-  font-weight: 500;
+/* "Paso 2 de 5", al lado del enlace de volver. */
+.volver > :global(.numero) {
+  color: var(--text-muted);
+  font-size: var(--fs-small);
 }
 
 .anteriorSiguiente {

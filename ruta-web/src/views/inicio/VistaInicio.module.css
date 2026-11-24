@@ -4,40 +4,56 @@
   gap: 40px;
 }
 
-/* Portada: tarjeta destacada en negro (DESIGN.md), la sección principal de la app. */
+/*
+ * Portada: tarjeta de vidrio claro con un degradado que va del azul (arriba a
+ * la izquierda) al crema (abajo a la derecha), como las manchas de luz del fondo.
+ */
 .presentacion {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 48px;
-  border-radius: var(--radius-container);
-  background: var(--bg-dark);
-  color: var(--text-on-dark);
-  box-shadow: var(--sombra-panel);
+  gap: 20px;
+  padding: 56px 64px 44px;
+  border: 1px solid var(--glass-border);
+  border-radius: 36px;
+  background:
+    radial-gradient(120% 90% at 100% 100%, color-mix(in srgb, var(--pastel-cream) 75%, transparent), transparent 55%),
+    linear-gradient(160deg, color-mix(in srgb, var(--pastel-blue) 85%, white), color-mix(in srgb, var(--bg-card) 80%, transparent) 60%);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: 0 24px 60px rgba(17, 17, 17, 0.14);
+  color: var(--text);
+  overflow: hidden;
 }
 
 .presentacion h1 {
-  font-size: var(--fs-number);
-  line-height: 1.1;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(48px, 7vw, 76px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
 }
 
 .antetitulo {
-  font-size: var(--fs-label);
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-body);
   font-weight: 500;
+  letter-spacing: 0.06em;
 }
 
 .reto {
-  font-family: var(--font-display);
-  font-size: var(--fs-page-title);
-  font-weight: 600;
-  line-height: 1.25;
-  max-width: 760px;
+  margin: 0;
+  max-width: 780px;
+  font-family: var(--font-ui);
+  font-size: clamp(19px, 2.4vw, 27px);
+  font-weight: 400;
+  line-height: 1.55;
 }
 
-.ruta {
-  margin-top: 8px;
-  font-size: var(--fs-label);
-  font-weight: 500;
+.reto strong {
+  font-weight: 700;
 }
 
 .ingreso {
@@ -45,12 +61,96 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 16px;
-  margin-top: 12px;
+  margin-top: 4px;
 }
 
 .ingresoTexto {
+  color: var(--text-muted);
   font-size: var(--fs-label);
   font-weight: 500;
+}
+
+/* Línea de las 6 fases: punto de color, icono en un círculo y nombre. */
+.fasesPortada {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Línea punteada que une los círculos, a la altura de su centro. */
+.fasesPortada::before {
+  content: '';
+  position: absolute;
+  top: 42px;
+  left: calc(100% / 12);
+  right: calc(100% / 12);
+  border-top: 1.5px dashed color-mix(in srgb, var(--text-muted) 55%, transparent);
+}
+
+.fasePortada {
+  position: relative;
+  /* Sobre la línea punteada, con el halo por detrás del círculo. */
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.faseMarca {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-fase) 45%, var(--text-muted));
+}
+
+.faseIcono {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--color-fase);
+  color: var(--text);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--bg-card) 60%, transparent),
+    0 6px 16px rgba(17, 17, 17, 0.1);
+}
+
+/* Cápsula suave detrás de las fases alternas, como un halo. */
+.fasePortada[data-halo='true'] .faseIcono::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -2px -24px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-fase) 55%, transparent);
+}
+
+.faseNombre {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  .presentacion {
+    padding: 36px 24px 32px;
+    border-radius: var(--radius-container);
+  }
+
+  .fasesPortada {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: 22px;
+  }
+
+  .fasesPortada::before {
+    display: none;
+  }
 }
 
 .idea {
@@ -146,249 +246,9 @@ a.acceso:hover {
   color: var(--text-muted);
 }
 
-/* Recorrido: línea de tiempo vertical con eje, nodos y pasos alternados a cada lado. */
-.recorrido {
-  --nodo: 44px;
-  --ancho-eje: 72px;
-  --medio-eje: 50%;
-  max-width: 860px;
-  margin: 0 auto;
-}
-
-.tramo {
-  position: relative;
-  padding-bottom: 20px;
-}
-
-/* El eje recorre todo el tramo y termina en la punta de la flecha. */
-.tramo::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 12px;
-  left: var(--medio-eje);
-  width: 2px;
-  margin-left: -1px;
-  background: var(--text-muted);
-}
-
-.punta {
-  position: absolute;
-  bottom: 0;
-  left: var(--medio-eje);
-  width: 20px;
-  height: 16px;
-  margin-left: -10px;
-  fill: var(--text-muted);
-}
-
-.fases,
-.pasosFase {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.fases,
-.fase {
-  gap: 20px;
-}
-
-.pasosFase {
-  gap: 16px;
-}
-
-.fase {
-  display: flex;
-  flex-direction: column;
-}
-
-.verbo {
-  position: relative;
-  width: fit-content;
-  margin: 0 auto;
-  padding: 6px 18px;
-  border-radius: var(--radius-pill);
-  background: var(--bg-dark);
-  color: var(--text-on-dark);
-  font-family: var(--font-display);
-  font-size: var(--fs-label);
-  font-weight: 600;
-}
-
-.paso {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--ancho-eje) minmax(0, 1fr);
-  align-items: start;
-}
-
-.nodo {
-  grid-column: 2;
-  grid-row: 1;
-  position: relative;
-  justify-self: center;
-  display: grid;
-  place-items: center;
-  width: var(--nodo);
-  height: var(--nodo);
-  border: 2px solid var(--text);
-  border-radius: 50%;
-  background: var(--tono);
-}
-
-.nodo::after {
-  content: '';
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--bg-dark);
-}
-
-.contenido {
-  grid-row: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-
-.paso[data-lado='izquierda'] .contenido {
-  grid-column: 1;
-  align-items: flex-start;
-}
-
-.paso[data-lado='derecha'] .contenido {
-  grid-column: 3;
-  align-items: flex-end;
-  text-align: right;
-}
-
-.cabeza {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  align-self: stretch;
-  height: var(--nodo);
-}
-
-/* La línea sale del nodo: se extiende sobre el hueco del eje hasta tocarlo. */
-.paso[data-lado='izquierda'] .cabeza {
-  margin-right: calc((var(--nodo) - var(--ancho-eje)) / 2);
-}
-
-.paso[data-lado='derecha'] .cabeza {
-  flex-direction: row-reverse;
-  margin-left: calc((var(--nodo) - var(--ancho-eje)) / 2);
-}
-
-.numeroGrande {
-  font-family: var(--font-display);
-  font-size: var(--fs-number);
-  font-weight: 600;
-  line-height: 1;
-}
-
-.punto {
-  flex: none;
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--text);
-  border-radius: 50%;
-  background: var(--tono);
-}
-
-.conector {
-  flex: 1;
-  height: 2px;
-  margin-inline: -10px;
-  background: var(--text);
-}
-
-.pregunta {
-  max-width: 300px;
-  padding: 8px 14px;
-  border-radius: var(--radio-control);
-  background: var(--tono);
-  font-weight: 600;
-}
-
-.herramienta {
-  max-width: 300px;
-  font-size: var(--fs-label);
-}
-
-.llegada {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  margin-top: 8px;
-  text-align: center;
-}
-
-.pasoLlegada {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
 @media (max-width: 1100px) {
   .accesos {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-/* Sin ancho para dos lados: el eje pasa a la izquierda y todo queda a su derecha. */
-@media (max-width: 720px) {
-  .recorrido {
-    --ancho-eje: 56px;
-    --medio-eje: 28px;
-  }
-
-  .verbo {
-    margin: 0 0 0 calc(var(--ancho-eje) + 8px);
-  }
-
-  .paso {
-    grid-template-columns: var(--ancho-eje) minmax(0, 1fr);
-  }
-
-  .nodo {
-    grid-column: 1;
-  }
-
-  .paso[data-lado] .contenido {
-    grid-column: 2;
-    align-items: flex-start;
-    text-align: left;
-  }
-
-  .paso[data-lado] .cabeza {
-    flex-direction: row-reverse;
-    justify-content: flex-end;
-    margin: 0 0 0 calc((var(--nodo) - var(--ancho-eje)) / 2);
-  }
-
-  .conector {
-    flex: 0 0 28px;
-  }
-
-  .llegada {
-    align-items: flex-start;
-    padding-left: calc(var(--ancho-eje) + 8px);
-    text-align: left;
-  }
-
-  .llegada .verbo {
-    margin: 0;
-  }
-
-  .pasoLlegada {
-    align-items: flex-start;
   }
 }
 

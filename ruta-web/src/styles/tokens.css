@@ -5,7 +5,9 @@
  */
 :root {
   /* Base (refs 01 y 03) */
-  --bg-page: #E8ECF4;
+  --bg-page: #A0C8E0; /* base */
+  --bg-page-light: #C2D8E8; /* lighter */
+  --bg-page-dark: #6A8FA0; /* darker (still cyan) */
   --bg-card: #FFFFFF;
   --bg-soft: #F3F5FA;
   --bg-dark: #1C1C1E;
@@ -19,6 +21,8 @@
   --pastel-mint: #D5EDDC;
   --pastel-cream: #FBF1CC;
   --pastel-blue: #DCEBFB;
+  /* Etapa 0 (registro de la empresa): amarillo miel suave, cálido y uniforme. */
+  --pastel-durazno: #FAE7C3;
 
   /* Tonos del recorrido: de la etapa, de su pastel hacia más intenso. */
   --tono-r-1: var(--pastel-blue);
@@ -36,6 +40,43 @@
   --negative: #D64550;
   --accent-action: #BFDDFB;
   --accent-link: #3445D6;
+
+  /*
+   * Avisos que hay que leer: tarjeta con degradado (claro → tono), línea fina,
+   * icono del color fuerte y texto oscuro del mismo matiz.
+   */
+  --atencion-bg-claro: #FFF9E0; /* very soft warm yellow */
+  --atencion-bg: #FFE5B4; /* warm cream */
+  --atencion-linea: #FFC107; /* golden line */
+  --atencion-borde: #FFB300; /* amber border */
+  --atencion-texto: #5D4037; /* warm dark text */
+  --peligro-bg-claro: #FFF3F4;
+  --peligro-bg: #FBDDE0;
+  --peligro-linea: #F1B4BA;
+  --peligro-borde: var(--negative);
+  --peligro-texto: #7A1620;
+  --info-bg-claro: #F4F8FF;
+  --info-bg: #E2ECFB;
+  --info-linea: #CBDBF3;
+  --info-icono: #6E8FCB;
+  --info-borde: var(--accent-link);
+  --info-texto: #3B4556;
+
+  /* Tarjetas suaves (mismo estilo que los avisos): fondo claro → pastel y línea fina. */
+  --lavanda-claro: #FAF7FE;
+  --lavanda-linea: #E3D9F3;
+  --menta-claro: #F4FBF6;
+  --menta-linea: #CFE7D7;
+  --violeta-suave: #A9A7EE;
+  --sombra-suave: 0 6px 20px rgba(17, 17, 17, 0.06);
+
+  /* Cinta del recorrido en el Inicio: un color por fase, de azul a naranja. */
+  --recorrido-entender: #93B4F2;
+  --recorrido-escuchar: #BBA9EE;
+  --recorrido-comunicar: #A98BE6;
+  --recorrido-acompanar: #7DD8CE;
+  --recorrido-transformar: #F5D88E;
+  --recorrido-comprobar: #F0B25E;
 
   /* Vidrio (refs 02 y 04) */
   --glass-bg: rgba(255, 255, 255, 0.60);

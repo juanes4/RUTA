@@ -31,6 +31,11 @@ describe('rutas', () => {
     expect(hashDe({ pagina: 'ingresar' }, ETAPAS)).toBe('#/ingresar');
   });
 
+  it('la página del copiloto vive dentro de R y no en otras etapas', () => {
+    expect(parsear('#/etapa/r/copiloto')).toEqual({ pagina: 'etapa', etapaId: 'etapa-r', pasoId: 'copiloto' });
+    expect(parsear('#/etapa/u/copiloto')).toEqual({ pagina: 'no_encontrada' });
+  });
+
   it('ida y vuelta: el hash generado se vuelve a leer igual', () => {
     const ruta = { pagina: 'etapa' as const, etapaId: 'etapa-u', pasoId: 'U4' };
     expect(parsear(hashDe(ruta, ETAPAS))).toEqual(ruta);

@@ -3,7 +3,8 @@ import { Boton } from '../../components/ui/Boton';
 import { CampoArea, CampoSeleccion, CampoTexto } from '../../components/ui/Campo';
 import { EstadoVacio } from '../../components/ui/EstadoVacio';
 import { Pestanas } from '../../components/ui/Pestanas';
-import { PREGUNTAS_BUZON1, type CampoBuzon1 } from '../../config/formularios/buzon1';
+import { GRUPOS_BUZON1, PREGUNTAS_BUZON1, SIN_GRUPO, type CampoBuzon1 } from '../../config/formularios/buzon1';
+import { BuzonEnLinea } from './BuzonEnLinea';
 import { EXPLICACION_BUZON1 as EX } from '../../contenido/reconocer';
 import { useProyecto } from '../../estado/ProyectoContexto';
 import { COLUMNAS_PLANTILLA, fusionarBuzon1, importarBuzon1 } from '../../lib/captura/buzon1Csv';
@@ -14,7 +15,7 @@ import formulario from '../etapa0/formulario.module.css';
 import { BorrarRespuestas, hoy, MENSAJE_SIN_ESPACIO } from './ayudas';
 import estilos from './reconocer.module.css';
 
-const VACIA: Record<CampoBuzon1, string> & { area: string } = { area: '', falla: '', preocupa: '', harias: '' };
+const VACIA: Record<CampoBuzon1, string> & { area: string; grupo: string } = { area: '', grupo: '', falla: '', preocupa: '', harias: '' };
 const MAX_ERRORES_VISIBLES = 8;
 
 /** R5: buzón 1, escucha inicial. El papel se digita; Google Forms entra por CSV. */
@@ -35,6 +36,7 @@ export function PasoBuzon1() {
         pestanas={[
           { id: 'digitar', etiqueta: 'Digitar papel', contenido: <FormBuzon1 /> },
           { id: 'csv', etiqueta: 'Cargar CSV', contenido: <CargaCsv /> },
+          { id: 'forms', etiqueta: 'Google Forms en línea', contenido: <BuzonEnLinea /> },
           { id: 'resultados', etiqueta: 'Resultados', contenido: <ResultadosBuzon1 /> },
         ]}
       />
@@ -60,6 +62,7 @@ function FormBuzon1() {
       id: crypto.randomUUID(),
       fecha: hoy(),
       area: respuesta.area,
+      grupo: respuesta.grupo || SIN_GRUPO,
       falla: respuesta.falla.trim(),
       preocupa: respuesta.preocupa.trim(),
       harias: respuesta.harias.trim(),
@@ -69,7 +72,7 @@ function FormBuzon1() {
     } catch {
       return setError(MENSAJE_SIN_ESPACIO);
     }
-    setRespuesta({ ...VACIA, area: respuesta.area });
+    setRespuesta({ ...VACIA, area: respuesta.area, grupo: respuesta.grupo });
     setMensaje(`Respuesta guardada. Van ${datos.buzon1.length + 1}.`);
     inicio.current?.scrollIntoView({ block: 'start' });
   };
@@ -84,6 +87,19 @@ function FormBuzon1() {
         {activo.segmentacion.areas.map((a) => (
           <option key={a.area} value={a.area}>
             {a.area}
+          </option>
+        ))}
+      </CampoSeleccion>
+      <CampoSeleccion
+        etiqueta="Grupo (opcional)"
+        explicacion={EX.grupo}
+        value={respuesta.grupo}
+        onChange={(e) => setRespuesta((r) => ({ ...r, grupo: e.target.value }))}
+      >
+        <option value="">Sin grupo</option>
+        {GRUPOS_BUZON1.map((g) => (
+          <option key={g} value={g}>
+            {g}
           </option>
         ))}
       </CampoSeleccion>
@@ -120,6 +136,7 @@ function descargarPlantilla() {
 function CargaCsv() {
   const { activo, actualizarDatos } = useProyecto();
   const [errores, setErrores] = useState<string[]>([]);
+  const [avisos, setAvisos] = useState<string[]>([]);
   const [mensaje, setMensaje] = useState('');
   if (!activo) return null;
 
@@ -128,8 +145,9 @@ function CargaCsv() {
     evento.target.value = ''; // Permite volver a elegir el mismo archivo tras corregirlo.
     if (!archivo) return;
     setMensaje('');
-    const { filas, errores: problemas } = importarBuzon1(await archivo.text(), activo.segmentacion.areas.map((a) => a.area), hoy());
+    const { filas, errores: problemas, avisos: alertas } = importarBuzon1(await archivo.text(), activo.segmentacion.areas.map((a) => a.area), hoy());
     setErrores(problemas);
+    setAvisos(alertas);
     if (problemas.length > 0) return;
     try {
       let nuevas = 0;
@@ -147,13 +165,19 @@ function CargaCsv() {
   return (
     <div className={estilos.bloque}>
       <p className={estilos.nota}>
-        Sube el CSV de Google Forms tal como sale. La pregunta de área debe titularse "Área" y cada pregunta debe empezar con su código. Las áreas se escriben igual que en la
-        Etapa 0. Si alguna línea tiene un error, no se carga nada; volver a cargar el mismo archivo no duplica respuestas.
+        Sube el CSV de Google Forms tal como sale. La pregunta de área debe titularse "Área", la de grupo (opcional) "Grupo" y cada pregunta debe empezar con su
+        código. Las áreas se escriben igual que en la Etapa 0. Si alguna línea tiene un error, no se carga nada; volver a cargar el mismo archivo no duplica respuestas.
+        Para la demo hay un <a href="/buzon_prueba.csv" download>buzón de prueba</a> con respuestas inventadas (sus áreas: Producción, Bodega, Despacho y Administración).
       </p>
       <CampoTexto etiqueta="Archivo CSV" explicacion={EX.archivo} type="file" accept=".csv,text/csv" onChange={(e) => void cargar(e)} />
       <p className={estilos.mensaje} aria-live="polite">
         {mensaje}
       </p>
+      {avisos.map((a) => (
+        <p key={a} className={estilos.aviso} role="status">
+          {a}
+        </p>
+      ))}
       {errores.length > 0 && (
         <ul className={formulario.errores} role="alert">
           {errores.slice(0, MAX_ERRORES_VISIBLES).map((e) => (

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { Etapa } from '../../config/etapas';
+import { SimboloEtapa } from '../etapa/SimboloEtapa';
 import { ETIQUETA_ROL, useSesion } from '../../estado/SesionContexto';
 import { useRuta } from '../../navegacion/RutaContexto';
 import type { Ruta } from '../../navegacion/rutas';
@@ -50,9 +51,11 @@ function elementos(etapas: readonly Etapa[], conSesion: boolean): ElementoRiel[]
       .filter((e) => e.activa)
       .map<ElementoRiel>((e) => ({
         clave: e.id,
-        etiqueta: `Etapa ${e.letra} · ${e.nombre}`,
+        etiqueta: e.icono ? e.nombre : `Etapa ${e.letra} · ${e.nombre}`,
         ruta: { pagina: 'etapa', etapaId: e.id, pasoId: null },
-        icono: <span className={estilos.letra}>{e.letra}</span>,
+        icono: <span className={estilos.letra}>
+            <SimboloEtapa etapa={e} tamano={18} />
+          </span>,
         activo: (r) => r.pagina === 'etapa' && r.etapaId === e.id,
       })),
     {

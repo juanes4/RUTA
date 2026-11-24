@@ -33,7 +33,7 @@ export function parsearRuta(hash: string, etapas: readonly Etapa[]): Ruta {
     const etapa = etapas.find((e) => e.activa && segmentoEtapa(e) === segunda.toLowerCase());
     if (!etapa) return { pagina: 'no_encontrada' };
     if (!tercera) return { pagina: 'etapa', etapaId: etapa.id, pasoId: null };
-    const paso = etapa.pasos.find((p) => p.id.toLowerCase() === tercera.toLowerCase());
+    const paso = [...etapa.pasos, ...(etapa.extras ?? [])].find((p) => p.id.toLowerCase() === tercera.toLowerCase());
     return paso ? { pagina: 'etapa', etapaId: etapa.id, pasoId: paso.id } : { pagina: 'no_encontrada' };
   }
   return { pagina: 'no_encontrada' };

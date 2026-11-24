@@ -26,8 +26,13 @@ export interface EstiloTarjeta {
 
 export interface Etapa {
   id: string;
-  /** Letra del nodo. Las etapas vacías no muestran letra. */
+  /** Letra del nodo y de la dirección (#/etapa/r). Las etapas vacías no muestran letra. */
   letra: string;
+  /**
+   * Si se da, se dibuja este icono en lugar de la letra (nodo, encabezado,
+   * accesos). La Etapa 0 no es una letra de RUTA: un "0" no dice nada.
+   */
+  icono?: 'empresa';
   nombre: string;
   activa: boolean;
   /** Pastel que identifica la etapa (nodo, encabezado, acceso). Las vacías no tienen. */
@@ -39,16 +44,25 @@ export interface Etapa {
   /** true: índice de pasos y una página por paso. false: todos los pasos en una página. */
   paginasPorPaso?: boolean;
   pasos: readonly PasoEtapa[];
+  /**
+   * Páginas de apoyo que no son pasos de la metodología (no cuentan en el
+   * avance ni en la barra de pasos). Se abren desde el índice de la etapa.
+   */
+  extras?: readonly PasoEtapa[];
 }
+
+/** Página del Copiloto de Reconocimiento, dentro de la etapa R. */
+export const ID_COPILOTO = 'copiloto';
 
 export const ETAPAS: readonly Etapa[] = [
   {
     id: 'etapa-0',
     letra: '0',
+    icono: 'empresa',
     nombre: 'Registro de la empresa',
     activa: true,
-    color: 'var(--pastel-cream)',
-    tarjetas: { fondos: ['var(--pastel-cream)'], manchas: true },
+    color: 'var(--pastel-durazno)',
+    tarjetas: { fondos: ['var(--pastel-durazno)'], manchas: false },
     pasos: [
       { id: '0.1', titulo: 'Empresa y cambio' },
       { id: '0.2', titulo: 'Áreas y afectados' },
@@ -70,6 +84,7 @@ export const ETAPAS: readonly Etapa[] = [
       { id: 'R4', titulo: 'Mapa de actores' },
       { id: 'R5', titulo: 'Buzón 1: escucha inicial' },
     ],
+    extras: [{ id: ID_COPILOTO, titulo: 'Copiloto de Reconocimiento' }],
   },
   {
     id: 'etapa-u',

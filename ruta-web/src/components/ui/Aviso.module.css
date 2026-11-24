@@ -1,0 +1,112 @@
+/*
+ * Aviso flotante: tarjeta con degradado suave del tono, borde fino, sombra
+ * difusa, icono en un círculo y título en negrita. El tono cambia solo las
+ * variables de color.
+ */
+.aviso {
+  --aviso-claro: var(--info-bg-claro);
+  --aviso-bg: var(--info-bg);
+  --aviso-borde: var(--info-linea);
+  --aviso-icono: var(--info-icono);
+  --aviso-titulo: var(--text);
+  --aviso-texto: var(--info-texto);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 18px 22px;
+  border: 1px solid var(--aviso-borde);
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--aviso-claro), var(--aviso-bg));
+  box-shadow: 0 10px 30px rgba(17, 17, 17, 0.10);
+  color: var(--aviso-texto);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+}
+
+.aviso[data-tono='atencion'] {
+  --aviso-claro: var(--atencion-bg-claro);
+  --aviso-bg: var(--atencion-bg);
+  --aviso-borde: var(--atencion-linea);
+  --aviso-icono: var(--atencion-borde);
+  --aviso-texto: var(--atencion-texto);
+}
+
+.aviso[data-tono='peligro'] {
+  --aviso-claro: var(--peligro-bg-claro);
+  --aviso-bg: var(--peligro-bg);
+  --aviso-borde: var(--peligro-linea);
+  --aviso-icono: var(--peligro-borde);
+  --aviso-texto: var(--peligro-texto);
+}
+
+.icono {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: var(--aviso-icono);
+  color: var(--text-on-dark);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.aviso[data-tono='atencion'] .icono,
+.aviso[data-tono='peligro'] .icono {
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.titulo {
+  margin: 0;
+  color: var(--aviso-titulo);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.texto p {
+  margin: 0;
+}
+
+.texto p + p {
+  margin-top: 6px;
+}
+
+.etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.etiquetas li {
+  padding: 3px 10px;
+  border: 1px solid var(--aviso-borde);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--aviso-texto);
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+.accion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
