@@ -12,6 +12,7 @@ ruta-web/docs/
 
 # Dependencias y compilados
 node_modules/
+venv/
 dist/
 coverage/
 *.tsbuildinfo

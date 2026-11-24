@@ -225,6 +225,37 @@ export interface RespuestaViajeA {
   comentarios: ComentarioViaje[];
 }
 
+/* ---------- Etapa U · Paso U3 · Coach de Comunicación para Líderes ---------- */
+
+export interface TurnoCoach {
+  role: 'user' | 'model';
+  text: string;
+}
+
+export interface LiderConfigCoach {
+  area: string;
+  estiloU1: string;
+  liderId?: string;
+}
+
+export interface EscalamientoCoach {
+  id?: number;
+  creadoEn?: string;
+  fecha: string;
+  area: string;
+  pregunta: string;
+  tipo: 'sin_respuesta_oficial';
+  estado: string;
+  respuesta_oficial: string | null;
+}
+
+export interface RespuestaCoachChat {
+  reply: string;
+  escalamiento: EscalamientoCoach | null;
+  documentosDetectados: string[];
+  modelo: string;
+}
+
 export class ErrorApi extends Error {
   constructor(
     readonly estado: number,
@@ -279,6 +310,15 @@ export const api = {
     ),
   guardarViajeA: (datos: { periodo: string; area: string; comentario: string; respuestas: number[] }) =>
     llamar<{ id: number; resumen: ResumenViaje }>('/api/etapa-a/viaje', datos),
+  coachChat: (datos: {
+    message: string;
+    history: TurnoCoach[];
+    liderConfig: LiderConfigCoach;
+    documentosOficiales?: unknown;
+  }) => llamar<RespuestaCoachChat>('/api/coach/chat', datos),
+  coachEscalamientos: () => llamar<{ escalamientos: EscalamientoCoach[] }>('/api/coach/escalamientos'),
+  guardarEscalamientoCoach: (ficha: Omit<EscalamientoCoach, 'id' | 'creadoEn'>) =>
+    llamar<{ id: number; escalamiento: EscalamientoCoach }>('/api/coach/escalamientos', ficha),
 };
 
 /** SQLite guarda la fecha en UTC como "2026-11-11 21:59:00". */
