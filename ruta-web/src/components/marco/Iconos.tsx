@@ -143,3 +143,46 @@ export function IconoComprobar({ tamano = 18 }: { tamano?: number }) {
     </svg>
   );
 }
+
+/* ---------- Pasos del copiloto ---------- */
+
+/** Lienzo: un lápiz sobre una hoja. */
+export function IconoLienzo({ tamano = 16 }: { tamano?: number }) {
+  return (
+    <svg {...PROPS} width={tamano} height={tamano}>
+      <path d="M11 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" />
+      <path d="M17.5 3.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z" />
+    </svg>
+  );
+}
+
+/** Triaje: una cruz de evaluación en un círculo. */
+export function IconoTriaje({ tamano = 16 }: { tamano?: number }) {
+  return (
+    <svg {...PROPS} width={tamano} height={tamano}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 8v8M8 12h8" />
+    </svg>
+  );
+}
+
+/** Buzón: un buzón con su bandera. */
+export function IconoBuzon({ tamano = 16 }: { tamano?: number }) {
+  return (
+    <svg {...PROPS} width={tamano} height={tamano}>
+      <path d="M3 19v-8a4 4 0 0 1 4-4h11a3 3 0 0 1 3 3v9z" />
+      <path d="M7 7a4 4 0 0 1 4 4v8" />
+      <path d="M15 12V4h3" />
+    </svg>
+  );
+}
+
+/** Dossier: una carpeta. */
+export function IconoDossier({ tamano = 16 }: { tamano?: number }) {
+  return (
+    <svg {...PROPS} width={tamano} height={tamano}>
+      <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <path d="M3 10h18" />
+    </svg>
+  );
+}

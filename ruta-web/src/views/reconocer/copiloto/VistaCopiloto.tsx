@@ -1,5 +1,5 @@
 import { SeccionEtapa } from '../../../components/etapa/SeccionEtapa';
-import { IconoCopiloto } from '../../../components/marco/Iconos';
+import { IconoBuzon, IconoCopiloto, IconoDossier, IconoLienzo, IconoTriaje } from '../../../components/marco/Iconos';
 import { EnlaceFlecha } from '../../../components/ui/EnlaceFlecha';
 import { EstadoVacio } from '../../../components/ui/EstadoVacio';
 import { Pestanas } from '../../../components/ui/Pestanas';
@@ -130,12 +130,13 @@ export function VistaCopiloto({ etapa }: { etapa: Etapa }) {
         <LimiteErrores alReiniciar={reiniciarCopiloto}>
           <Pestanas
             etiqueta="Pasos del copiloto"
+            variante="segmentada"
             inicial={pasoPendiente(datos)}
             pestanas={[
-              { id: 'lienzo', etiqueta: '1 · Lienzo', contenido: <PanelLienzo {...props} /> },
-              { id: 'triaje', etiqueta: '2 · Triaje', contenido: <PanelTriaje {...props} /> },
-              { id: 'buzon', etiqueta: '3 · Buzón', contenido: <PanelBuzon {...props} /> },
-              { id: 'dossier', etiqueta: '4 · Dossier', contenido: <PanelDossier {...props} /> },
+              { id: 'lienzo', etiqueta: '1 · Lienzo', icono: <IconoLienzo />, contenido: <PanelLienzo {...props} /> },
+              { id: 'triaje', etiqueta: '2 · Triaje', icono: <IconoTriaje />, contenido: <PanelTriaje {...props} /> },
+              { id: 'buzon', etiqueta: '3 · Buzón', icono: <IconoBuzon />, contenido: <PanelBuzon {...props} /> },
+              { id: 'dossier', etiqueta: '4 · Dossier', icono: <IconoDossier />, contenido: <PanelDossier {...props} /> },
             ]}
           />
         </LimiteErrores>
