@@ -5,7 +5,6 @@ import { EXPLICACION_CAMPO as EX } from '../../contenido/etapa0';
 import { useBorrador } from '../../hooks/useBorrador';
 import type { AreaAfectada, Segmentacion } from '../../lib/modelo/proyecto';
 import { normalizarSegmentacion, validarAreas } from '../../lib/proyecto/etapa0';
-import { ListaEditable } from './ListaEditable';
 import { PieFormulario } from './PieFormulario';
 import estilos from './formulario.module.css';
 
@@ -14,7 +13,7 @@ interface Props {
   guardar(segmentacion: Segmentacion): Promise<void>;
 }
 
-/** Paso 0.2: grupos y afectados. Los afectados por área son la base de la participación. */
+/** Paso 0.2: áreas y afectados. Los afectados por área son la base de la participación. */
 export function FormSegmentacion({ segmentacion, guardar }: Props) {
   const { borrador, editar, confirmar, estado } = useBorrador(segmentacion, guardar);
   const [errores, setErrores] = useState<string[]>([]);
@@ -107,20 +106,6 @@ export function FormSegmentacion({ segmentacion, guardar }: Props) {
         />
       </div>
 
-      <div className={estilos.rejilla}>
-        <ListaEditable
-          etiqueta="Turnos o sedes"
-          explicacion={EX.turnos}
-          valores={borrador.turnos}
-          alCambiar={(turnos) => editar((s) => ({ ...s, turnos }))}
-        />
-        <ListaEditable
-          etiqueta="Rangos de antigüedad"
-          explicacion={EX.rangos_antiguedad}
-          valores={borrador.rangos_antiguedad}
-          alCambiar={(rangos_antiguedad) => editar((s) => ({ ...s, rangos_antiguedad }))}
-        />
-      </div>
       <PieFormulario estado={estado} errores={errores} />
     </form>
   );

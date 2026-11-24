@@ -7,7 +7,8 @@ export interface AlmacenamientoClaveValor {
   setItem(clave: string, valor: string): void;
 }
 
-const CLAVE = 'ruta:v1';
+/** v2: modelo de las etapas R y U según RUTA_ANDI_R_U.md (los datos de v1 no son compatibles). */
+const CLAVE = 'ruta:v2';
 
 interface Instantanea {
   proyectos: Proyecto[];

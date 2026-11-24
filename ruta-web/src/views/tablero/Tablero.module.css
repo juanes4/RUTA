@@ -74,15 +74,6 @@
   font-weight: 600;
 }
 
-.motivos {
-  margin: 0;
-  padding-left: 18px;
-  font-size: var(--fs-small);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
 /* Botón claro con el acento de acción (DESIGN.md), también sobre la tarjeta oscura. */
 .enlaceOscuro,
 .enlaceSecundario {
@@ -124,11 +115,30 @@
   background: var(--fondo-porcentaje);
 }
 
+.textoOscuro {
+  font-size: var(--fs-label);
+}
+
+.motivosClaros {
+  margin: 0;
+  padding-left: 18px;
+  font-size: var(--fs-small);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 /* Cuadro con la letra de la etapa, en su pastel (como los iconos de la referencia). */
 .celdaIndicador {
   display: flex;
   align-items: center;
   gap: 12px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.celdaIndicador:hover {
+  text-decoration: underline;
 }
 
 .cuadroEtapa {

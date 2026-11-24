@@ -13,7 +13,7 @@ describe('rutas', () => {
 
   it('una etapa activa y uno de sus pasos', () => {
     expect(parsear('#/etapa/r')).toEqual({ pagina: 'etapa', etapaId: 'etapa-r', pasoId: null });
-    expect(parsear('#/etapa/R/r6')).toEqual({ pagina: 'etapa', etapaId: 'etapa-r', pasoId: 'R6' });
+    expect(parsear('#/etapa/R/r5')).toEqual({ pagina: 'etapa', etapaId: 'etapa-r', pasoId: 'R5' });
     expect(parsear('#/etapa/0/0.2')).toEqual({ pagina: 'etapa', etapaId: 'etapa-0', pasoId: '0.2' });
   });
 
@@ -31,7 +31,7 @@ describe('rutas', () => {
   });
 
   it('ida y vuelta: el hash generado se vuelve a leer igual', () => {
-    const ruta = { pagina: 'etapa' as const, etapaId: 'etapa-u', pasoId: 'U5' };
+    const ruta = { pagina: 'etapa' as const, etapaId: 'etapa-u', pasoId: 'U4' };
     expect(parsear(hashDe(ruta, ETAPAS))).toEqual(ruta);
     expect(hashDe({ pagina: 'tablero' }, ETAPAS)).toBe('#/tablero');
   });

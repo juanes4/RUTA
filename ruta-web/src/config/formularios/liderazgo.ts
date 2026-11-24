@@ -1,108 +1,127 @@
-import type { LetraLiderazgo, RespondenteLiderazgo } from '../../lib/modelo/tipos';
+import type { LetraLiderazgo } from '../../lib/modelo/tipos';
 
 /**
- * Encuesta de liderazgo (CONTEXTO §5, texto corregido). La opción 3d está
- * pendiente de confirmar con administrativa. La versión para el equipo es
- * [PROPUESTA]: mismos enunciados del contexto, opciones en tercera persona.
+ * U1. Encuesta de liderazgo (RUTA_ANDI_R_U.md). La responden las personas
+ * con cargos de liderazgo o reconocidas como referentes por sus equipos.
  */
 
 export const LETRAS_LIDERAZGO: readonly LetraLiderazgo[] = ['A', 'B', 'C', 'D'];
 
 export interface PreguntaLiderazgo {
   id: string;
-  enunciado: Record<RespondenteLiderazgo, string>;
-  opciones: Record<LetraLiderazgo, Record<RespondenteLiderazgo, string>>;
+  enunciado: string;
+  opciones: Record<LetraLiderazgo, string>;
 }
-
-const op = (auto: string, equipo: string): Record<RespondenteLiderazgo, string> => ({ auto, equipo });
 
 export const PREGUNTAS_LIDERAZGO: readonly PreguntaLiderazgo[] = [
   {
     id: 'l1',
-    enunciado: { auto: 'Cuando debo tomar una decisión importante…', equipo: 'Cuando mi jefe debe tomar una decisión importante…' },
+    enunciado: 'Cuando debo tomar una decisión importante…',
     opciones: {
-      A: op('Decido yo y comunico qué hacer.', 'Decide él y comunica qué hacer.'),
-      B: op('Consulto al equipo antes de decidir.', 'Consulta al equipo antes de decidir.'),
-      C: op('Explico la visión y busco inspirar una solución.', 'Explica la visión y busca inspirar una solución.'),
-      D: op('Delego la decisión si alguien puede asumirla.', 'Delega la decisión si alguien puede asumirla.'),
+      A: 'Decido yo y comunico qué hacer.',
+      B: 'Consulto al equipo antes de decidir.',
+      C: 'Explico la visión y busco inspirar una solución.',
+      D: 'Delego la decisión si alguien puede asumirla.',
     },
   },
   {
     id: 'l2',
-    enunciado: { auto: 'Cuando un colaborador, trabajador u operario comete un error…', equipo: 'Cuando un colaborador comete un error, mi jefe…' },
+    enunciado: 'Cuando un colaborador, trabajador u operario comete un error…',
     opciones: {
-      A: op('Corrijo de inmediato y doy instrucciones concretas.', 'Corrige de inmediato y da instrucciones concretas.'),
-      B: op('Escucho su explicación y buscamos una forma de solucionarlo.', 'Escucha su explicación y buscan una forma de solucionarlo.'),
-      C: op('Lo uso como oportunidad de aprendizaje y mejora.', 'Lo usa como oportunidad de aprendizaje y mejora.'),
-      D: op('Le pido que lo resuelva por su cuenta.', 'Le pide que lo resuelva por su cuenta.'),
+      A: 'Corrijo de inmediato y doy instrucciones concretas.',
+      B: 'Escucho su explicación y buscamos una forma de solucionarlo.',
+      C: 'Lo uso como oportunidad de aprendizaje y mejora.',
+      D: 'Le pido que lo resuelva él solo por su cuenta.',
     },
   },
   {
     id: 'l3',
-    enunciado: { auto: 'Cuando asigno responsabilidades…', equipo: 'Cuando mi jefe asigna responsabilidades…' },
+    enunciado: 'Cuando asigno responsabilidades…',
     opciones: {
-      A: op('Defino tareas y superviso el cumplimiento.', 'Define tareas y supervisa el cumplimiento.'),
-      B: op('Acordamos responsabilidades y escucho propuestas.', 'Acuerdan responsabilidades y escucha propuestas.'),
-      C: op('Relaciono las tareas con objetivos y propósitos.', 'Relaciona las tareas con objetivos y propósitos.'),
-      D: op('Doy autonomía y reviso principalmente los resultados.', 'Da autonomía y revisa principalmente los resultados.'),
+      A: 'Defino tareas y superviso el cumplimiento.',
+      B: 'Acordamos responsabilidades y escucho propuestas.',
+      C: 'Relaciono las tareas con objetivos y propósitos.',
+      D: 'Doy autonomía y reviso principalmente el resultado.',
     },
   },
   {
     id: 'l4',
-    enunciado: { auto: 'Lo que más me importa en mi equipo es…', equipo: 'Lo que más le importa a mi jefe en el equipo es…' },
+    enunciado: 'Lo que más me importa en mi equipo es…',
     opciones: {
-      A: op('La disciplina, el orden y el cumplimiento.', 'La disciplina, el orden y el cumplimiento.'),
-      B: op('La participación y el trabajo conjunto.', 'La participación y el trabajo conjunto.'),
-      C: op('La innovación, la motivación y el crecimiento.', 'La innovación, la motivación y el crecimiento.'),
-      D: op('La autonomía y la responsabilidad individual.', 'La autonomía y la responsabilidad individual.'),
+      A: 'La disciplina, el orden y el cumplimiento.',
+      B: 'La participación y el trabajo conjunto.',
+      C: 'La innovación, la motivación y el crecimiento.',
+      D: 'La autonomía y la responsabilidad individual.',
     },
   },
   {
     id: 'l5',
-    enunciado: { auto: 'Cuando hay presión o una crisis…', equipo: 'Cuando hay presión o una crisis, mi jefe…' },
+    enunciado: 'Cuando hay presión o una crisis…',
     opciones: {
-      A: op('Centralizo decisiones y doy instrucciones directas.', 'Centraliza decisiones y da instrucciones directas.'),
-      B: op('Busco opiniones y procuro decidir en conjunto.', 'Busca opiniones y procura decidir en conjunto.'),
-      C: op('Comunico el rumbo y movilizo al equipo.', 'Comunica el rumbo y moviliza al equipo.'),
-      D: op('Distribuyo autoridad para resolver con rapidez.', 'Distribuye autoridad para resolver con rapidez.'),
+      A: 'Centralizo decisiones y doy instrucciones directas.',
+      B: 'Busco opiniones, pero procuro decidir en conjunto.',
+      C: 'Comunico el rumbo y movilizo al equipo.',
+      D: 'Distribuyo autoridad para resolver con rapidez.',
     },
   },
   {
     id: 'l6',
-    enunciado: { auto: 'Cuando un colaborador tiene bajo desempeño…', equipo: 'Cuando un colaborador tiene bajo desempeño, mi jefe…' },
+    enunciado: 'Cuando un colaborador tiene bajo desempeño…',
     opciones: {
-      A: op('Aumento la supervisión y establezco exigencias claras.', 'Aumenta la supervisión y establece exigencias claras.'),
-      B: op('Converso con él y acordamos un plan de mejora.', 'Conversa con él y acuerdan un plan de mejora.'),
-      C: op('Trabajo en su motivación y desarrollo.', 'Trabaja en su motivación y desarrollo.'),
-      D: op('Le doy responsabilidad para que plantee una solución.', 'Le da responsabilidad para que plantee una solución.'),
+      A: 'Aumento la supervisión y establezco exigencias claras.',
+      B: 'Converso con él y acordamos un plan de mejora.',
+      C: 'Trabajo en su motivación y desarrollo.',
+      D: 'Le doy responsabilidad para que plantee una solución.',
     },
   },
   {
     id: 'l7',
-    enunciado: { auto: 'Mi equipo probablemente diría que yo…', equipo: 'Yo diría que mi jefe…' },
+    enunciado: 'Mi equipo probablemente diría que yo…',
     opciones: {
-      A: op('Soy exigente, claro y directo.', 'Es exigente, claro y directo.'),
-      B: op('Soy abierto al diálogo y colaborativo.', 'Es abierto al diálogo y colaborativo.'),
-      C: op('Soy motivador y promuevo cambios.', 'Es motivador y promueve cambios.'),
-      D: op('Confío en las personas y doy libertad.', 'Confía en las personas y da libertad.'),
+      A: 'Soy exigente, claro y directo.',
+      B: 'Soy abierto al diálogo y colaborativo.',
+      C: 'Soy motivador y promuevo cambios.',
+      D: 'Confío en las personas y doy libertad.',
     },
   },
   {
     id: 'l8',
-    enunciado: { auto: 'Cuando quiero mejorar los resultados de la empresa…', equipo: 'Cuando mi jefe quiere mejorar los resultados…' },
+    enunciado: 'Cuando quiero mejorar los resultados de la empresa…',
     opciones: {
-      A: op('Establezco controles, metas y procedimientos.', 'Establece controles, metas y procedimientos.'),
-      B: op('Involucro al equipo en la búsqueda de mejoras.', 'Involucra al equipo en la búsqueda de mejoras.'),
-      C: op('Transmito una visión ambiciosa y promuevo nuevas ideas.', 'Transmite una visión ambiciosa y promueve nuevas ideas.'),
-      D: op('Entrego responsabilidades y dejo que surjan iniciativas.', 'Entrega responsabilidades y deja que surjan iniciativas.'),
+      A: 'Establezco controles, metas y procedimientos.',
+      B: 'Involucro al equipo en la búsqueda de mejoras.',
+      C: 'Transmito una visión ambiciosa y promuevo nuevas ideas.',
+      D: 'Entrego responsabilidades y dejo que surjan iniciativas.',
     },
   },
 ];
 
-/** Qué significa cada estilo para el cambio (CONTEXTO §3, R4). */
-export const ESTILOS_LIDERAZGO: Readonly<Record<LetraLiderazgo, { nombre: string; implicacion: string }>> = {
-  A: { nombre: 'Directivo y estructurado', implicacion: 'Viabilidad media; emparejar con agente de cambio.' },
-  B: { nombre: 'Participativo y colaborativo', implicacion: 'Viabilidad alta; dirige el mapa de empatía.' },
-  C: { nombre: 'Transformacional e inspirador', implicacion: 'Viabilidad alta; vocero ideal.' },
-  D: { nombre: 'Delegativo y autónomo', implicacion: 'Requiere acompañamiento y guion.' },
+export interface EstiloLiderazgo {
+  nombre: string;
+  viabilidad: string;
+  rol: string;
+}
+
+/** Metodología de clasificación: la letra con mayoría define el estilo. */
+export const ESTILOS_LIDERAZGO: Readonly<Record<LetraLiderazgo, EstiloLiderazgo>> = {
+  A: {
+    nombre: 'Directo y estructurado',
+    viabilidad: 'Media',
+    rol: 'Aporta orden y exigencia clara, pero se aconseja emparejarlo con un líder informal o "campeón del cambio" para evitar que el mensaje se perciba como una imposición estricta.',
+  },
+  B: {
+    nombre: 'Participativo y colaborativo',
+    viabilidad: 'Alta (además de comunicar, escucha a los trabajadores)',
+    rol: 'Dirige las sesiones del mapa de empatía, recoge dudas de los trabajadores y genera acuerdos.',
+  },
+  C: {
+    nombre: 'Transformacional e inspirador',
+    viabilidad: 'Alta (es la persona ideal para ser el vocero o informante del nuevo cambio)',
+    rol: 'Transmite el propósito, moviliza con entusiasmo y conecta el cambio con la visión futura.',
+  },
+  D: {
+    nombre: 'Delegativo y autónomo',
+    viabilidad: 'Acompañamiento necesario',
+    rol: 'Adecuado para respaldar la iniciativa con equipos maduros, pero requiere un guion de comunicación estructurado para no dejar vacíos de información en la fase inicial.',
+  },
 };

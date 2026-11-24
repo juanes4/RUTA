@@ -1,8 +1,8 @@
 import type { AreaAfectada } from '../modelo/proyecto';
-import type { FilaRespuesta } from '../modelo/tipos';
-import { contarPersonas, proporcion } from './estadistica';
+import type { RespuestaBuzon1 } from '../modelo/tipos';
+import { proporcion } from './estadistica';
 
-/** Participación = respuestas ÷ afectados (CONTEXTO §6, meta 70 %). */
+/** Participación del buzón 1 = respuestas ÷ afectados del área (Etapa 0). */
 
 export interface ParticipacionArea {
   area: string;
@@ -12,17 +12,15 @@ export interface ParticipacionArea {
   participacion: number | null;
 }
 
-export function participacionPorArea(
-  filas: readonly FilaRespuesta[],
-  areas: readonly AreaAfectada[],
-): ParticipacionArea[] {
+export function participacionPorArea(respuestas: readonly RespuestaBuzon1[], areas: readonly AreaAfectada[]): ParticipacionArea[] {
   return areas.map(({ area, afectados }) => {
-    const respondentes = contarPersonas(filas.filter((f) => f.area === area));
+    const respondentes = respuestas.filter((r) => r.area === area).length;
     return { area, respondentes, afectados, participacion: proporcion(respondentes, afectados) };
   });
 }
 
-export function participacionTotal(filas: readonly FilaRespuesta[], areas: readonly AreaAfectada[]): number | null {
+export function participacionTotal(respuestas: readonly RespuestaBuzon1[], areas: readonly AreaAfectada[]): number | null {
   const afectados = areas.reduce((suma, a) => suma + a.afectados, 0);
-  return proporcion(contarPersonas(filas), afectados);
+  const nombres = new Set(areas.map((a) => a.area));
+  return proporcion(respuestas.filter((r) => nombres.has(r.area)).length, afectados);
 }

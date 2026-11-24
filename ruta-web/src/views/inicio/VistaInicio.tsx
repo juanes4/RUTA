@@ -45,7 +45,7 @@ export function VistaInicio({ etapas }: Props) {
           RUTA es una aplicación que acompaña a las empresas en sus procesos de transformación organizacional mediante
           etapas, herramientas y un tablero para orientar y dar seguimiento al cambio.
         </p>
-        <p className={estilos.ruta}>Entender → comunicar → escuchar → decidir → acompañar → comprobar.</p>
+        <p className={estilos.ruta}>Entender → escuchar → comunicar → acompañar → transformar.</p>
         {!usuario && (
           <div className={estilos.ingreso}>
             <Boton variante="secundario" onClick={() => navegar({ pagina: 'ingresar' })}>
@@ -86,7 +86,7 @@ export function VistaInicio({ etapas }: Props) {
             <a className={estilos.acceso} data-oscuro="true" href={enlace({ pagina: 'tablero' })}>
               <span className={estilos.nombreAcceso}>Tablero</span>
               <span className={estilos.descripcion}>
-                Decisión de lanzamiento, participación por área, categorías e indicadores con semáforo.
+                Ruta del cambio con semáforo, participación del buzón, FODA, actores, liderazgo y avance de cada paso.
               </span>
               <span className={estilos.pasos}>
                 Abrir <span aria-hidden="true">→</span>

@@ -13,6 +13,7 @@ const COMPLETO: Lienzo = {
   que_cambia: 'El registro',
   que_no_cambia: 'Los turnos',
   beneficios: [{ grupo: 'Bodega', beneficio: 'Menos errores' }],
+  criterios: [{ criterio: 'Pedidos en el sistema nuevo', meta: '90 %' }],
   riesgos: ['Falla del sistema'],
   intentos_previos: ['Ninguno'],
 };
@@ -34,6 +35,11 @@ describe('bloquesFaltantes', () => {
   it('qué cambia y qué no cambia son un solo bloque que pide ambos', () => {
     expect(bloquesFaltantes({ ...COMPLETO, que_no_cambia: '' }, 3)).toEqual(['cambios']);
   });
+
+  it('riesgos pide lo que puede salir mal y los intentos previos; criterios pide la meta', () => {
+    expect(bloquesFaltantes({ ...COMPLETO, intentos_previos: [] }, 3)).toEqual(['riesgos']);
+    expect(bloquesFaltantes({ ...COMPLETO, criterios: [{ criterio: 'x', meta: ' ' }] }, 3)).toEqual(['criterios']);
+  });
 });
 
 describe('edición del lienzo', () => {
@@ -43,9 +49,15 @@ describe('edición del lienzo', () => {
     expect(urgencia[0]).toEqual({ motivo: 'a', dato: '1' });
   });
 
-  it('al limpiar quita espacios y beneficios en blanco', () => {
-    const limpio = limpiarLienzo({ ...LIENZO_VACIO, vision: '  x ', beneficios: [{ grupo: ' ', beneficio: '' }, { grupo: 'A ', beneficio: 'b' }] });
+  it('al limpiar quita espacios y filas en blanco', () => {
+    const limpio = limpiarLienzo({
+      ...LIENZO_VACIO,
+      vision: '  x ',
+      beneficios: [{ grupo: ' ', beneficio: '' }, { grupo: 'A ', beneficio: 'b' }],
+      criterios: [{ criterio: '', meta: ' ' }],
+    });
     expect(limpio.vision).toBe('x');
     expect(limpio.beneficios).toEqual([{ grupo: 'A', beneficio: 'b' }]);
+    expect(limpio.criterios).toEqual([]);
   });
 });

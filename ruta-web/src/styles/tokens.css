@@ -26,10 +26,10 @@
   --tono-r-3: var(--accent-action);
   --tono-r-4: #B0D3F8;
   --tono-r-5: #A0C9F5;
-  --tono-r-6: #8FBFF2;
-  --tono-r-7: #7FB5EF;
   --tono-u-1: var(--pastel-lavender);
-  --tono-u-2: #CDBCE6;
+  --tono-u-2: #DACDEE;
+  --tono-u-3: #CDBCE6;
+  --tono-u-4: #C0ABDE;
 
   /* Estados */
   --positive: #2F9E6B;

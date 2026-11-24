@@ -1,48 +1,24 @@
 /**
- * Umbrales de cálculo y decisión. Ninguno va fijo en el código: todo
- * componente o función de cálculo los recibe desde aquí.
- * Fuente de cada valor entre paréntesis.
+ * Umbrales de cálculo. Ninguno va fijo en el código: todo componente o
+ * función de cálculo los recibe desde aquí. Fuente: RUTA_ANDI_R_U.md.
  */
 export const REGLAS = {
-  adkar: {
-    /** Punto de bloqueo: primera dimensión con promedio menor a este valor (CONTEXTO §3, R6). */
-    umbralBloqueo: 3.0,
-    /** Respuestas que cuentan como favorables (CONTEXTO §6: 4 y 5). */
-    valorFavorableMinimo: 4,
-    /** Alerta de falta de información: % "No sé" mayor a este valor (CONTEXTO §6). */
-    alertaNoSe: 0.2,
+  triaje: {
+    /** Puntaje total de 3 a 4: cambio ágil o estándar (semáforo verde). */
+    verdeHasta: 4,
+    /** Puntaje total de 5 a 7: cambio moderado (amarillo). De 8 a 9: cambio mayor (rojo). */
+    amarilloHasta: 7,
+    /** Complejidad organizacional: 1 elemento = 1 punto; 2 o 3 = 2 puntos; 4 o más = 3 puntos. */
+    elementosMedio: 2,
+    elementosAlto: 4,
   },
-  /** Escala de las preguntas de los buzones (CONTEXTO §5). */
-  escala: { minimo: 1, maximo: 5 },
   foda: {
-    /** Los ítems más votados pasan al backlog de la etapa 2 (CONTEXTO §3, R2). */
-    itemsAlBacklog: 5,
+    /** Puntaje de cada ítem del FODA matemático. */
+    escala: { minimo: 1, maximo: 5 },
   },
   anonimato: {
-    /** Mínimo de personas por grupo para colaboradores (Instrumento 1). */
+    /** Mínimo de respuestas de un área para mostrar sus textos del buzón separados. */
     minimoColaboradores: 5,
-    /** Mínimo de personas por grupo de rol en Kotter (Instrumento 2, confidencialidad). */
-    minimoKotter: 3,
-  },
-  semaforo: {
-    /** Margen relativo a la meta para "Atención" [PROPUESTA] (PLAN §6). */
-    margen: 0.15,
-  },
-  kotter: {
-    /** Nivel bajo: 1,0 a 2,9 → puntaje menor a este valor (Instrumento 2 §2.5). */
-    limiteBajo: 3.0,
-    /** Nivel medio: 3,0 a 3,9 → puntaje menor a este valor (Instrumento 2 §2.5). */
-    limiteMedio: 4.0,
-    /** Brecha entre roles que genera alerta (Instrumento 2 §2.5). */
-    brechaAlerta: 1.0,
-    /** Pasos base de la regla de secuencia (Instrumento 2 §2.5). */
-    pasosBase: [1, 2, 3] as const,
-  },
-  decisionR7: {
-    /** Más de esta fracción de grupos bloqueados en Conciencia → postergar [PROPUESTA] (PLAN §6). */
-    fraccionMayoriaGrupos: 0.5,
-    /** Con este número de pasos bajos o más → postergar (Instrumento 2 §2.5). */
-    pasosBajosParaPostergar: 3,
   },
 } as const;
 
