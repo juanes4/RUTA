@@ -36,7 +36,9 @@ const filaReal = { id: 'x1', fecha: '2026-11-20', area: 'Bodega', grupo: 'Operat
 
 describe('buzón de prueba', () => {
   it('el CSV público para R5 coincide con los datos de prueba del servidor', () => {
-    expect(readFileSync(new URL('../public/buzon_prueba.csv', import.meta.url), 'utf8')).toBe(buzonPruebaCsv());
+    // Sin importar el salto de línea: en Windows git puede sacar el archivo con CRLF (core.autocrlf).
+    const sinCr = (t) => t.replace(/\r\n/g, '\n');
+    expect(sinCr(readFileSync(new URL('../public/buzon_prueba.csv', import.meta.url), 'utf8'))).toBe(sinCr(buzonPruebaCsv()));
   });
 
   it('cumple la lista de la demo', () => {
