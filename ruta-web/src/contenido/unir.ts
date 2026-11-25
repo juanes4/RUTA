@@ -4,7 +4,7 @@
 export const DESCRIPCION_PASO_U: Readonly<Record<string, string>> = {
   U1: 'La encuesta se responde en papel o en línea. Aquí se digita cada respuesta y la herramienta clasifica el estilo de cada líder.',
   U2: 'Escribe el guion en sus 3 partes y elige al vocero. Puedes partir de lo que registraste en el lienzo del cambio (R1).',
-  U3: 'Reúne lo que los jefes necesitan para acompañar a su equipo: mensajes clave, preguntas frecuentes con su respuesta y pautas de conversación.',
+  U3: 'Reúne lo que los jefes necesitan para acompañar a su equipo (mensajes clave, preguntas frecuentes y pautas) y usa el Coach de Comunicación para preparar o ensayar conversaciones.',
   U4: 'Después de comunicar el cambio, registra lo que encontraron en la sesión del mapa de empatía y las estrategias de acompañamiento que salen de ahí.',
 };
 

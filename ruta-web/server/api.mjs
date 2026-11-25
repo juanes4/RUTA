@@ -3,6 +3,7 @@ import { rutasAsistenteA } from './asistenteA.mjs';
 import { hashClave, verificarClave } from './clave.mjs';
 import { rutasBuzon } from './buzon.mjs';
 import { rutasCopiloto } from './copiloto/rutas.mjs';
+import { rutasCoach } from './coach.mjs';
 import { rutasEtapaA } from './etapaA.mjs';
 import { rutasEtapaT } from './etapaT.mjs';
 import { APROBACION_MINIMA } from './simulador.mjs';
@@ -56,7 +57,7 @@ const publico = (u) => ({ id: u.id, usuario: u.usuario, nombre: u.nombre, rol: u
  * Crea el manejador de la API (/api/*). Devuelve false si la ruta no es de la
  * API, para que el servidor siga con lo suyo. `db` es una base de abrirBase().
  */
-export function crearApi(db, { seguro = false, env = process.env, generarImpl } = {}) {
+export function crearApi(db, { seguro = false, env = process.env, generarImpl, coachResponder } = {}) {
   const intentos = new Map(); // usuario -> { n, hasta }
 
   const sesionDe = (req) => {
@@ -210,6 +211,7 @@ export function crearApi(db, { seguro = false, env = process.env, generarImpl } 
     ...rutasCopiloto({ sesionDe, enviar, leerJson, env, ...(generarImpl ? { generarImpl } : {}) }),
     ...rutasBuzon({ db, sesionDe, enviar, leerJson }),
     ...rutasAsistenteA({ db, sesionDe, enviar, leerJson }),
+    ...rutasCoach({ db, sesionDe, enviar, leerJson, ...(coachResponder ? { coachResponder } : {}) }),
   };
 
   return async function manejar(req, res) {

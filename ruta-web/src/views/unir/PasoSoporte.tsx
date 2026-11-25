@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { Pestanas } from '../../components/ui/Pestanas';
 import { EXPLICACION_SOPORTE as EX } from '../../contenido/unir';
 import { useProyecto } from '../../estado/ProyectoContexto';
 import { useBorrador } from '../../hooks/useBorrador';
@@ -8,6 +9,7 @@ import { PieFormulario } from '../etapa0/PieFormulario';
 import formulario from '../etapa0/formulario.module.css';
 import { MENSAJE_SIN_ESPACIO, TablaPares } from '../reconocer/ayudas';
 import estilos from '../reconocer/reconocer.module.css';
+import { CoachLideres } from './CoachLideres';
 
 const limpiar = (s: SoporteLideres): SoporteLideres => ({
   mensajes: s.mensajes,
@@ -15,7 +17,7 @@ const limpiar = (s: SoporteLideres): SoporteLideres => ({
   preguntas: s.preguntas.map((p) => ({ pregunta: p.pregunta.trim(), respuesta: p.respuesta.trim() })).filter((p) => p.pregunta || p.respuesta),
 });
 
-/** U3: guía para que los jefes acompañen a sus equipos tras el anuncio. */
+/** U3: guía para que los jefes acompañen a sus equipos tras el anuncio + Coach de Comunicación (IA). */
 export function PasoSoporte() {
   const { datos, actualizarDatos } = useProyecto();
   const [error, setError] = useState('');
@@ -32,7 +34,7 @@ export function PasoSoporte() {
     }
   };
 
-  return (
+  const formularioGuia = (
     <form className={formulario.formulario} onSubmit={(e) => void enviar(e)}>
       <ListaEditable etiqueta="Mensajes clave" explicacion={EX.mensajes} valores={borrador.mensajes} alCambiar={(mensajes) => editar((s) => ({ ...s, mensajes }))} />
 
@@ -71,5 +73,15 @@ export function PasoSoporte() {
       )}
       <PieFormulario estado={estado} />
     </form>
+  );
+
+  return (
+    <Pestanas
+      etiqueta="Soporte para líderes (U3)"
+      pestanas={[
+        { id: 'guia', etiqueta: 'Guía y preguntas frecuentes', contenido: formularioGuia },
+        { id: 'coach', etiqueta: 'Coach de Comunicación (IA)', contenido: <CoachLideres soporteActual={borrador} /> },
+      ]}
+    />
   );
 }
