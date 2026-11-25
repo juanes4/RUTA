@@ -1,11 +1,13 @@
 /**
- * Capa de agentes de IA (PLAN §8). Encendida solo para el Copiloto de
- * Reconocimiento (etapa R), que usa la API de Gemini desde el servidor.
+ * Capa de agentes de IA (PLAN §8). Encendida para el Copiloto de
+ * Reconocimiento (etapa R) y el asistente de la Etapa A (motor híbrido:
+ * analítico local + Gemini opcional). Gemini se usa siempre desde el servidor
+ * y solo con datos agregados y anonimizados (Ley 1581).
  * Mientras `habilitada` sea false no se muestra ningún botón ni texto de IA.
  */
 export const CONFIG_IA = {
   habilitada: true,
-  /** Ningún dato de grupos más pequeños que esto se muestra por separado. */
+  /** Ningún dato de grupos más pequeños que esto se muestra por separado ni llega a un agente. */
   minimoPersonasPorGrupo: 5,
   /**
    * Textos abiertos reales solo con contrato de datos (Ley 1581). Quien decide

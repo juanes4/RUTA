@@ -86,3 +86,5 @@ Sigue la sección «Etapa #4: Analizar» del documento de metodología RUTA ANDI
 | --- | --- | --- |
 | A1 Auditorías de adopción | Tablero del equipo con 8 indicadores, metas editables, calculadora por fórmula, semáforo del 15 %, historial e insumos de Etapa T (termómetro T3 y balances T4) | Registra el líder; todos consultan el tablero |
 | A2 Mapa de viaje del colaborador | Encuesta de 12 preguntas en 4 momentos (Antes, Durante, Situación actual, Hacia dónde mejorar), curva interactiva con caritas (🙂 / 😐 / 🙁), filtro por periodo y guía del taller | Todos responden; consolidado anónimo por periodo |
+
+Incluye un **Asistente contextual exclusivo de Etapa A** (`ruta-web/server/asistenteA.mjs`) con diagnóstico de semáforos y plan a 15 días (A1), lectura cruzada con Etapa T (solo líderes) e intérprete de la curva emocional y prioridades (A2). Funciona sin configuración con motor analítico local y, de forma opcional, puede enriquecerse con la API de Gemini definiendo `GEMINI_API_KEY` en entorno (enviando solo cifras agregadas y anonimizadas).

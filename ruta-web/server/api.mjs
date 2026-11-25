@@ -1,4 +1,5 @@
 import { createHash, randomBytes } from 'node:crypto';
+import { rutasAsistenteA } from './asistenteA.mjs';
 import { hashClave, verificarClave } from './clave.mjs';
 import { rutasBuzon } from './buzon.mjs';
 import { rutasCopiloto } from './copiloto/rutas.mjs';
@@ -208,6 +209,7 @@ export function crearApi(db, { seguro = false, env = process.env, generarImpl } 
     ...rutasEtapaA({ db, sesionDe, enviar, leerJson }),
     ...rutasCopiloto({ sesionDe, enviar, leerJson, env, ...(generarImpl ? { generarImpl } : {}) }),
     ...rutasBuzon({ db, sesionDe, enviar, leerJson }),
+    ...rutasAsistenteA({ db, sesionDe, enviar, leerJson }),
   };
 
   return async function manejar(req, res) {

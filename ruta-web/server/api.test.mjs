@@ -270,4 +270,63 @@ describe('Etapa A · Analizar (A1 auditorías y A2 mapa de viaje)', () => {
     expect(resEmp.comentarios[0].comentario).toBe('Fricción en transición');
     expect(resEmp.propias).toHaveLength(1);
   });
+
+  it('Asistente Etapa A (Ideas 1, 2 y 4): exige sesión, diagnostica A1, cruza con T solo para líder e interpreta A2', async () => {
+    expect((await pedir('/api/etapa-a/asistente/estado')).estado).toBe(401);
+    expect((await post('/api/etapa-a/asistente', { accion: 'diagnostico_a1' })).estado).toBe(401);
+
+    const lid = await entrar('lider');
+    const emp = await entrar('empleado1');
+
+    const estado = (await pedir('/api/etapa-a/asistente/estado', { cookie: lid })).json;
+    expect(estado).toMatchObject({ disponible: true, rol: 'lider' });
+
+    expect((await post('/api/etapa-a/asistente', { accion: 'libre', mensaje: '   ' }, lid)).estado).toBe(400);
+
+    // Idea 1: Diagnóstico A1 y plan a 15 días
+    const r1 = (await post('/api/etapa-a/asistente', { accion: 'diagnostico_a1', pasoActual: 'A1' }, lid)).json;
+    expect(r1.esRecomendacion).toBe(true);
+    expect(r1.titulo).toContain('Día 30');
+    expect(r1.acciones15Dias.length).toBeGreaterThan(0);
+
+    // Idea 2: Lectura cruzada A1 + Etapa T (líder recibe balance T4 y termómetro T3; empleado no)
+    const r2Lider = (await post('/api/etapa-a/asistente', { accion: 'cruce_a1_t', pasoActual: 'A1' }, lid)).json;
+    expect(JSON.stringify(r2Lider)).toContain('Termómetro T3');
+    expect(JSON.stringify(r2Lider)).toContain('Balance T4');
+    const r2Emp = (await post('/api/etapa-a/asistente', { accion: 'cruce_a1_t', pasoActual: 'A1' }, emp)).json;
+    expect(JSON.stringify(r2Emp)).not.toContain('Balance T4');
+    expect(r2Emp.resumen).toContain('líder');
+
+    // Idea 4: Intérprete de la curva emocional y prioridades A2
+    const r4 = (await post('/api/etapa-a/asistente', { accion: 'curva_a2', pasoActual: 'A2' }, lid)).json;
+    expect(r4.esRecomendacion).toBe(true);
+    expect(r4.resumen).toContain('Durante el cambio');
+    expect(r4.acciones15Dias.length).toBeGreaterThan(0);
+
+    // Chat libre sobre un indicador puntual
+    const libre = (await post('/api/etapa-a/asistente', { accion: 'libre', mensaje: '¿cómo está regreso a lo anterior?' }, lid)).json;
+    expect(libre.titulo).toContain('Regreso a lo anterior');
+
+    // Conversación amigable y seguimiento contextual («¿qué puedo hacer para mitigar esto?»)
+    const saludo = (await post('/api/etapa-a/asistente', { accion: 'libre', mensaje: 'hola' }, lid)).json;
+    expect(saludo.titulo).toContain('Hola');
+    expect(saludo.acciones15Dias).toEqual([]);
+
+    const mitigar = (
+      await post(
+        '/api/etapa-a/asistente',
+        {
+          accion: 'libre',
+          mensaje: 'que puedo hacer para mitigar esto?',
+          pasoActual: 'A1',
+          historial: [{ autor: 'asistente', texto: 'Análisis puntual · Regreso a lo anterior: ...' }],
+        },
+        lid,
+      )
+    ).json;
+    expect(mitigar.titulo).toContain('Cómo mitigar Regreso a lo anterior');
+
+    const guion = (await post('/api/etapa-a/asistente', { accion: 'libre', mensaje: '¿cómo lo hablo con el equipo?' }, lid)).json;
+    expect(guion.titulo).toContain('Guion breve');
+  });
 });
