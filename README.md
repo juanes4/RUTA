@@ -75,6 +75,18 @@ el termómetro es anónimo y solo se reporta con 5 respuestas o más por ciclo.
 Pendiente de revisar con el equipo: las 21 preguntas del simulador (`ruta-web/server/simulador.mjs`) son un borrador escrito a partir del tema de cada
 video, y la aprobación (2 de 3 aciertos) no está definida en el documento.
 
+### IA en T2 (opcional)
+
+Con una clave de Gemini (Google AI Studio), T2 suma dos ayudas para el líder. La IA recomienda; una persona decide.
+
+1. Copia `ruta-web/.env.example` como `ruta-web/.env`, escribe `GEMINI_API_KEY` y reinicia `npm run dev`. La clave solo la lee el servidor.
+2. Pestaña **Preguntas** (solo líder): pega un resumen o la transcripción de un video y la IA propone 3 preguntas con su explicación. Quedan como **borrador**; los empleados siguen viendo las publicadas hasta que un líder las **apruebe**. Lo aprobado reemplaza al banco base de `ruta-web/server/simulador.mjs`.
+3. **Resumen para el líder** (arriba del Historial): qué video falla más y qué brechas hay entre seguridad y resultado. A la IA solo llegan conteos y promedios de videos con 5 personas o más (`RUTA_MINIMO_GRUPO_IA` lo cambia para pruebas), sin nombres. Si no se cumple el mínimo o no hay clave, el resumen sale por reglas.
+4. Cada resultado trae una **lectura**: sobreconfianza (muy seguro, sin aprobar), se subestima (acertó todo, se siente inseguro), necesita apoyo o alineado. Se ve en el Historial y el empleado recibe un mensaje al responder.
+5. Al responder, el empleado ve qué acertó y por qué. Si no quieres mostrar las respuestas (el simulador se puede repetir), pon `MOSTRAR_RESPUESTAS = false` en `ruta-web/server/simulador.mjs`.
+
+El interruptor del navegador es `CONFIG_IA.habilitada` en `ruta-web/src/config/ia.ts` (ahora en `true`). Código: `ruta-web/server/ia.mjs` y `ruta-web/server/iaT.mjs`; tabla nueva `preguntas_ia` (se crea sola).
+
 Las tablas nuevas (`simulacros` y `registros`) se crean solas; una base existente conserva usuarios, videos e historial.
 
 ## Etapa A (Analizar)

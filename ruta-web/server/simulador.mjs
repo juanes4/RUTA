@@ -46,14 +46,79 @@ export const PREGUNTAS = {
   ],
 };
 
+/**
+ * Si es true, al responder se muestra cuál era la correcta y por qué. Sirve para aprender,
+ * pero como el simulador se puede repetir, quien lo repite ya conoce las respuestas.
+ */
+export const MOSTRAR_RESPUESTAS = true;
+
+/** Preguntas vigentes de un video: las aprobadas (generadas con IA) o, si no hay, las base de este archivo. */
+export function preguntasDe(db, videoId) {
+  const fila = db.prepare("SELECT preguntas FROM preguntas_ia WHERE video_id = ? AND estado = 'aprobada'").get(videoId);
+  return fila ? JSON.parse(fila.preguntas) : (PREGUNTAS[videoId] ?? []);
+}
+
 /** Preguntas sin la respuesta, para enviar al navegador. */
-export const preguntasPublicas = (videoId) =>
-  (PREGUNTAS[videoId] ?? []).map(({ texto, opciones }) => ({ texto, opciones }));
+export const preguntasPublicas = (preguntas) => preguntas.map(({ texto, opciones }) => ({ texto, opciones }));
 
 /** Cuenta aciertos. Devuelve null si las respuestas no corresponden a las preguntas. */
-export function calificar(videoId, respuestas) {
-  const preguntas = PREGUNTAS[videoId];
-  if (!preguntas || !Array.isArray(respuestas) || respuestas.length !== preguntas.length) return null;
+export function calificar(preguntas, respuestas) {
+  if (!preguntas.length || !Array.isArray(respuestas) || respuestas.length !== preguntas.length) return null;
   if (!respuestas.every((r, i) => Number.isInteger(r) && r >= 0 && r < preguntas[i].opciones.length)) return null;
   return { aciertos: preguntas.filter((p, i) => p.correcta === respuestas[i]).length, total: preguntas.length };
+}
+
+/** Qué acertó cada pregunta y por qué; solo si MOSTRAR_RESPUESTAS. */
+export function detalleDeRespuestas(preguntas, respuestas) {
+  if (!MOSTRAR_RESPUESTAS) return null;
+  return preguntas.map((p, i) => ({ acerto: p.correcta === respuestas[i], elegida: respuestas[i], correcta: p.correcta, explicacion: p.explicacion ?? null }));
+}
+
+/* ---------- Seguridad frente a resultado ---------- */
+
+/**
+ * Cruza lo que la persona acertó con lo seguro que se siente (autoevaluación 1 a 5).
+ * sobreconfianza: muy segura pero no aprobó. subestima: acertó todo y se siente insegura.
+ * necesita_apoyo: insegura y sin aprobar. alineado: lo demás.
+ */
+export function clasificarBrecha(aciertos, total, seguridad) {
+  const aprobo = aciertos >= APROBACION_MINIMA;
+  if (seguridad >= 4 && !aprobo) return 'sobreconfianza';
+  if (seguridad <= 2 && aciertos === total) return 'subestima';
+  if (seguridad <= 2 && !aprobo) return 'necesita_apoyo';
+  return 'alineado';
+}
+
+export const MENSAJE_BRECHA = {
+  sobreconfianza: 'Te sientes más seguro de lo que mostró el simulador. Vuelve a ver el video y repasa antes de aplicarlo solo.',
+  subestima: 'Acertaste todo y aun así te sientes inseguro. Tienes más dominio del que crees; practícalo con un compañero.',
+  necesita_apoyo: 'Todavía no te sientes seguro y el simulador lo confirma. Es normal: vuelve a ver el video y pide acompañamiento a tu líder.',
+  alineado: 'Tu seguridad coincide con tu resultado.',
+};
+
+/** Forma única del resultado que sale en /api/videos, /api/historial y al responder. */
+export function resultadoPublico(aciertos, total, seguridad) {
+  const brecha = clasificarBrecha(aciertos, total, seguridad);
+  return { aciertos, total, aprobado: aciertos >= APROBACION_MINIMA, seguridad, brecha, mensaje: MENSAJE_BRECHA[brecha] };
+}
+
+/* ---------- Preguntas generadas: validación ---------- */
+
+const esTexto = (v, min, max) => typeof v === 'string' && v.trim().length >= min && v.trim().length <= max;
+
+/** Valida y normaliza 3 preguntas {texto, opciones[3], correcta, explicacion}. Lanza Error si algo no cumple. */
+export function validarPreguntas(lista) {
+  if (!Array.isArray(lista) || lista.length !== 3) throw new Error('Deben ser exactamente 3 preguntas.');
+  return lista.map((q, i) => {
+    const n = i + 1;
+    if (!q || typeof q !== 'object') throw new Error(`La pregunta ${n} no es válida.`);
+    if (!esTexto(q.texto, 5, 300)) throw new Error(`La pregunta ${n} necesita un enunciado.`);
+    if (!Array.isArray(q.opciones) || q.opciones.length !== 3 || !q.opciones.every((o) => esTexto(o, 1, 200))) {
+      throw new Error(`La pregunta ${n} necesita exactamente 3 opciones.`);
+    }
+    if (new Set(q.opciones.map((o) => o.trim().toLowerCase())).size !== 3) throw new Error(`La pregunta ${n} tiene opciones repetidas.`);
+    if (!Number.isInteger(q.correcta) || q.correcta < 0 || q.correcta > 2) throw new Error(`La pregunta ${n} necesita una respuesta correcta (0 a 2).`);
+    if (!esTexto(q.explicacion, 5, 500)) throw new Error(`La pregunta ${n} necesita una explicación.`);
+    return { texto: q.texto.trim(), opciones: q.opciones.map((o) => o.trim()), correcta: q.correcta, explicacion: q.explicacion.trim() };
+  });
 }

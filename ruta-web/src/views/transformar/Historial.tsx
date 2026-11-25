@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { EstadoVacio } from '../../components/ui/EstadoVacio';
 import { ETIQUETA_ROL, useSesion } from '../../estado/SesionContexto';
 import { api, ErrorApi, formatearFechaVista, type Historial as DatosHistorial, type VideoHistorial } from '../../lib/api';
+import { CONFIG_IA } from '../../config/ia';
 import { InsigniaAudiencia } from './Capacitaciones';
+import { NOMBRE_BRECHA } from './GestionPreguntas';
+import { ResumenEquipo } from './ResumenEquipo';
+import etapaT from './etapaT.module.css';
 import estilos from './transformar.module.css';
 
 type Estado = { fase: 'cargando' } | { fase: 'error'; mensaje: string } | { fase: 'listo'; datos: DatosHistorial };
@@ -37,13 +41,16 @@ export function Historial({ clave = '' }: { clave?: string }) {
   if (videos.length === 0) return <EstadoVacio titulo="Aún no hay videos">El historial aparece cuando haya capacitaciones.</EstadoVacio>;
 
   return (
-    <ul className={estilos.historial}>
-      {videos.map((v) => (
-        <li key={v.id}>
-          <FilaHistorial video={v} verTodos={verTodos} />
-        </li>
-      ))}
-    </ul>
+    <>
+      {verTodos && CONFIG_IA.habilitada && <ResumenEquipo />}
+      <ul className={estilos.historial}>
+        {videos.map((v) => (
+          <li key={v.id}>
+            <FilaHistorial video={v} verTodos={verTodos} />
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }
 
@@ -78,6 +85,7 @@ function FilaHistorial({ video, verTodos }: { video: VideoHistorial; verTodos: b
                 <th scope="col">Visto el</th>
                 <th scope="col">Simulador</th>
                 <th scope="col">Seguridad (1 a 5)</th>
+                <th scope="col">Lectura</th>
               </tr>
             </thead>
             <tbody>
@@ -90,6 +98,7 @@ function FilaHistorial({ video, verTodos }: { video: VideoHistorial; verTodos: b
                     {s.simulador ? `${s.simulador.aciertos}/${s.simulador.total} · ${s.simulador.aprobado ? 'aprobado' : 'no aprobado'}` : 'Pendiente'}
                   </td>
                   <td className="numero">{s.simulador ? s.simulador.seguridad : '—'}</td>
+                  <td>{s.simulador ? <span className={etapaT.etiquetaBrecha} data-brecha={s.simulador.brecha}>{NOMBRE_BRECHA[s.simulador.brecha]}</span> : '—'}</td>
                 </tr>
               ))}
             </tbody>

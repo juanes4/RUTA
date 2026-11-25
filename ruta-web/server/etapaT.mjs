@@ -1,5 +1,5 @@
 import { ErrorDatos, MAX_DINAMICAS_POR_CICLO, MIN_GRUPO_TERMOMETRO, VALIDADORES } from './reglasT.mjs';
-import { APROBACION_MINIMA, calificar, preguntasPublicas } from './simulador.mjs';
+import { APROBACION_MINIMA, calificar, detalleDeRespuestas, preguntasDe, preguntasPublicas, resultadoPublico } from './simulador.mjs';
 
 /** Quién puede guardar cada tipo de registro. */
 const ESCRIBEN = {
@@ -101,7 +101,7 @@ export function rutasEtapaT({ db, sesionDe, enviar, leerJson, audienciasDe }) {
       const id = new URL(req.url, 'http://localhost').searchParams.get('videoId') ?? '';
       const video = db.prepare('SELECT id, audiencia FROM videos WHERE id = ?').get(id);
       if (!video || !audienciasDe(u.rol).includes(video.audiencia)) return enviar(res, 404, { error: 'Video no encontrado.' });
-      enviar(res, 200, { videoId: id, preguntas: preguntasPublicas(id), aprobacionMinima: APROBACION_MINIMA });
+      enviar(res, 200, { videoId: id, preguntas: preguntasPublicas(preguntasDe(db, id)), aprobacionMinima: APROBACION_MINIMA });
     },
 
     'POST /api/simulador': async (req, res) => {
@@ -115,14 +115,15 @@ export function rutasEtapaT({ db, sesionDe, enviar, leerJson, audienciasDe }) {
       }
       const visto = db.prepare('SELECT 1 FROM vistas WHERE usuario_id = ? AND video_id = ?').get(u.id, video.id);
       if (!visto) return enviar(res, 409, { error: 'Primero mira el video completo.' });
-      const nota = calificar(video.id, respuestas);
+      const preguntas = preguntasDe(db, video.id);
+      const nota = calificar(preguntas, respuestas);
       if (!nota) return enviar(res, 400, { error: 'Responde las 3 preguntas.' });
       db.prepare(
         `INSERT INTO simulacros (usuario_id, video_id, aciertos, total, seguridad) VALUES (?, ?, ?, ?, ?)
          ON CONFLICT (usuario_id, video_id) DO UPDATE SET aciertos = excluded.aciertos, total = excluded.total,
            seguridad = excluded.seguridad, hecho_en = datetime('now')`,
       ).run(u.id, video.id, nota.aciertos, nota.total, seguridad);
-      enviar(res, 200, { aciertos: nota.aciertos, total: nota.total, aprobado: nota.aciertos >= APROBACION_MINIMA, seguridad });
+      enviar(res, 200, { ...resultadoPublico(nota.aciertos, nota.total, seguridad), detalle: detalleDeRespuestas(preguntas, respuestas) });
     },
 
     'POST /api/registros': async (req, res) => {

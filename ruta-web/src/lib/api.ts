@@ -20,6 +20,20 @@ export interface ResultadoSimulador {
   aprobado: boolean;
   /** Autoevaluación de seguridad, de 1 a 5. */
   seguridad: number;
+  /** Cruce entre seguridad y resultado. */
+  brecha: BrechaSeguridad;
+  mensaje: string;
+  /** Solo viene justo al responder: qué acertó cada pregunta y por qué. */
+  detalle?: DetalleRespuesta[] | null;
+}
+
+export type BrechaSeguridad = 'sobreconfianza' | 'subestima' | 'necesita_apoyo' | 'alineado';
+
+export interface DetalleRespuesta {
+  acerto: boolean;
+  elegida: number;
+  correcta: number;
+  explicacion: string | null;
 }
 
 export interface VideoCapacitacion {
@@ -60,6 +74,29 @@ export interface Historial {
 export interface PreguntaSimulador {
   texto: string;
   opciones: string[];
+}
+
+/** Preguntas del simulador para gestionar (solo líderes). `explicacion` no está en el banco base. */
+export interface PreguntaCompleta extends PreguntaSimulador {
+  correcta: number;
+  explicacion?: string;
+}
+export interface JuegoPreguntas {
+  creadoEn: string | null;
+  preguntas: PreguntaCompleta[];
+  /** true: es el banco base de server/simulador.mjs, no preguntas aprobadas. */
+  base?: boolean;
+}
+export interface GestionVideo {
+  id: string;
+  titulo: string;
+  audiencia: Rol;
+  publicadas: JuegoPreguntas;
+  borrador: JuegoPreguntas | null;
+}
+export interface GestionPreguntasIA {
+  iaDisponible: boolean;
+  videos: GestionVideo[];
 }
 
 export type TipoRegistro = 'pulso' | 'voto' | 'acuerdo' | 'termometro' | 'dinamica' | 'balance' | 'merito';
@@ -359,6 +396,12 @@ export const api = {
     llamar<{ videoId: string; preguntas: PreguntaSimulador[]; aprobacionMinima: number }>(`/api/preguntas?videoId=${encodeURIComponent(videoId)}`),
   responderSimulador: (videoId: string, respuestas: number[], seguridad: number) =>
     llamar<ResultadoSimulador>('/api/simulador', { videoId, respuestas, seguridad }),
+  gestionPreguntasIA: () => llamar<GestionPreguntasIA>('/api/ia/preguntas'),
+  generarPreguntasIA: (videoId: string, contexto: string) =>
+    llamar<{ videoId: string; borrador: JuegoPreguntas }>('/api/ia/preguntas/generar', { videoId, contexto }),
+  aprobarPreguntasIA: (videoId: string) => llamar<{ videoId: string; publicadas: JuegoPreguntas }>('/api/ia/preguntas/aprobar', { videoId }),
+  descartarPreguntasIA: (videoId: string) => llamar<{ ok: true }>('/api/ia/preguntas/descartar', { videoId }),
+  resumenIA: () => llamar<{ texto: string; origen: 'ia' | 'reglas' }>('/api/ia/resumen', {}),
   guardarRegistro: (tipo: TipoRegistro, datos: unknown) => llamar<{ id: number; tipo: TipoRegistro }>('/api/registros', { tipo, datos }),
   registros: <T>(tipo: TipoRegistro) => llamar<T>(`/api/registros?tipo=${tipo}`),
   tableroA: () => llamar<RespuestaTableroA>('/api/etapa-a/tablero'),

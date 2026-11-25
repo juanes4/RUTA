@@ -1,5 +1,4 @@
-import type { Connect } from 'vite';
-import { loadEnv } from 'vite';
+import { loadEnv, type Connect } from 'vite';
 import { defineConfig, type Plugin } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { crearApi } from './server/api.mjs';
@@ -17,6 +16,9 @@ import { avisarEntorno } from './server/entorno.mjs';
  * ninguna. Al arrancar se avisa qué falta, sin mostrar valores.
  */
 function apiRuta(env: Record<string, string>, publicas: Record<string, string>): Plugin {
+  // Los módulos que leen process.env (coach de líderes, IA de T2, asistente de A) también ven las variables de .env.
+  // Solo GEMINI_* y RUTA_*; nunca llegan al navegador.
+  for (const [k, v] of Object.entries(env)) process.env[k] ??= v;
   const montar = async (servidor: { middlewares: Connect.Server }) => {
     // De las variables públicas solo se revisan los nombres (una clave con prefijo VITE_ sería visible en el navegador).
     avisarEntorno({ ...publicas, ...env });

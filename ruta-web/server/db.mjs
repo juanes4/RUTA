@@ -56,6 +56,14 @@ export async function abrirBase(ruta = process.env.RUTA_DB ?? resolve(process.cw
       hecho_en   TEXT NOT NULL DEFAULT (datetime('now')),
       PRIMARY KEY (usuario_id, video_id)
     );
+    -- T2: preguntas del simulador generadas con IA. 'borrador' espera la aprobación de un líder; 'aprobada' reemplaza al banco base.
+    CREATE TABLE IF NOT EXISTS preguntas_ia (
+      video_id  TEXT NOT NULL REFERENCES videos(id) ON DELETE CASCADE,
+      estado    TEXT NOT NULL CHECK (estado IN ('aprobada', 'borrador')),
+      preguntas TEXT NOT NULL,
+      creado_en TEXT NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (video_id, estado)
+    );
     -- T1, T3 y T4: pulsos, votos, termómetro, dinámicas, méritos y balances (datos en JSON).
     -- usuario_id queda en NULL en el termómetro, que es anónimo.
     CREATE TABLE IF NOT EXISTS registros (
