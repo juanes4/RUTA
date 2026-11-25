@@ -54,7 +54,8 @@ export function ReproductorYouTube({ video, alVer }: Props) {
         });
         jugador = p;
         intervalo = window.setInterval(() => {
-          if (p.getPlayerState() !== YT.PlayerState.PLAYING) return;
+          // Los métodos del reproductor existen solo cuando YouTube terminó de cargarlo (onReady).
+          if (typeof p.getPlayerState !== 'function' || p.getPlayerState() !== YT.PlayerState.PLAYING) return;
           const total = p.getDuration();
           if (total > 0 && p.getCurrentTime() / total >= AVANCE_PARA_VISTO) avisar();
         }, 2000);
