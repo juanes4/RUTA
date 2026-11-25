@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { anclaPaso, type Etapa, type EstiloTarjeta, type PasoEtapa } from '../../config/etapas';
 import estilos from './SeccionEtapa.module.css';
+import { SimboloEtapa } from './SimboloEtapa';
 
 interface PropsSeccion {
   etapa: Etapa;
@@ -17,7 +18,7 @@ export function SeccionEtapa({ etapa, descripcion, children }: PropsSeccion) {
     <section id={etapa.id} className={estilos.seccion} aria-labelledby={idTitulo} tabIndex={-1} style={color}>
       <header className={estilos.cabecera}>
         <span className={estilos.letra} aria-hidden="true">
-          {etapa.letra}
+          <SimboloEtapa etapa={etapa} tamano={24} />
         </span>
         <div>
           <h1 id={idTitulo}>{etapa.nombre}</h1>

@@ -10,7 +10,7 @@ const csv = (...filas: string[]) =>
     ...filas,
   ].join('\n');
 
-describe('carga del buzón 1 desde Google Forms', () => {
+describe('carga del buzón 1 desde un CSV', () => {
   it('lee el área y las 3 preguntas por su código, sin importar tildes ni mayúsculas en el área', () => {
     const { filas, errores } = importarBuzon1(csv('"2026/11/20 8:00","produccion","Se pierden pedidos","Más trabajo","Capacitar antes"'), AREAS, FECHA);
     expect(errores).toEqual([]);
@@ -36,6 +36,24 @@ describe('carga del buzón 1 desde Google Forms', () => {
   it('la plantilla se puede volver a cargar', () => {
     const { errores } = importarBuzon1(`${COLUMNAS_PLANTILLA.map((c) => `"${c}"`).join(',')}\nBodega,a,b,c`, AREAS, FECHA);
     expect(errores).toEqual([]);
+  });
+
+  it('lee el grupo opcional y avisa de las columnas personales sin cargarlas', () => {
+    const texto = '"Marca temporal","Dirección de correo electrónico","Área","Grupo","P1. a","P2. b","P3. ¿Qué harías ahora?"\n"t1","x@y.com","Bodega","operativo","a","b","c"';
+    const { filas, avisos } = importarBuzon1(texto, AREAS, FECHA);
+    expect(filas[0]).toMatchObject({ grupo: 'Operativo' });
+    expect(JSON.stringify(filas[0])).not.toContain('x@y.com');
+    expect(avisos).toHaveLength(1);
+    expect(avisos[0]).toContain('Marca temporal');
+    expect(avisos[0]).toContain('correo');
+    expect(avisos[0]).not.toContain('ahora');
+  });
+
+  it('acepta la tabla del copiloto (id, fecha, area, grupo, p1, p2, p3)', () => {
+    const { filas, errores, avisos } = importarBuzon1('id,fecha,area,grupo,p1,p2,p3\nprueba-01,2026-11-10,Bodega,Administrativo,a,b,c', AREAS, FECHA);
+    expect(errores).toEqual([]);
+    expect(avisos).toEqual([]);
+    expect(filas[0]).toMatchObject({ area: 'Bodega', grupo: 'Administrativo', falla: 'a', harias: 'c' });
   });
 
   it('volver a cargar el mismo archivo no duplica respuestas', () => {

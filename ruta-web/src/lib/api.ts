@@ -1,4 +1,5 @@
 import type { EstadoCarita, IdFaseViaje, IdIndicadorA } from '../config/analizar';
+import type { EstadoCopiloto, MensajeCopiloto, ModoCopiloto, PartesDossier, PropuestaLienzo, PropuestaTriaje, ResultadoBuzon } from './copiloto/tipos';
 
 /** Cliente de la API del servidor (/api/*). La sesión viaja en una cookie HttpOnly. */
 
@@ -225,10 +226,54 @@ export interface RespuestaViajeA {
   comentarios: ComentarioViaje[];
 }
 
+/* ---------- Etapa R · Copiloto y buzón en la app ---------- */
+
+/** Una respuesta del buzón en la tabla del copiloto (id, fecha, area, grupo, p1, p2, p3). */
+export interface FilaBuzonCopiloto {
+  id: string;
+  fecha: string;
+  area: string;
+  grupo: string;
+  p1: string;
+  p2: string;
+  p3: string;
+}
+
+/** Lo que ve gestión del cambio del buzón en la app: estado y cantidades, nunca quién respondió. */
+export interface EstadoBuzonApp {
+  buzon: string;
+  /** null: todavía no se ha abierto. */
+  estado: 'abierto' | 'cerrado' | null;
+  convocados: number;
+  respuestas: number;
+  areas: string[];
+  abiertoEn: string | null;
+  cerradoEn: string | null;
+  /** A quién se convocó (para marcarlo en la lista); no dice quién respondió. */
+  idsConvocados?: number[];
+}
+
+export interface Colaborador {
+  id: number;
+  nombre: string;
+  usuario: string;
+}
+
+/** El buzón que le toca a un colaborador. */
+export interface BuzonColaborador {
+  id: string;
+  empresa: string;
+  areas: string[];
+  grupos: string[];
+  estado: 'pendiente' | 'respondido' | 'cerrado';
+}
+
 export class ErrorApi extends Error {
   constructor(
     readonly estado: number,
     mensaje: string,
+    /** Campos extra del error (por ejemplo `puedeSimular` o `bloqueado` en el copiloto). */
+    readonly detalle: Record<string, unknown> = {},
   ) {
     super(mensaje);
   }
@@ -246,8 +291,8 @@ async function llamar<T>(ruta: string, cuerpo?: unknown): Promise<T> {
   } catch {
     throw new ErrorApi(0, 'No se pudo conectar con el servidor.');
   }
-  const datos = (await respuesta.json().catch(() => ({}))) as { error?: string };
-  if (!respuesta.ok) throw new ErrorApi(respuesta.status, datos.error ?? 'Ocurrió un error.');
+  const datos = (await respuesta.json().catch(() => ({}))) as { error?: string } & Record<string, unknown>;
+  if (!respuesta.ok) throw new ErrorApi(respuesta.status, datos.error ?? 'Ocurrió un error.', datos);
   return datos as T;
 }
 
@@ -279,6 +324,35 @@ export const api = {
     ),
   guardarViajeA: (datos: { periodo: string; area: string; comentario: string; respuestas: number[] }) =>
     llamar<{ id: number; resumen: ResumenViaje }>('/api/etapa-a/viaje', datos),
+
+  copiloto: {
+    estado: () => llamar<EstadoCopiloto>('/api/copiloto/estado'),
+    buzonPrueba: () =>
+      llamar<{ empresa: { nombre: string; sector: string; que_cambia: string; areas: { area: string; afectados: number }[] }; filas: FilaBuzonCopiloto[] }>(
+        '/api/copiloto/buzon-prueba',
+      ),
+    /** contexto: el lienzo y el triaje, para que el copiloto proponga ajustes. */
+    analizarBuzon: (modo: ModoCopiloto, buzon: FilaBuzonCopiloto[], areas: { area: string; afectados: number }[], contexto: unknown) =>
+      llamar<ResultadoBuzon>('/api/copiloto/buzon', { modo, buzon, areas, contexto }),
+    lienzo: (modo: ModoCopiloto, mensajes: MensajeCopiloto[], contexto: unknown) =>
+      llamar<{ modo: ModoCopiloto; texto: string }>('/api/copiloto/lienzo', { modo, mensajes, contexto }),
+    extraerLienzo: (modo: ModoCopiloto, mensajes: MensajeCopiloto[], contexto: unknown) =>
+      llamar<{ modo: ModoCopiloto; lienzo: PropuestaLienzo }>('/api/copiloto/extraer-lienzo', { modo, mensajes, contexto }),
+    triaje: (modo: ModoCopiloto, contexto: unknown) => llamar<{ modo: ModoCopiloto; modelo?: string; propuesta: PropuestaTriaje }>('/api/copiloto/triaje', { modo, contexto }),
+    dossier: (modo: ModoCopiloto, contexto: unknown) => llamar<{ modo: ModoCopiloto; modelo?: string; dossier: PartesDossier }>('/api/copiloto/dossier', { modo, contexto }),
+  },
+
+  buzon: {
+    /** Gestión del cambio. */
+    colaboradores: () => llamar<{ colaboradores: Colaborador[] }>('/api/buzon/colaboradores'),
+    estado: (buzon: string) => llamar<EstadoBuzonApp>(`/api/buzon/estado?buzon=${encodeURIComponent(buzon)}`),
+    abrir: (datos: { buzon: string; empresa: string; areas: string[]; convocados: number[] }) => llamar<EstadoBuzonApp>('/api/buzon/abrir', datos),
+    cerrar: (buzon: string) => llamar<EstadoBuzonApp>('/api/buzon/cerrar', { buzon }),
+    respuestas: (buzon: string) => llamar<{ buzon: string; filas: FilaBuzonCopiloto[] }>(`/api/buzon/respuestas?buzon=${encodeURIComponent(buzon)}`),
+    /** Colaborador. */
+    mio: () => llamar<{ buzon: BuzonColaborador | null }>('/api/buzon/mio'),
+    responder: (datos: { buzon: string; area: string; grupo: string; p1: string; p2: string; p3: string }) => llamar<{ ok: true }>('/api/buzon/responder', datos),
+  },
 };
 
 /** SQLite guarda la fecha en UTC como "2026-11-11 21:59:00". */

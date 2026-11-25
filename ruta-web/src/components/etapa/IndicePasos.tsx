@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { tarjetaDePaso, type Etapa, type PasoEtapa } from '../../config/etapas';
 import { useRuta } from '../../navegacion/RutaContexto';
+import { EnlaceFlecha } from '../ui/EnlaceFlecha';
 import estilos from './IndicePasos.module.css';
 
 interface PropsIndice {
@@ -40,9 +41,7 @@ export function VolverAlIndice({ etapa, paso }: { etapa: Etapa; paso: PasoEtapa 
   const posicion = etapa.pasos.indexOf(paso) + 1;
   return (
     <p className={`${estilos.volver} fila-completa`}>
-      <a href={enlace({ pagina: 'etapa', etapaId: etapa.id, pasoId: null })}>
-        <span aria-hidden="true">←</span> Todos los pasos
-      </a>
+      <EnlaceFlecha href={enlace({ pagina: 'etapa', etapaId: etapa.id, pasoId: null })}>Todos los pasos</EnlaceFlecha>
       <span className="numero">
         Paso {posicion} de {etapa.pasos.length}
       </span>
@@ -61,16 +60,16 @@ export function PasoAnteriorSiguiente({ etapa, paso }: { etapa: Etapa; paso: Pas
   return (
     <nav className={`${estilos.anteriorSiguiente} fila-completa`} aria-label="Otros pasos de la etapa">
       {anterior ? (
-        <a className={estilos.enlacePaso} href={href(anterior)}>
-          <span aria-hidden="true">←</span> {anterior.id} {anterior.titulo}
-        </a>
+        <EnlaceFlecha href={href(anterior)} antetitulo="Anterior">
+          {anterior.id} · {anterior.titulo}
+        </EnlaceFlecha>
       ) : (
         <span />
       )}
       {siguiente && (
-        <a className={estilos.enlacePaso} href={href(siguiente)}>
-          {siguiente.id} {siguiente.titulo} <span aria-hidden="true">→</span>
-        </a>
+        <EnlaceFlecha href={href(siguiente)} direccion="adelante" antetitulo="Siguiente">
+          {siguiente.id} · {siguiente.titulo}
+        </EnlaceFlecha>
       )}
     </nav>
   );

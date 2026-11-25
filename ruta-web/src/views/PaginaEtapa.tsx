@@ -22,7 +22,9 @@ export function PaginaEtapa({ etapas, etapa, pasoId, Vista }: Props) {
   const porPagina = Boolean(etapa.paginasPorPaso);
   const { vistos } = useSeguimientoScroll(porPagina ? [] : etapa.pasos.map((p) => anclaPaso(p.id)));
 
-  useEffect(() => marcar(vistos), [vistos, marcar]);
+  useEffect(() => {
+    marcar(vistos);
+  }, [vistos, marcar]);
 
   // Con una página por paso, abrir la página es haber visto el paso.
   useEffect(() => {

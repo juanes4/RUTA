@@ -45,16 +45,18 @@ export interface FilaActor {
   compromiso_deseado: NivelCompromiso | null;
 }
 
-/** R5. Una respuesta del buzón 1 (escucha inicial). Anónima: solo se guarda el área. */
+/** R5. Una respuesta del buzón 1 (escucha inicial). Anónima: solo se guardan el área y el grupo. */
 export interface RespuestaBuzon1 {
   id: string;
   fecha: string;
   area: string;
+  /** Grupo opcional (operativo, administrativo, líder de área…). Se segmenta por área o por grupo, nunca por los dos a la vez. */
+  grupo?: string;
   /** ¿Qué es lo que más falla hoy en este proceso? */
   falla: string;
   /** ¿Qué te preocupa del cambio? */
   preocupa: string;
-  /** Si tú decidieras, ¿qué harías? */
+  /** Si tú decidieras, ¿qué harías para mejorar? */
   harias: string;
 }
 

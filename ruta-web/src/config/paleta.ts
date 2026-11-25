@@ -9,7 +9,10 @@ export const PASTELES = [
   'var(--pastel-blue)',
 ] as const;
 
-export type Pastel = (typeof PASTELES)[number];
+/** Durazno cálido de la Etapa 0. Fuera de PASTELES: no entra en la alternancia de tarjetas. */
+export const PASTEL_DURAZNO = 'var(--pastel-durazno)';
+
+export type Pastel = (typeof PASTELES)[number] | typeof PASTEL_DURAZNO;
 
 /** Alterna los pasteles para que tarjetas vecinas no sean idénticas (DESIGN.md, "Evitar"). */
 export function pastelPorIndice(indice: number): Pastel {

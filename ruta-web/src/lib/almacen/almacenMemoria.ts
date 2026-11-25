@@ -1,4 +1,5 @@
 import { DATOS_VACIOS, type DatosProyecto, type Proyecto } from '../modelo/proyecto';
+import { normalizarCopiloto } from '../copiloto/normalizar';
 import type { Almacen } from './almacen';
 
 /** Implementación en memoria: base de la de localStorage y útil en pruebas. */
@@ -27,7 +28,9 @@ export class AlmacenMemoria implements Almacen {
 
   async obtenerDatos(idProyecto: string): Promise<DatosProyecto> {
     // Se completa con las tablas vacías: los proyectos antiguos no tienen las tablas nuevas.
-    return structuredClone({ ...DATOS_VACIOS, ...this.datos.get(idProyecto) });
+    // Lo del copiloto se repara: puede venir incompleto del modelo o de una versión anterior.
+    const guardados = this.datos.get(idProyecto);
+    return structuredClone({ ...DATOS_VACIOS, ...guardados, copiloto: normalizarCopiloto(guardados?.copiloto) });
   }
 
   async guardarDatos(idProyecto: string, datos: DatosProyecto): Promise<void> {

@@ -9,7 +9,7 @@ export type CampoBuzon1 = keyof Pick<RespuestaBuzon1, 'falla' | 'preocupa' | 'ha
 
 export interface PreguntaBuzon1 {
   campo: CampoBuzon1;
-  /** Código con el que empieza el título de la pregunta en Google Forms. */
+  /** Código de la pregunta (P1, P2, P3): encabezado de su columna en el CSV. */
   codigo: string;
   texto: string;
 }
@@ -17,5 +17,15 @@ export interface PreguntaBuzon1 {
 export const PREGUNTAS_BUZON1: readonly PreguntaBuzon1[] = [
   { campo: 'falla', codigo: 'P1', texto: '¿Qué es lo que más falla hoy en este proceso?' },
   { campo: 'preocupa', codigo: 'P2', texto: '¿Qué te preocupa del cambio?' },
-  { campo: 'harias', codigo: 'P3', texto: 'Si tú decidieras, ¿qué harías? (Mejorar)' },
+  { campo: 'harias', codigo: 'P3', texto: 'Si tú decidieras, ¿qué harías para mejorar?' },
 ];
+
+/** Grupo opcional de quien responde. Permite segmentar sin identificar. */
+export const GRUPOS_BUZON1 = ['Operativo', 'Administrativo', 'Líder de área', 'Prefiero no decirlo'] as const;
+export const SIN_GRUPO = 'Sin grupo';
+
+/**
+ * Columnas que el formulario no debería recolectar. Si llegan en el CSV se
+ * ignoran y se avisa: rompen el anonimato (la hora exacta permite reconocer a alguien).
+ */
+export const COLUMNAS_PERSONALES = ['correo', 'email', 'e-mail', 'nombre', 'marca temporal', 'timestamp', 'hora', 'telefono', 'celular', 'cedula', 'documento'];

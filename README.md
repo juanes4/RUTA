@@ -24,6 +24,39 @@ Agregar un usuario (desde `ruta-web/`): `npm run usuario -- maria "María Pérez
 Los videos (YouTube) están en `ruta-web/server/videos.mjs`. Para cambiarlos: edita ese archivo, borra
 `ruta-web/server/data/ruta.db` y vuelve a iniciar (esto también borra usuarios e historial).
 
+## Etapa R (Reconocer): copiloto y buzón en línea
+
+El **Copiloto de Reconocimiento** (solo rol líder) se abre desde el índice de la etapa R. Tiene 4 pestañas: buzón (R5), lienzo (R1),
+triaje (R2) y dossier para la etapa U. Usa la API de **Gemini** desde el servidor. El modelo clasifica y propone; los conteos, los porcentajes,
+la suma del triaje y el semáforo se calculan en código. Nada pasa a R1 o R2 sin el clic de la persona (botones "Pasar a R1" y "Pasar a R2").
+
+Variables del servidor, en el entorno o en `ruta-web/.env`. Copia `ruta-web/.env.example` como `.env` y llena los valores. El `.env` no se sube, ninguna
+clave va en el código ni llega al navegador (nunca uses el prefijo `VITE_`), y al iniciar la consola avisa qué variables faltan sin mostrar valores:
+
+| Variable | Para qué |
+| --- | --- |
+| `GEMINI_API_KEY` | Clave de la API de Gemini |
+| `GEMINI_API_KEY_RESPALDO` | Opcional. Segunda clave: se usa solo si la principal se queda sin cuota o es rechazada |
+| `GEMINI_MODEL` | El modelo que se quiere usar; se cambia sin tocar el código |
+| `GEMINI_MODELOS_RESPALDO` | Opcional. Modelos separados por comas, del más al menos potente: si `GEMINI_MODEL` está saturado, sin cuota o no responde, se prueban en orden. La app muestra cuál respondió |
+| `RUTA_IA_DATOS_REALES` | Solo con `permitido` se envían a Gemini respuestas que no son del buzón de prueba |
+| `RUTA_HOSTS` | Hosts extra para Vite (por ejemplo, el de un túnel para mostrar la app desde otro equipo) |
+
+Sin `GEMINI_API_KEY` o `GEMINI_MODEL`, o si la API falla, la app lo explica y ofrece el **modo simulado** (sin IA, con la clasificación
+de referencia del buzón de prueba). **Sin respuestas reales hasta tener un contrato de datos:** sin `RUTA_IA_DATOS_REALES=permitido`, el
+servidor solo envía a Gemini el buzón de prueba (49 respuestas inventadas, en `ruta-web/server/copiloto/buzonPrueba.mjs` y
+`ruta-web/public/buzon_prueba.csv`). El enmascarado (correos, teléfonos, cédulas y nombres) se aplica siempre.
+
+R5 acepta un grupo opcional (operativo, administrativo, líder de área) además del área. Los resultados se separan por área **o** por grupo,
+nunca por los dos a la vez.
+
+**Buzón en la app.** En R5, gestión del cambio abre el buzón y elige qué colaboradores (cuentas con rol empleado) hacen parte del cambio.
+Cada uno lo ve al entrar (`#/buzon`) y lo responde **una sola vez y de forma anónima**: el servidor guarda aparte que la persona ya
+respondió (`buzon_participaciones`) y la respuesta sin ningún vínculo con ella (`buzon_anonimas`: id aleatorio, solo la fecha, área y grupo).
+Las dos tablas son `WITHOUT ROWID`, así que tampoco se pueden emparejar por orden de llegada. Mientras el buzón está abierto solo se ve
+cuántos respondieron, nunca quiénes; al cerrarlo, las respuestas se traen a R5. El código está en `ruta-web/server/buzon.mjs`.
+El papel se sigue pudiendo digitar y un CSV se puede cargar. El prompt del copiloto está en `ruta-web/server/copiloto/prompt.mjs`.
+
 ## Etapa T (Transformar)
 
 Sigue la sección «Etapa #3: Transformar» del documento de metodología (niveles de Kirkpatrick). El texto del documento está en

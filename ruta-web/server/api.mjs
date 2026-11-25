@@ -1,5 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { hashClave, verificarClave } from './clave.mjs';
+import { rutasBuzon } from './buzon.mjs';
+import { rutasCopiloto } from './copiloto/rutas.mjs';
 import { rutasEtapaA } from './etapaA.mjs';
 import { rutasEtapaT } from './etapaT.mjs';
 import { APROBACION_MINIMA } from './simulador.mjs';
@@ -26,12 +28,12 @@ function leerCookie(req, nombre) {
   return null;
 }
 
-function leerJson(req) {
+function leerJson(req, limite = 30_000) {
   return new Promise((resolver, rechazar) => {
     let texto = '';
     req.on('data', (trozo) => {
       texto += trozo;
-      if (texto.length > 30_000) {
+      if (texto.length > limite) {
         rechazar(new Error('Cuerpo demasiado grande'));
         req.destroy();
       }
@@ -53,7 +55,7 @@ const publico = (u) => ({ id: u.id, usuario: u.usuario, nombre: u.nombre, rol: u
  * Crea el manejador de la API (/api/*). Devuelve false si la ruta no es de la
  * API, para que el servidor siga con lo suyo. `db` es una base de abrirBase().
  */
-export function crearApi(db, { seguro = false } = {}) {
+export function crearApi(db, { seguro = false, env = process.env, generarImpl } = {}) {
   const intentos = new Map(); // usuario -> { n, hasta }
 
   const sesionDe = (req) => {
@@ -204,6 +206,8 @@ export function crearApi(db, { seguro = false } = {}) {
     },
     ...rutasEtapaT({ db, sesionDe, enviar, leerJson, audienciasDe }),
     ...rutasEtapaA({ db, sesionDe, enviar, leerJson }),
+    ...rutasCopiloto({ sesionDe, enviar, leerJson, env, ...(generarImpl ? { generarImpl } : {}) }),
+    ...rutasBuzon({ db, sesionDe, enviar, leerJson }),
   };
 
   return async function manejar(req, res) {

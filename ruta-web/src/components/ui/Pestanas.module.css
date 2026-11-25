@@ -27,3 +27,71 @@
   border-bottom-color: var(--text);
   font-weight: 700;
 }
+
+/* Variante segmentada: barra de vidrio con la pestaña activa en una pastilla azul suave. */
+.contenedor[data-variante='segmentada'] .lista {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 4px;
+  padding: 5px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--glass-mate-bg);
+  box-shadow: var(--sombra-suave);
+}
+
+.contenedor[data-variante='segmentada'] .pestana {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 9px 14px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.contenedor[data-variante='segmentada'] .pestana:hover {
+  background: var(--bg-soft);
+  color: var(--text);
+}
+
+.contenedor[data-variante='segmentada'] .pestana[aria-selected='true'] {
+  border-color: var(--info-linea);
+  background: linear-gradient(135deg, var(--info-bg-claro), var(--info-bg));
+  box-shadow: 0 2px 8px rgba(52, 69, 214, 0.08);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.contenedor[data-variante='segmentada'] .pestana:focus-visible {
+  outline: 2px solid var(--accent-link);
+  outline-offset: 2px;
+}
+
+.icono {
+  display: inline-flex;
+  flex: none;
+}
+
+@media (max-width: 640px) {
+  .contenedor[data-variante='segmentada'] .lista {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contenedor[data-variante='segmentada'] .pestana {
+    transition: none;
+  }
+}

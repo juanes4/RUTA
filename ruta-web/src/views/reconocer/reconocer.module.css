@@ -37,12 +37,53 @@
   font-weight: 600;
 }
 
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .aviso {
-  padding: 12px 16px;
-  border-radius: var(--radio-control);
-  background: var(--bg-card);
-  border: 1px solid var(--negative);
-  font-size: var(--fs-label);
+  position: relative;
+  padding: 18px 22px 18px 62px;
+  border: 1px solid var(--atencion-linea);
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--atencion-bg-claro), var(--atencion-bg));
+  box-shadow: 0 10px 30px rgba(17, 17, 17, 0.1);
+  color: var(--atencion-texto);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+/* Icono "!" en un círculo del color fuerte del tono. */
+.aviso::before {
+  content: '!';
+  position: absolute;
+  left: 20px;
+  top: 18px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--atencion-borde);
+  color: var(--text-on-dark);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* Un error que acaba de pasar: rojo. */
+.aviso[role='alert'] {
+  border-color: var(--peligro-linea);
+  background: linear-gradient(135deg, var(--peligro-bg-claro), var(--peligro-bg));
+  color: var(--peligro-texto);
+}
+
+.aviso[role='alert']::before {
+  background: var(--peligro-borde);
 }
 
 .tabla {

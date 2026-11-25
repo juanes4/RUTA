@@ -1,9 +1,11 @@
 import type { ReactNode } from 'react';
 import type { Etapa } from '../../config/etapas';
+import { SimboloEtapa } from '../etapa/SimboloEtapa';
 import { ETIQUETA_ROL, useSesion } from '../../estado/SesionContexto';
 import { useRuta } from '../../navegacion/RutaContexto';
 import type { Ruta } from '../../navegacion/rutas';
-import { IconoIngresar, IconoInicio, IconoSalir, IconoTablero } from './Iconos';
+import type { Rol } from '../../lib/api';
+import { IconoBuzon, IconoIngresar, IconoInicio, IconoSalir, IconoTablero } from './Iconos';
 import estilos from './Marco.module.css';
 
 interface Props {
@@ -21,7 +23,8 @@ interface ElementoRiel {
   activo(ruta: Ruta): boolean;
 }
 
-function elementos(etapas: readonly Etapa[], conSesion: boolean): ElementoRiel[] {
+function elementos(etapas: readonly Etapa[], rol: Rol | null): ElementoRiel[] {
+  const conSesion = rol !== null;
   const inicio: ElementoRiel = {
     clave: 'inicio',
     etiqueta: 'Inicio',
@@ -50,11 +53,25 @@ function elementos(etapas: readonly Etapa[], conSesion: boolean): ElementoRiel[]
       .filter((e) => e.activa)
       .map<ElementoRiel>((e) => ({
         clave: e.id,
-        etiqueta: `Etapa ${e.letra} · ${e.nombre}`,
+        etiqueta: e.icono ? e.nombre : `Etapa ${e.letra} · ${e.nombre}`,
         ruta: { pagina: 'etapa', etapaId: e.id, pasoId: null },
-        icono: <span className={estilos.letra}>{e.letra}</span>,
+        icono: <span className={estilos.letra}>
+            <SimboloEtapa etapa={e} tamano={18} />
+          </span>,
         activo: (r) => r.pagina === 'etapa' && r.etapaId === e.id,
       })),
+    // Los colaboradores responden el buzón 1 desde su cuenta.
+    ...(rol === 'empleado'
+      ? [
+          {
+            clave: 'buzon',
+            etiqueta: 'Buzón de escucha',
+            ruta: { pagina: 'buzon' },
+            icono: <IconoBuzon tamano={20} />,
+            activo: (r) => r.pagina === 'buzon',
+          } satisfies ElementoRiel,
+        ]
+      : []),
     {
       clave: 'tablero',
       etiqueta: 'Tablero',
@@ -91,7 +108,7 @@ export function Marco({ etapas, conBarraEtapas, children }: Props) {
         <nav className={estilos.riel} aria-label="Navegación general">
           <span className={estilos.marca}>RUTA</span>
           <ul className={estilos.lista}>
-            {elementos(etapas, Boolean(usuario)).map((el) => {
+            {elementos(etapas, usuario?.rol ?? null).map((el) => {
               const activo = el.activo(ruta);
               return (
                 <li key={el.clave}>
