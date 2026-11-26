@@ -31,7 +31,7 @@ describe('revisión de variables al iniciar', () => {
 
   it('.env.example lista todas las variables y no trae valores', () => {
     const ejemplo = readFileSync(new URL('../.env.example', import.meta.url), 'utf8');
-    const asignaciones = ejemplo.split('\n').filter((l) => /^[A-Z_]+=/.test(l));
+    const asignaciones = ejemplo.split(/\r?\n/).filter((l) => /^[A-Z_]+=/.test(l));
     for (const v of VARIABLES) expect(asignaciones).toContain(`${v.nombre}=`);
     expect(asignaciones.every((l) => l.endsWith('='))).toBe(true);
   });

@@ -130,7 +130,6 @@ export function VistaCopiloto({ etapa }: { etapa: Etapa }) {
         <LimiteErrores alReiniciar={reiniciarCopiloto}>
           <Pestanas
             etiqueta="Pasos del copiloto"
-            variante="segmentada"
             inicial={pasoPendiente(datos)}
             pestanas={[
               { id: 'lienzo', etiqueta: '1 · Lienzo', icono: <IconoLienzo />, contenido: <PanelLienzo {...props} /> },
