@@ -59,9 +59,9 @@ function GraficoAnilloSalud({
     color: string;
     filtrable: boolean;
   }[] = [
-    { id: 'en_meta', etiqueta: 'En meta', cantidad: resumen.enMeta, color: 'var(--positive)', filtrable: true },
-    { id: 'atencion', etiqueta: 'Atención', cantidad: resumen.atencion, color: 'var(--text)', filtrable: true },
-    { id: 'intervenir', etiqueta: 'Intervenir', cantidad: resumen.intervenir, color: 'var(--negative)', filtrable: true },
+    { id: 'en_meta', etiqueta: 'En meta', cantidad: resumen.enMeta, color: 'var(--recorrido-acompanar)', filtrable: true },
+    { id: 'atencion', etiqueta: 'Atención', cantidad: resumen.atencion, color: 'var(--recorrido-comprobar)', filtrable: true },
+    { id: 'intervenir', etiqueta: 'Intervenir', cantidad: resumen.intervenir, color: 'var(--peligro-linea)', filtrable: true },
     { id: 'sin_dato', etiqueta: 'Sin dato', cantidad: resumen.sinDato, color: 'var(--border)', filtrable: false },
   ];
 
@@ -365,8 +365,8 @@ export function GraficoEvolucionAuditorias({ auditorias }: { auditorias: readonl
         >
           <defs>
             <linearGradient id={idGrad} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="var(--positive)" stopOpacity="0.22" />
-              <stop offset="100%" stopColor="var(--positive)" stopOpacity="0.0" />
+              <stop offset="0%" stopColor="var(--recorrido-acompanar)" stopOpacity="0.32" />
+              <stop offset="100%" stopColor="var(--recorrido-acompanar)" stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
@@ -381,21 +381,25 @@ export function GraficoEvolucionAuditorias({ auditorias }: { auditorias: readonl
 
           {yMeta !== null && ind && (
             <g>
-              <line x1={PAD_IZQ} y1={yMeta} x2={ANCHO - PAD_DER} y2={yMeta} stroke="var(--text)" strokeDasharray="6 4" strokeWidth={1.5} />
-              <text x={ANCHO - PAD_DER} y={Math.max(14, yMeta - 6)} textAnchor="end" fill="var(--text)" fontSize={11} fontWeight={600}>
+              <line x1={PAD_IZQ} y1={yMeta} x2={ANCHO - PAD_DER} y2={yMeta} stroke="var(--info-texto)" strokeDasharray="6 4" strokeWidth={1.4} />
+              <text x={ANCHO - PAD_DER} y={Math.max(14, yMeta - 6)} textAnchor="end" fill="var(--info-texto)" fontSize={11} fontWeight={600}>
                 Meta: {formatearMetaA(metaLinea!, ind)}
               </text>
             </g>
           )}
 
           {rutaArea && <path d={rutaArea} fill={`url(#${idGrad})`} />}
-          {ruta && <path d={ruta} fill="none" stroke="var(--positive)" strokeWidth={3} strokeLinecap="round" />}
+          {ruta && <path d={ruta} fill="none" stroke="var(--info-icono)" strokeWidth={2.8} strokeLinecap="round" />}
 
           {puntos.map((p) => {
             const estado =
               ind && p.valor !== null && metaLinea !== null ? semaforoIndicadorA(p.valor, metaLinea, ind) : null;
             const colorPunto =
-              estado === 'intervenir' ? 'var(--negative)' : estado === 'atencion' ? 'var(--text)' : 'var(--positive)';
+              estado === 'intervenir'
+                ? 'var(--peligro-linea)'
+                : estado === 'atencion'
+                  ? 'var(--recorrido-comprobar)'
+                  : 'var(--recorrido-acompanar)';
             return (
               <g key={p.id}>
                 {p.y !== null && (

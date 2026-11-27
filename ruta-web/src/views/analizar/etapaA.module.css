@@ -129,15 +129,15 @@
 }
 
 .barraRelleno[data-estado='en_meta'] {
-  background: var(--positive);
+  background: linear-gradient(90deg, var(--pastel-mint), var(--recorrido-acompanar));
 }
 
 .barraRelleno[data-estado='atencion'] {
-  background: var(--text);
+  background: linear-gradient(90deg, var(--recorrido-transformar), var(--recorrido-comprobar));
 }
 
 .barraRelleno[data-estado='intervenir'] {
-  background: var(--negative);
+  background: linear-gradient(90deg, var(--peligro-bg), var(--peligro-linea));
 }
 
 /* ---------- Tarjetas KPI resumen (A1) ---------- */
@@ -605,15 +605,15 @@
 }
 
 .rellenoOpcion[data-letra='A'] {
-  background: var(--positive);
+  background: linear-gradient(90deg, var(--pastel-mint), var(--recorrido-acompanar));
 }
 
 .rellenoOpcion[data-letra='B'] {
-  background: var(--text);
+  background: linear-gradient(90deg, var(--recorrido-transformar), var(--recorrido-comprobar));
 }
 
 .rellenoOpcion[data-letra='C'] {
-  background: var(--negative);
+  background: linear-gradient(90deg, var(--peligro-bg), var(--peligro-linea));
 }
 
 /* Franja de hallazgos automáticos (A2) */
@@ -676,7 +676,7 @@
 .rellenoProgreso {
   height: 100%;
   border-radius: var(--radius-pill);
-  background: var(--positive);
+  background: linear-gradient(90deg, var(--pastel-blue), var(--recorrido-entender));
   transition: width 0.2s ease;
 }
 
@@ -807,10 +807,10 @@
 }
 
 .lineaMetaMini {
-  width: 3px;
+  width: 2.5px;
   height: 14px;
   border-radius: 2px;
-  background: var(--text);
+  background: var(--info-texto);
 }
 
 .listaBullet {
@@ -876,24 +876,24 @@
 }
 
 .barraBullet[data-estado='en_meta'] {
-  background: var(--positive);
+  background: linear-gradient(90deg, var(--pastel-mint), var(--recorrido-acompanar));
 }
 
 .barraBullet[data-estado='atencion'] {
-  background: var(--text);
+  background: linear-gradient(90deg, var(--recorrido-transformar), var(--recorrido-comprobar));
 }
 
 .barraBullet[data-estado='intervenir'] {
-  background: var(--negative);
+  background: linear-gradient(90deg, var(--peligro-bg), var(--peligro-linea));
 }
 
 .marcadorMetaBullet {
   position: absolute;
   top: -3px;
   bottom: -3px;
-  width: 3px;
+  width: 2.5px;
   border-radius: 2px;
-  background: var(--bg-dark);
+  background: var(--info-texto);
   transform: translateX(-50%);
   box-shadow: 0 0 0 2px var(--bg-card);
 }
@@ -1012,15 +1012,15 @@
 }
 
 .tramoApilado[data-letra='A'] {
-  background: var(--positive);
+  background: linear-gradient(90deg, var(--pastel-mint), var(--recorrido-acompanar));
 }
 
 .tramoApilado[data-letra='B'] {
-  background: var(--text);
+  background: linear-gradient(90deg, var(--recorrido-transformar), var(--recorrido-comprobar));
 }
 
 .tramoApilado[data-letra='C'] {
-  background: var(--negative);
+  background: linear-gradient(90deg, var(--peligro-bg), var(--peligro-linea));
 }
 
 @media (max-width: 900px) {
