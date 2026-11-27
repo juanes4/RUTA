@@ -330,3 +330,36 @@ describe('Etapa A · Analizar (A1 auditorías y A2 mapa de viaje)', () => {
     expect(guion.titulo).toContain('Guion breve');
   });
 });
+
+describe('ingreso sin clave para una demo publicada (RUTA_DEMO_USUARIO)', () => {
+  it('sin sesión entra como el usuario de la demo; una sesión iniciada tiene prioridad', async () => {
+    const api = crearApi(await abrirBase(':memory:'), { env: { RUTA_DEMO_USUARIO: 'lider' } });
+    const srv = createServer((req, res) => {
+      api(req, res).then((atendida) => {
+        if (!atendida) res.writeHead(404).end();
+      });
+    });
+    await new Promise((r) => srv.listen(0, '127.0.0.1', r));
+    const url = `http://127.0.0.1:${srv.address().port}`;
+    try {
+      const sinCookie = await (await fetch(`${url}/api/sesion`)).json();
+      expect(sinCookie.usuario).toMatchObject({ usuario: 'lider', rol: 'lider' });
+      expect((await fetch(`${url}/api/videos`)).status).toBe(200);
+
+      const login = await fetch(`${url}/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuario: 'empleado1', clave: 'ruta2026' }),
+      });
+      const cookie = login.headers.get('set-cookie')?.split(';')[0] ?? '';
+      const conCookie = await (await fetch(`${url}/api/sesion`, { headers: { Cookie: cookie } })).json();
+      expect(conCookie.usuario.usuario).toBe('empleado1');
+    } finally {
+      srv.close();
+    }
+  });
+
+  it('sin la variable, nadie entra sin clave', async () => {
+    expect((await pedir('/api/sesion')).json.usuario).toBeNull();
+  });
+});

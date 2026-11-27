@@ -1,0 +1,463 @@
+/* Gráficos del Tablero. Solo variables de tokens.css. */
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 20px 22px;
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  border: var(--borde-panel);
+  box-shadow: var(--sombra-suave);
+}
+
+.cabeceraTarjeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tituloTarjeta {
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+
+.chipEtapa {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  min-width: 30px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 8px;
+  background: var(--fondo-chip);
+  font-family: var(--font-display);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+
+/* La lectura del gráfico: lo primero que se lee, más grande que el título. */
+.lectura {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.cuerpo {
+  min-width: 0;
+}
+
+.nota {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.leyenda li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.muestra {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--color-muestra);
+}
+
+.muestra[data-forma='punto'] {
+  border-radius: 50%;
+}
+
+.muestra[data-forma='anillo'] {
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--color-muestra);
+}
+
+.muestra[data-forma='linea'] {
+  height: 3px;
+  width: 16px;
+  border-radius: 2px;
+}
+
+.muestra[data-forma='guion'] {
+  height: 0;
+  width: 16px;
+  border-radius: 0;
+  background: none;
+  border-top: 2px dashed var(--color-muestra);
+}
+
+/* Ver datos */
+.datos {
+  font-size: var(--fs-small);
+}
+
+.datos summary {
+  cursor: pointer;
+  color: var(--accent-link);
+  font-weight: 500;
+  width: fit-content;
+}
+
+.tablaDesplazable {
+  overflow-x: auto;
+  margin-top: 8px;
+}
+
+.datos table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.datos th,
+.datos td {
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.datos thead th {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.datos tbody th {
+  font-weight: 500;
+}
+
+/* Lienzo y globo */
+.lienzo {
+  position: relative;
+  width: 100%;
+}
+
+.lienzo svg {
+  display: block;
+  overflow: visible;
+  font-family: var(--font-ui);
+}
+
+.lienzo svg :focus {
+  outline: none;
+}
+
+.lienzo svg :focus-visible {
+  outline: 2px solid var(--accent-link);
+  outline-offset: 2px;
+}
+
+.globo {
+  position: absolute;
+  z-index: 5;
+  transform: translate(-50%, calc(-100% - 12px));
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 140px;
+  max-width: 260px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  pointer-events: none;
+  box-shadow: var(--sombra-panel);
+}
+
+.globo strong {
+  font-weight: 600;
+}
+
+.lineaGlobo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lineaGlobo i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+/* Piezas del SVG */
+.rejilla {
+  stroke: var(--grafico-rejilla);
+  stroke-width: 1;
+}
+
+.eje {
+  fill: var(--text-muted);
+  font-size: 11px;
+}
+
+.ejeCategoria {
+  fill: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ejeCentro {
+  stroke: var(--text);
+  stroke-width: 1.5;
+}
+
+.referencia {
+  stroke: var(--text);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+
+.etiquetaReferencia {
+  fill: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.etiquetaFila {
+  fill: var(--text);
+  font-size: 12.5px;
+}
+
+.valorFila {
+  fill: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.zonaToque {
+  fill: transparent;
+}
+
+.filaMarca:hover .zonaToque,
+.filaMarca:focus-visible .zonaToque {
+  fill: var(--bg-soft);
+}
+
+.lineaMancuerna {
+  stroke: var(--grafico-neutro);
+  stroke-width: 2;
+}
+
+.anillo {
+  fill: var(--bg-card);
+  stroke: var(--grafico-neutro);
+  stroke-width: 2;
+}
+
+.puntoLleno {
+  stroke: var(--bg-card);
+  stroke-width: 2;
+}
+
+.tallo {
+  stroke: var(--grafico-3);
+  stroke-width: 2;
+}
+
+.linea {
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lineaContexto {
+  stroke-width: 2;
+  stroke-dasharray: 5 5;
+}
+
+.banda {
+  opacity: 0.55;
+}
+
+.etiquetaBanda {
+  fill: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.cruz {
+  stroke: var(--text-muted);
+  stroke-width: 1;
+}
+
+.etiquetaSerie {
+  fill: var(--text);
+  font-size: 11.5px;
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: var(--bg-card);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+.numeroClaro {
+  fill: var(--text-on-dark);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.numeroOscuro {
+  fill: var(--text);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.arco {
+  stroke-linecap: butt;
+}
+
+.centroDona,
+.centroDonaClaro {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  fill: var(--text);
+}
+
+.centroDonaClaro {
+  fill: var(--text-on-dark);
+}
+
+.subcentroDona,
+.subcentroDonaClaro {
+  font-size: 11px;
+  fill: var(--text-muted);
+}
+
+.subcentroDonaClaro {
+  fill: rgba(255, 255, 255, 0.75);
+}
+
+.zonaBurbujas {
+  opacity: 0.14;
+}
+
+.etiquetaZona {
+  fill: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.burbuja {
+  stroke: var(--bg-card);
+  stroke-width: 2;
+  opacity: 0.95;
+}
+
+.zonaMedidor {
+  stroke-linecap: butt;
+}
+
+.aguja {
+  stroke: var(--text);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.ejeAguja {
+  fill: var(--text);
+  stroke: var(--bg-card);
+  stroke-width: 2;
+}
+
+.etiquetaMedidor {
+  margin-top: -4px;
+  text-align: center;
+  font-size: var(--fs-label);
+  font-weight: 600;
+}
+
+.cifraDivergente {
+  fill: var(--text);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.balance {
+  fill: var(--text);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.minitendencia {
+  display: block;
+}
+
+/* Mapa de calor (HTML) */
+.mapaCalor {
+  display: grid;
+  gap: 4px;
+  align-items: center;
+}
+
+.filaCalor {
+  display: contents;
+}
+
+.cabeceraCalor {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  font-weight: 500;
+  text-align: center;
+}
+
+.etiquetaCalor {
+  font-size: 12.5px;
+  padding-right: 8px;
+}
+
+.celdaCalor {
+  display: grid;
+  place-items: center;
+  height: 44px;
+  border-radius: 8px;
+  font-size: var(--fs-label);
+  font-weight: 600;
+  cursor: default;
+}
+
+.celdaCalor:focus-visible {
+  outline: 2px solid var(--accent-link);
+  outline-offset: 2px;
+}
+
+.rampa {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.rampa i {
+  width: 22px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.rampa span {
+  padding: 0 4px;
+}

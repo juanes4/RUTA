@@ -32,3 +32,5 @@ Thumbs.db
 ruta-web/server/data/
 
 .T2 IA/
+# Salida del script de la demo (progreso y registro de llamadas a Gemini)
+ruta-web/demo/salida/

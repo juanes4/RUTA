@@ -1,8 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Boton } from '../../components/ui/Boton';
 import { useSesion } from '../../estado/SesionContexto';
 import { api, ErrorApi } from '../../lib/api';
 import etapaT from './etapaT.module.css';
+
+type Resumen = { texto: string; origen: 'ia' | 'reglas'; fecha?: string };
+
+/** El último resumen queda guardado en este navegador: no hay que volver a pedirlo al recargar. */
+const CLAVE_RESUMEN = 'ruta:resumen-t2:v1';
+
+function leerResumenGuardado(): Resumen | null {
+  try {
+    const r = JSON.parse(window.localStorage.getItem(CLAVE_RESUMEN) ?? 'null') as Resumen | null;
+    return r && typeof r.texto === 'string' && (r.origen === 'ia' || r.origen === 'reglas') ? r : null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * T2, solo líderes. Resume los resultados del simulador. La IA solo recibe conteos y
@@ -10,7 +24,7 @@ import etapaT from './etapaT.module.css';
  */
 export function ResumenEquipo() {
   const { expirar } = useSesion();
-  const [resumen, setResumen] = useState<{ texto: string; origen: 'ia' | 'reglas' } | null>(null);
+  const [resumen, setResumen] = useState<Resumen | null>(leerResumenGuardado);
   const [generando, setGenerando] = useState(false);
   const [error, setError] = useState('');
 
@@ -18,7 +32,7 @@ export function ResumenEquipo() {
     setError('');
     setGenerando(true);
     try {
-      setResumen(await api.resumenIA());
+      setResumen({ ...(await api.resumenIA()), fecha: new Date().toISOString() });
     } catch (e) {
       if (e instanceof ErrorApi && e.estado === 401) expirar();
       setError(e instanceof Error ? e.message : 'Ocurrió un error.');
@@ -26,6 +40,15 @@ export function ResumenEquipo() {
       setGenerando(false);
     }
   };
+
+  useEffect(() => {
+    if (!resumen) return;
+    try {
+      window.localStorage.setItem(CLAVE_RESUMEN, JSON.stringify(resumen));
+    } catch {
+      // Si el navegador bloquea localStorage, el resumen solo vive en esta pantalla.
+    }
+  }, [resumen]);
 
   return (
     <section className={etapaT.resumenEquipo} aria-labelledby="titulo-resumen-equipo">

@@ -9,7 +9,10 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "usuario": "node server/crear-usuario.mjs"
+    "usuario": "node server/crear-usuario.mjs",
+    "demo": "node demo/iniciar-demo.mjs",
+    "demo:sembrar": "node demo/sembrar.mjs",
+    "demo:render": "node demo/iniciar-render.mjs"
   },
   "dependencies": {
     "@google/genai": "^3.6.1",

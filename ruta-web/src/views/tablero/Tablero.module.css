@@ -5,57 +5,104 @@
   margin-bottom: 28px;
 }
 
-/* Esquema de la referencia: panel suave a la izquierda, contenido a la derecha. */
-.rejilla {
-  display: grid;
-  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
-  gap: 32px;
-  align-items: start;
-}
-
-.panel {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  padding: 20px;
-  border-radius: var(--radius-card);
-  background: var(--bg-soft);
-  border: var(--borde-panel);
-}
-
-.principal {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  min-width: 0;
-}
-
-.bloque {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.tituloBloque {
-  font-size: var(--fs-card-title);
-  font-weight: 600;
-}
-
 .detalle {
   font-size: var(--fs-small);
   color: var(--text-muted);
 }
 
-.nombreArea {
-  font-size: var(--fs-label);
-  font-weight: 500;
+.niveles {
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
 }
 
-/* Tarjeta destacada en negro (DESIGN.md). */
+/* ---------- Secciones por nivel de importancia ---------- */
+
+.seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cabeceraSeccion {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.numeroSeccion {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.tituloSeccion {
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+}
+
+/* El primer nivel manda: título más grande. Los demás bajan de peso. */
+.seccion[data-nivel='1'] .tituloSeccion {
+  font-size: 24px;
+}
+
+.seccion[data-nivel='3'] .numeroSeccion,
+.seccion[data-nivel='4'] .numeroSeccion {
+  background: var(--bg-soft);
+  color: var(--text);
+  border: var(--borde-panel);
+}
+
+.rejilla12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+.ancho4 { grid-column: span 4; }
+.ancho5 { grid-column: span 5; }
+.ancho6 { grid-column: span 6; }
+.ancho7 { grid-column: span 7; }
+.ancho8 { grid-column: span 8; }
+.ancho12 { grid-column: span 12; }
+
+.columna {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+.sinDatos {
+  padding: 18px;
+  border-radius: 12px;
+  background: var(--bg-soft);
+  color: var(--text-muted);
+  font-size: var(--fs-label);
+  text-align: center;
+}
+
+/* ---------- Nivel 1 ---------- */
+
+.filaEstado {
+  display: grid;
+  grid-template-columns: minmax(300px, 5fr) minmax(0, 7fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
 .tarjetaOscura {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   padding: 24px;
   border-radius: var(--radius-card);
   background: var(--bg-dark);
@@ -66,15 +113,117 @@
 .antetituloOscuro {
   font-size: var(--fs-small);
   font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
 }
 
-.decision {
+.estadoGeneral {
   font-family: var(--font-display);
-  font-size: var(--fs-card-title);
-  font-weight: 600;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.15;
 }
 
-/* Botón claro con el acento de acción (DESIGN.md), también sobre la tarjeta oscura. */
+.estadoDona {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.leyendaOscura {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-label);
+}
+
+.leyendaOscura li {
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-width: 150px;
+}
+
+.leyendaOscura i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.leyendaOscura strong {
+  font-family: var(--font-display);
+  font-size: 18px;
+}
+
+.porMejorar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.porMejorar ul {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.porMejorar li {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto 92px;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: var(--fs-label);
+}
+
+.porMejorar i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.porMejorar strong {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.metaOscura {
+  font-size: var(--fs-small);
+  color: rgba(255, 255, 255, 0.7);
+  text-align: right;
+}
+
+.rutaOscura {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.rutaLinea {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+.textoOscuro {
+  font-size: var(--fs-label);
+}
+
 .enlaceOscuro,
 .enlaceSecundario {
   align-self: flex-start;
@@ -91,54 +240,278 @@
   text-decoration: none;
 }
 
-.listaAreas {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+/* Hallazgos priorizados */
+.hallazgos {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  padding: 22px 24px;
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  border: var(--borde-panel);
+  box-shadow: var(--sombra-suave);
 }
 
-.listaAreas li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.porcentaje {
-  font-weight: 600;
-  font-size: var(--fs-label);
-  padding: 4px 10px;
-  border-radius: var(--radius-pill);
-  background: var(--fondo-porcentaje);
-}
-
-.textoOscuro {
-  font-size: var(--fs-label);
-}
-
-.motivosClaros {
-  margin: 0;
-  padding-left: 18px;
-  font-size: var(--fs-small);
+.cabeceraHallazgos {
   display: flex;
   flex-direction: column;
+  gap: 2px;
+}
+
+.tituloHallazgos {
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+}
+
+.listaHallazgos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hallazgo {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.hallazgo[data-prioridad='actuar'] {
+  background: linear-gradient(90deg, var(--peligro-bg-claro), var(--bg-card));
+  border-color: var(--peligro-linea);
+}
+
+.hallazgo[data-prioridad='vigilar'] {
+  background: linear-gradient(90deg, var(--atencion-bg-claro), var(--bg-card));
+  border-color: var(--atencion-bg);
+}
+
+.hallazgo[data-prioridad='bien'] {
+  background: linear-gradient(90deg, var(--menta-claro), var(--bg-card));
+  border-color: var(--menta-linea);
+}
+
+.prioridad {
+  display: inline-flex;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.prioridad[data-prioridad='actuar'] {
+  background: var(--peligro-bg);
+  color: var(--peligro-texto);
+}
+
+.prioridad[data-prioridad='vigilar'] {
+  background: var(--atencion-bg);
+  color: var(--atencion-texto);
+}
+
+.prioridad[data-prioridad='bien'] {
+  background: var(--badge-bg);
+  color: var(--text);
+}
+
+.tituloHallazgo {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* Indicadores clave */
+.indicadoresClave {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.indicador {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 20px;
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  border: var(--borde-panel);
+  box-shadow: var(--sombra-suave);
+}
+
+.cabeceraIndicador {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nombreIndicador {
+  font-size: var(--fs-label);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.valorConTendencia {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.valorIndicador {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.pieIndicador {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.estado,
+.delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text);
+}
+
+.estado i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.estado[data-estado='en_meta'] { background: var(--pastel-mint); }
+.estado[data-estado='en_meta'] i { background: var(--estado-bien); }
+.estado[data-estado='atencion'] { background: var(--pastel-cream); }
+.estado[data-estado='atencion'] i { background: var(--estado-atencion); }
+.estado[data-estado='intervenir'] { background: var(--peligro-bg); }
+.estado[data-estado='intervenir'] i { background: var(--estado-intervenir); }
+
+.delta {
+  background: var(--bg-soft);
+}
+
+.delta[data-favorable='true'] {
+  background: var(--badge-bg);
+}
+
+.delta[data-favorable='false'] {
+  background: var(--peligro-bg-claro);
+  color: var(--peligro-texto);
+}
+
+/* ---------- Nivel 3 ---------- */
+
+.triaje {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.criterios {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-label);
+}
+
+.criterios li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.pips {
+  display: inline-flex;
   gap: 4px;
 }
 
-/* Cuadro con la letra de la etapa, en su pastel (como los iconos de la referencia). */
+.pips i {
+  width: 18px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--grafico-rejilla);
+}
+
+.pips i[data-lleno='true'] {
+  background: var(--text);
+}
+
+.desglose {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+.desglose li {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--bg-soft);
+}
+
+.cifraDesglose {
+  font-family: var(--font-display);
+  font-size: var(--fs-body);
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ---------- Nivel 4 ---------- */
+
+.avance {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .celdaIndicador {
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
   color: var(--text);
   text-decoration: none;
 }
 
 .celdaIndicador:hover {
-  text-decoration: underline;
+  background: var(--bg-soft);
 }
 
 .cuadroEtapa {
@@ -154,115 +527,49 @@
   font-size: var(--fs-label);
 }
 
-/* Tarjetas pastel, una por categoría. */
-.categorias {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.categoria {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 20px;
-  border-radius: var(--radius-card);
-  background: var(--fondo-categoria);
-  border: var(--borde-panel);
-  box-shadow: var(--sombra-panel);
-}
-
-.nombreCategoria {
-  font-size: var(--fs-body);
-  font-weight: 600;
-}
-
-.ejemplos {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  flex: 1;
-}
-
-.ejemplos .detalle,
-.pieCategoria {
-  color: var(--text);
-}
-
-.pieCategoria {
-  font-size: var(--fs-small);
-  font-weight: 500;
-}
-
-/* Tabla limpia con separadores finos. */
-.tabla {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.tabla thead th {
-  text-align: left;
-  font-size: var(--fs-small);
-  font-weight: 500;
-  color: var(--text-muted);
-  padding: 0 12px 10px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.tabla tbody th,
-.tabla td {
-  text-align: left;
-  padding: 14px 12px 14px 0;
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-}
-
-.tabla tbody th {
-  font-weight: 400;
-}
-
-.tabla tbody tr:last-child th,
-.tabla tbody tr:last-child td {
-  border-bottom: 0;
-}
-
-.valor {
-  font-weight: 600;
+.nombrePaso {
+  display: block;
   font-size: var(--fs-label);
+  font-weight: 500;
 }
 
-@media (max-width: 1100px) {
-  .rejilla {
+.estadoPaso {
+  display: block;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+/* ---------- Pantallas medianas y pequeñas ---------- */
+
+@media (max-width: 1180px) {
+  .filaEstado {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .categorias {
-    grid-template-columns: minmax(0, 1fr);
+  .indicadoresClave {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ancho4,
+  .ancho5,
+  .ancho6,
+  .ancho7,
+  .ancho8 {
+    grid-column: span 12;
+  }
+
+  .avance {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 767px) {
-  .tabla thead {
-    display: none;
+@media (max-width: 640px) {
+  .indicadoresClave,
+  .avance {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .tabla tr {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 4px 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .tabla tbody th,
-  .tabla td {
-    padding: 0;
-    border: 0;
+  .hallazgo {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

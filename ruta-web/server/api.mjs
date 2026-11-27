@@ -60,20 +60,27 @@ const publico = (u) => ({ id: u.id, usuario: u.usuario, nombre: u.nombre, rol: u
  */
 export function crearApi(db, { seguro = false, env = process.env, generarImpl, coachResponder, ia = {} } = {}) {
   const intentos = new Map(); // usuario -> { n, hasta }
+  /**
+   * Solo para una demo publicada (RUTA_DEMO_USUARIO=lider): quien no tiene sesión entra como ese usuario, sin clave.
+   * Una sesión iniciada (por ejemplo, empleado1) tiene prioridad. Nunca la definas con datos reales.
+   */
+  const usuarioDemo = typeof env.RUTA_DEMO_USUARIO === 'string' ? env.RUTA_DEMO_USUARIO.trim() : '';
+  const sesionDemo = () =>
+    usuarioDemo ? (db.prepare('SELECT id, usuario, nombre, rol FROM usuarios WHERE usuario = ?').get(usuarioDemo) ?? null) : null;
 
   const sesionDe = (req) => {
     const token = leerCookie(req, COOKIE);
-    if (!token) return null;
+    if (!token) return sesionDemo();
     const fila = db
       .prepare(
         `SELECT u.id, u.usuario, u.nombre, u.rol, s.expira_en FROM sesiones s
          JOIN usuarios u ON u.id = s.usuario_id WHERE s.token_hash = ?`,
       )
       .get(sha256(token));
-    if (!fila) return null;
+    if (!fila) return sesionDemo();
     if (fila.expira_en < Date.now()) {
       db.prepare('DELETE FROM sesiones WHERE token_hash = ?').run(sha256(token));
-      return null;
+      return sesionDemo();
     }
     return fila;
   };

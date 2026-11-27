@@ -14,6 +14,28 @@ interface MensajeChat extends TurnoCoach {
   escalamiento?: EscalamientoCoach | null;
 }
 
+/** Conversación del Coach guardada en este navegador, por proyecto: no se pierde al cambiar de paso o recargar. */
+interface ChatGuardado {
+  mensajes: MensajeChat[];
+  modoEnsayo: boolean;
+  guardadosIds: Record<string, boolean>;
+}
+
+const claveChatCoach = (idProyecto: string | undefined) => `ruta:coach-u3:v1:${idProyecto ?? 'sin-proyecto'}`;
+
+function leerChatGuardado(clave: string): ChatGuardado {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(clave) ?? 'null') as Partial<ChatGuardado> | null;
+    return {
+      mensajes: Array.isArray(parsed?.mensajes) ? parsed.mensajes.slice(-40) : [],
+      modoEnsayo: parsed?.modoEnsayo === true,
+      guardadosIds: parsed?.guardadosIds && typeof parsed.guardadosIds === 'object' ? parsed.guardadosIds : {},
+    };
+  } catch {
+    return { mensajes: [], modoEnsayo: false, guardadosIds: {} };
+  }
+}
+
 const SUGERENCIAS = [
   'Un colaborador me preguntó si este cambio va a implicar despidos o recorte de personal.',
   'Siento resistencia abierta en una persona del equipo que dice que antes todo funcionaba mejor.',
@@ -131,14 +153,33 @@ export function CoachLideres({ soporteActual }: Props) {
   const [area, setArea] = useState<string>(areasProyecto[0] ?? '');
   const [textoAdicional, setTextoAdicional] = useState('');
 
-  const [mensajes, setMensajes] = useState<MensajeChat[]>([]);
+  const claveChat = claveChatCoach(activo?.id);
+  const [mensajes, setMensajes] = useState<MensajeChat[]>(() => leerChatGuardado(claveChat).mensajes);
   const [entrada, setEntrada] = useState('');
   const [enviando, setEnviando] = useState(false);
-  const [modoEnsayo, setModoEnsayo] = useState(false);
+  const [modoEnsayo, setModoEnsayo] = useState(() => leerChatGuardado(claveChat).modoEnsayo);
   const [error, setError] = useState('');
 
   const [copiadoId, setCopiadoId] = useState<string | null>(null);
-  const [guardadosIds, setGuardadosIds] = useState<Record<string, boolean>>({});
+  const [guardadosIds, setGuardadosIds] = useState<Record<string, boolean>>(() => leerChatGuardado(claveChat).guardadosIds);
+
+  // Si cambia el proyecto activo, se carga su propia conversación.
+  useEffect(() => {
+    const guardado = leerChatGuardado(claveChat);
+    setMensajes(guardado.mensajes);
+    setModoEnsayo(guardado.modoEnsayo);
+    setGuardadosIds(guardado.guardadosIds);
+  }, [claveChat]);
+
+  // Guarda la conversación en este navegador cada vez que cambia.
+  useEffect(() => {
+    try {
+      const chat: ChatGuardado = { mensajes: mensajes.slice(-40), modoEnsayo, guardadosIds };
+      window.localStorage.setItem(claveChat, JSON.stringify(chat));
+    } catch {
+      // Si el navegador bloquea localStorage, el chat sigue funcionando en memoria.
+    }
+  }, [claveChat, mensajes, modoEnsayo, guardadosIds]);
   const [guardandoId, setGuardandoId] = useState<string | null>(null);
   const [escalamientosGuardados, setEscalamientosGuardados] = useState<EscalamientoCoach[]>([]);
 

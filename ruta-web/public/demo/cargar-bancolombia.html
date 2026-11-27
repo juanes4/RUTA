@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RUTA · Cargar el caso Bancolombia (ficticio)</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --tinta: #1f2430;
+        --suave: #5b6272;
+        --borde: #e3e6ec;
+        --azul: #dcebfb;
+        --verde: #dff3e6;
+        --rojo: #fde2e2;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        color: var(--tinta);
+        background: #f7f8fa;
+        line-height: 1.5;
+      }
+      main { max-width: 760px; margin: 48px auto; padding: 0 20px; }
+      .tarjeta { background: #fff; border: 1px solid var(--borde); border-radius: 16px; padding: 28px 32px; }
+      h1 { font-size: 1.5rem; margin: 0 0 4px; }
+      .subtitulo { color: var(--suave); margin: 0 0 20px; }
+      .aviso { background: var(--azul); border-radius: 10px; padding: 10px 14px; font-size: 0.92rem; margin-bottom: 20px; }
+      ul.pasos { list-style: none; padding: 0; margin: 0 0 20px; display: grid; gap: 6px; }
+      ul.pasos li { padding: 8px 12px; border-radius: 8px; background: #fafbfc; border: 1px solid var(--borde); font-size: 0.93rem; }
+      ul.pasos li.ok::before { content: '✓ '; color: #1d7a45; font-weight: 700; }
+      .estado { padding: 12px 14px; border-radius: 10px; margin-bottom: 16px; }
+      .estado.bien { background: var(--verde); }
+      .estado.mal { background: var(--rojo); }
+      .botones { display: flex; flex-wrap: wrap; gap: 10px; }
+      button, a.boton {
+        font: inherit; font-weight: 600; border-radius: 10px; padding: 10px 18px; cursor: pointer;
+        border: 1px solid var(--tinta); background: var(--tinta); color: #fff; text-decoration: none;
+      }
+      button.secundario { background: #fff; color: var(--tinta); }
+      table { border-collapse: collapse; width: 100%; font-size: 0.9rem; margin-top: 8px; }
+      th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--borde); }
+      code { background: #f0f2f5; padding: 1px 5px; border-radius: 4px; }
+      h2 { font-size: 1.05rem; margin: 24px 0 6px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="tarjeta">
+        <h1>Caso Bancolombia · Piloto Asesor 360</h1>
+        <p class="subtitulo">Carga en este navegador el recorrido completo de RUTA (Etapa 0, R, U, T y A), con las respuestas de IA ya generadas.</p>
+        <div class="aviso">Caso <strong>ficticio con fines académicos</strong> (reto CUEE · ANDI). Las cifras, respuestas y personas son inventadas.</div>
+
+        <div id="estado" class="estado" hidden></div>
+        <ul class="pasos" id="pasos"></ul>
+        <div class="botones">
+          <a class="boton" id="abrir" href="/#/ingresar" hidden>Entrar a la app</a>
+          <button id="cargar" type="button">Cargar el caso</button>
+          <button id="restaurar" class="secundario" type="button" hidden>Restaurar el caso original</button>
+        </div>
+
+        <h2>Cuentas para la exposición (clave <code>ruta2026</code>)</h2>
+        <table>
+          <thead><tr><th>Usuario</th><th>Persona (ficticia)</th><th>Para mostrar</th></tr></thead>
+          <tbody>
+            <tr><td><code>lider</code></td><td>Carolina Restrepo · gestión del cambio</td><td>Todo: copiloto, Coach, tableros, resúmenes con IA y asistente A</td></tr>
+            <tr><td><code>empleado1</code> a <code>empleado8</code></td><td>Colaboradores del piloto</td><td>Vista del colaborador: buzón ya respondido, videos, simulador, termómetro, mapa de viaje</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+    <script type="module">
+      const CLAVE = 'ruta:v2';
+      const $ = (id) => document.getElementById(id);
+      const forzar = new URLSearchParams(location.search).has('forzar');
+
+      const leerInstantanea = () => {
+        try {
+          const v = JSON.parse(localStorage.getItem(CLAVE) ?? 'null');
+          return v && Array.isArray(v.proyectos) && v.datos && typeof v.datos === 'object' ? v : { proyectos: [], datos: {} };
+        } catch {
+          return { proyectos: [], datos: {} };
+        }
+      };
+
+      const mostrar = (texto, bien) => {
+        const e = $('estado');
+        e.hidden = false;
+        e.className = `estado ${bien ? 'bien' : 'mal'}`;
+        e.textContent = texto;
+      };
+
+      const resumen = (caso) => {
+        const d = caso.datos;
+        const c = d.copiloto;
+        const n = (x) => (Array.isArray(x) ? x.length : 0);
+        return [
+          `Etapa 0 · ${caso.proyecto.empresa.nombre} y ${n(caso.proyecto.segmentacion.areas)} áreas`,
+          `Copiloto R · entrevista del lienzo (${n(c.mensajesLienzo)} mensajes), triaje, informe del buzón y dossier (Gemini)`,
+          `R1 a R5 · lienzo, triaje, FODA (${n(d.foda)} ítems), actores (${n(d.actores)}) y buzón (${n(d.buzon1)} respuestas)`,
+          `U1 a U4 · liderazgo (${n(d.liderazgo)} encuestas), narrativa, soporte y mapa de empatía`,
+          `Coach U3 · conversación guardada (${n(caso.localStorage[Object.keys(caso.localStorage).find((k) => k.startsWith('ruta:coach-u3'))]?.mensajes)} mensajes)`,
+          'T y A · pulsos, simulador, escalera, termómetro, méritos, auditorías y mapa de viaje (en la base de la demo)',
+          `Resumen T2 y Asistente A · respuestas de Gemini guardadas`,
+        ];
+      };
+
+      let caso = null;
+      try {
+        const r = await fetch('./bancolombia.json', { cache: 'no-store' });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        caso = await r.json();
+        $('pasos').innerHTML = resumen(caso).map((t) => `<li>${t.replace(/</g, '&lt;')}</li>`).join('');
+      } catch (e) {
+        mostrar(`No se encontró public/demo/bancolombia.json (${e.message}). Corre primero: node demo/sembrar.mjs`, false);
+        $('cargar').disabled = true;
+      }
+
+      const cargar = () => {
+        const inst = leerInstantanea();
+        const resto = inst.proyectos.filter((p) => p.id !== caso.proyecto.id);
+        // El proyecto del caso va primero: la app abre el primero de la lista.
+        inst.proyectos = [caso.proyecto, ...resto];
+        inst.datos[caso.proyecto.id] = caso.datos;
+        localStorage.setItem(CLAVE, JSON.stringify(inst));
+        for (const [k, v] of Object.entries(caso.localStorage)) if (v !== null && v !== undefined) localStorage.setItem(k, JSON.stringify(v));
+        document.querySelectorAll('#pasos li').forEach((li) => li.classList.add('ok'));
+        mostrar('Listo: el caso quedó guardado en este navegador. Entra con el usuario «lider».', true);
+        $('cargar').hidden = true;
+        $('restaurar').hidden = false;
+        $('abrir').hidden = false;
+      };
+
+      if (caso) {
+        const yaEsta = leerInstantanea().proyectos.some((p) => p.id === caso.proyecto.id);
+        if (yaEsta && !forzar) {
+          document.querySelectorAll('#pasos li').forEach((li) => li.classList.add('ok'));
+          mostrar('El caso ya está cargado en este navegador. Si cambiaste algo durante una prueba, puedes restaurarlo.', true);
+          $('cargar').hidden = true;
+          $('restaurar').hidden = false;
+          $('abrir').hidden = false;
+        } else {
+          $('cargar').addEventListener('click', cargar);
+          if (forzar) cargar();
+        }
+        $('restaurar').addEventListener('click', () => {
+          if (confirm('¿Restaurar el caso Bancolombia tal como quedó al generarlo? Se pierden los cambios hechos en este navegador sobre ese proyecto.')) cargar();
+        });
+      }
+    </script>
+  </body>
+</html>

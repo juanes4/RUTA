@@ -78,6 +78,30 @@
   --recorrido-transformar: #F5D88E;
   --recorrido-comprobar: #F0B25E;
 
+  /*
+   * Gráficos del Tablero: los mismos matices de la cinta del recorrido (azul, naranja, turquesa y violeta),
+   * un paso más intensos para que se lean como marcas de datos. Validados como paleta categórica
+   * (banda de luminosidad, croma, separación para daltonismo y visión normal). El naranja no llega a 3:1
+   * sobre blanco: todo gráfico lleva etiquetas visibles y su tabla de datos.
+   */
+  --grafico-1: #3F6FDB;
+  --grafico-2: #E8902E;
+  --grafico-3: #1FA191;
+  --grafico-4: #9A6FE0;
+  /* Secuencial (magnitud u orden): un solo matiz, de claro a oscuro. */
+  --grafico-sec-1: #DCEBFB;
+  --grafico-sec-2: #A9C8F5;
+  --grafico-sec-3: #7499E6;
+  --grafico-sec-4: #3F6FDB;
+  --grafico-sec-5: #24479E;
+  /* Referencias, rejilla y valores sin dato. */
+  --grafico-neutro: #B8BFCC;
+  --grafico-rejilla: #E9ECF2;
+  /* Estados del semáforo (con palabra o icono, nunca solo color). */
+  --estado-bien: var(--positive);
+  --estado-atencion: #F2A900;
+  --estado-intervenir: var(--negative);
+
   /* Vidrio (refs 02 y 04) */
   --glass-bg: rgba(255, 255, 255, 0.60);
   --glass-border: rgba(255, 255, 255, 0.45);

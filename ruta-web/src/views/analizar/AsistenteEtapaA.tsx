@@ -30,7 +30,7 @@ const claveSesionChat = (usuarioId: number | undefined) => `ruta:asistente-a:v1:
 
 function leerHistorialGuardado(clave: string): MensajeChat[] {
   try {
-    const raw = window.sessionStorage.getItem(clave);
+    const raw = window.localStorage.getItem(clave);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? (parsed as MensajeChat[]).slice(-30) : [];
@@ -62,12 +62,12 @@ export function AsistenteEtapaA({ pasoActual, esLider }: Props) {
     setMensajes(leerHistorialGuardado(claveStorage));
   }, [claveStorage]);
 
-  // Persiste la conversación en sessionStorage para que no se borre al cambiar entre A1, A2 u otras etapas.
+  // Persiste la conversación en localStorage: no se borra al cambiar de etapa ni al cerrar el navegador.
   useEffect(() => {
     try {
-      window.sessionStorage.setItem(claveStorage, JSON.stringify(mensajes.slice(-30)));
+      window.localStorage.setItem(claveStorage, JSON.stringify(mensajes.slice(-30)));
     } catch {
-      // Ignora si el navegador bloquea sessionStorage.
+      // Ignora si el navegador bloquea localStorage.
     }
   }, [claveStorage, mensajes]);
 
